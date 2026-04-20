@@ -205,6 +205,7 @@ export const adminAPI = {
     
     // 榛戝悕鍗曠鐞?
     getBlacklist: (params) => request.get('/admin/blacklist', { params }),
+    getBlacklistStats: () => request.get('/admin/blacklist/stats'),
     addToBlacklist: (data) => request.post('/admin/blacklist', data),
     removeFromBlacklist: (id) => request.put(`/admin/blacklist/${id}/remove`),
     autoExpireBlacklist: () => request.put('/admin/blacklist/auto-expire'),

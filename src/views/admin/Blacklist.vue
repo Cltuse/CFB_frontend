@@ -363,12 +363,13 @@ const loadBlacklist = async () => {
 
 const loadStats = async () => {
   try {
-    // 这里可以根据实际需求调用统计接口
-    // 暂时使用当前列表统计
-    stats.activeCount = blacklistData.value.filter(item => item.status === 'ACTIVE').length;
-    stats.expiredCount = blacklistData.value.filter(item => item.status === 'EXPIRED').length;
-    stats.removedCount = blacklistData.value.filter(item => item.status === 'REMOVED').length;
-    stats.totalCount = pagination.total;
+    const response = await adminAPI.getBlacklistStats();
+    const data = response.data || {};
+
+    stats.activeCount = data.activeCount || 0;
+    stats.expiredCount = data.expiredCount || 0;
+    stats.removedCount = data.removedCount || 0;
+    stats.totalCount = data.totalCount || 0;
   } catch (error) {
     console.error('加载统计信息失败:', error);
   }

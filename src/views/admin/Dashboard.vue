@@ -212,11 +212,27 @@ const loadStats = async () => {
       userAPI.list()
     ]);
 
+    const resolveCount = (payload) => {
+      if (Array.isArray(payload)) {
+        return payload.length;
+      }
+
+      if (typeof payload?.totalElements === 'number') {
+        return payload.totalElements;
+      }
+
+      if (Array.isArray(payload?.content)) {
+        return payload.content.length;
+      }
+
+      return 0;
+    };
+
     stats.value = {
-      totalFacility: facilityRes.data.length,
-      availableFacility: availableRes.data.length,
-      totalReservations: reservationRes.data.length,
-      totalUser: userRes.data.length
+      totalFacility: resolveCount(facilityRes.data),
+      availableFacility: resolveCount(availableRes.data),
+      totalReservations: resolveCount(reservationRes.data),
+      totalUser: resolveCount(userRes.data)
     };
   } catch (error) {
     console.error('加载统计数据失败:', error);
