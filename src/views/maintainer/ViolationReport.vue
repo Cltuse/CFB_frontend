@@ -14,7 +14,7 @@
           </div>
           违规记录上报
         </h1>
-        <p class="page-subtitle">上报用户违规行为，维护设施使用秩序</p>
+        <p class="page-subtitle">上报用户违规行为，维护设施预约与现场使用秩序</p>
       </div>
     </div>
 

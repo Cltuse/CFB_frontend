@@ -54,6 +54,7 @@ import { useRouter } from 'vue-router'
 import { ElMessageBox } from 'element-plus'
 import { ArrowDown, SwitchButton, User } from '@element-plus/icons-vue'
 import { clearAuth, getUserInfo } from '../utils/auth'
+import { getRoleDisplayName } from '../utils/roleMapping'
 
 const router = useRouter()
 const userInfo = ref({})
@@ -65,15 +66,7 @@ onMounted(() => {
 const displayName = computed(() => userInfo.value.realName || userInfo.value.username || '用户')
 const displayInitial = computed(() => displayName.value.charAt(0).toUpperCase())
 
-const roleText = computed(() => {
-  if (userInfo.value.role === 'ADMIN') {
-    return '系统管理员'
-  }
-  if (userInfo.value.role === 'MAINTAINER') {
-    return '维护人员'
-  }
-  return '普通用户'
-})
+const roleText = computed(() => getRoleDisplayName(userInfo.value.role))
 
 const handleProfile = () => {
   const info = getUserInfo()

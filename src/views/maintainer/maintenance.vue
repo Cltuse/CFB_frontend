@@ -11,9 +11,9 @@
               <path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
             </svg>
           </div>
-          我的维护任务
+          我的设施维护
         </h1>
-        <p class="page-subtitle">管理您的设施维护任务</p>
+        <p class="page-subtitle">管理您负责设施的维护登记、状态更新与处理进度</p>
       </div>
     </div>
 
@@ -52,7 +52,7 @@
           </el-space>
         </el-col>
         <el-col :span="8" class="text-right">
-          <el-button type="primary" @click="handleCreate" :icon="Plus">新建维护任务</el-button>
+          <el-button type="primary" @click="handleCreate" :icon="Plus">新建维护登记</el-button>
         </el-col>
       </el-row>
     </div>
@@ -103,7 +103,7 @@
           </template>
         </el-table-column>
 
-        <el-table-column prop="maintainer" label="维护人员" width="100">
+        <el-table-column prop="maintainer" label="设施管理员" width="100">
           <template #default="{ row }">
             <span>{{ row.maintainer || '-' }}</span>
           </template>
@@ -240,10 +240,10 @@
             </el-select>
           </el-form-item>
 
-          <el-form-item label="维护人员" prop="maintainer" align="center">
+          <el-form-item label="设施管理员" prop="maintainer" align="center">
             <el-input
                 v-model="form.maintainer"
-                placeholder="请输入维护人员姓名或用户名"
+                placeholder="请输入设施管理员姓名或用户名"
                 maxlength="50"
                 :disabled="true"
             >
@@ -599,7 +599,7 @@ const handleCreate = () => {
     result: '',
     status: 'PENDING' // 默认状态为待处理
   };
-  dialogTitle.value = '新建维护任务';
+  dialogTitle.value = '新建维护登记';
   dialogVisible.value = true;
 };
 

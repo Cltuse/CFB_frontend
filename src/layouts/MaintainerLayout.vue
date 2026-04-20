@@ -14,21 +14,21 @@
           <el-menu-item index="/maintainer/dashboard" class="menu-item">
             <el-icon class="menu-icon-item"><DataAnalysis /></el-icon>
             <template #title>
-              <span class="menu-text">数据统计</span>
+              <span class="menu-text">统计分析</span>
             </template>
           </el-menu-item>
 
           <el-menu-item index="/maintainer/maintenance" class="menu-item">
             <el-icon class="menu-icon-item"><Tools /></el-icon>
             <template #title>
-              <span class="menu-text">维护任务</span>
+              <span class="menu-text">设施维护</span>
             </template>
           </el-menu-item>
 
           <el-menu-item index="/maintainer/facility" class="menu-item">
             <el-icon class="menu-icon-item"><Box /></el-icon>
             <template #title>
-              <span class="menu-text">设施管理</span>
+              <span class="menu-text">负责设施</span>
             </template>
           </el-menu-item>
 

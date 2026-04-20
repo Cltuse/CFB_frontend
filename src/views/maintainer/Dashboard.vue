@@ -12,7 +12,7 @@
           </div>
           维修数据统计
         </h1>
-        <p class="page-subtitle">设施维护任务统计分析</p>
+        <p class="page-subtitle">负责设施、维护任务与处理进度的统计分析</p>
       </div>
     </div>
 

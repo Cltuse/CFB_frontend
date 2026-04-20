@@ -11,7 +11,7 @@
               <path d="M12 11C14.2091 11 16 9.20914 16 7C16 4.79086 14.2091 3 12 3C9.79086 3 8 4.79086 8 7C8 9.20914 9.79086 11 12 11Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
             </svg>
           </div>
-          管理员中心
+          系统管理员中心
         </h1>
         <p class="page-subtitle">管理您的个人信息和系统设置</p>
       </div>

@@ -21,7 +21,7 @@
       <div class="search-section">
         <el-input
           v-model="searchKeyword"
-          placeholder="搜索设施名称或维护人员..."
+          placeholder="搜索设施名称或设施管理员..."
           size="large"
           class="search-input"
           clearable
@@ -74,7 +74,7 @@
           </template>
         </el-table-column>
 
-        <el-table-column prop="maintainer" label="维护人员" width="150">
+        <el-table-column prop="maintainer" label="设施管理员" width="150">
           <template #default="{ row }">
             <span class="maintainer">{{ row.maintainer || '-' }}</span>
           </template>
@@ -179,8 +179,8 @@
             <el-option label="升级" value="UPGRADE" />
           </el-select>
         </el-form-item>
-        <el-form-item label="维护人员" prop="maintainerId">
-          <el-select v-model="form.maintainerId" style="width: 100%;" placeholder="请选择维护人员" @change="handleMaintainerChange">
+        <el-form-item label="设施管理员" prop="maintainerId">
+          <el-select v-model="form.maintainerId" style="width: 100%;" placeholder="请选择设施管理员" @change="handleMaintainerChange">
             <el-option
               v-for="item in maintainerOptions"
               :key="item.id"
@@ -277,7 +277,7 @@ const form = ref({
 const rules = {
   facilityId: [{ required: true, message: '请选择设施', trigger: 'change' }],
   maintenanceType: [{ required: true, message: '请选择维护类型', trigger: 'change' }],
-  maintainerId: [{ required: true, message: '请选择维护人员', trigger: 'change' }]
+  maintainerId: [{ required: true, message: '请选择设施管理员', trigger: 'change' }]
 };
 
 // 表格样式

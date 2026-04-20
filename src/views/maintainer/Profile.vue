@@ -10,7 +10,7 @@
               <path d="M12 11C14.2091 11 16 9.20914 16 7C16 4.79086 14.2091 3 12 3C9.79086 3 8 4.79086 8 7C8 9.20914 9.79086 11 12 11Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
             </svg>
           </div>
-          维护人员中心
+          设施管理员中心
         </h1>
         <p class="page-subtitle">管理您的个人信息、安全设置和头像资料</p>
       </div>
@@ -31,7 +31,7 @@
           </div>
           <div class="card-title">
             <h3>个人信息</h3>
-            <p>更新维护人员的基础资料、联系方式和头像信息</p>
+            <p>更新设施管理员的基础资料、联系方式和头像信息</p>
           </div>
         </div>
         <div class="card-content">
@@ -45,7 +45,7 @@
           </div>
           <div class="info-item">
             <span class="label">角色</span>
-            <span class="value">设施维护员</span>
+            <span class="value">设施管理员</span>
           </div>
           <div class="info-item">
             <span class="label">手机号</span>
@@ -78,7 +78,7 @@
           </div>
           <div class="card-title">
             <h3>修改密码</h3>
-            <p>定期修改登录密码，保护维护人员账户和上报权限安全</p>
+            <p>定期修改登录密码，保护设施管理员账户和业务操作权限安全</p>
           </div>
         </div>
         <div class="card-content">
