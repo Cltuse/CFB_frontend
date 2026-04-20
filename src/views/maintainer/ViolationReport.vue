@@ -287,7 +287,7 @@ onMounted(() => {
 // 方法
 const loadUsers = async () => {
   try {
-    const response = await userAPI.list({ page: 0, size: 1000 });
+    const response = await userAPI.getReportableUsers();
     if (response && response.data) {
       // 确保用户数据有正确的显示名称
       userList.value = response.data.content || response.data || [];

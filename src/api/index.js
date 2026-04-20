@@ -6,6 +6,7 @@ export const userAPI = {
     register: (data) => request.post('/user/register', data),
     updateProfile: (data) => request.put('/user/me', data),
     list: (params) => request.get('/user/list', { params }),
+    getReportableUsers: () => request.get('/user/reportable-list'),
     getById: (id) => request.get(`/user/${id}`),
     create: (data) => request.post('/user', data),
     update: (id, data) => request.put(`/user/${id}`, data),
