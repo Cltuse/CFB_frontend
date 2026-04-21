@@ -1,107 +1,136 @@
 <template>
-  <div class="profile-page">
-    <div class="page-header">
-      <div class="header-decoration"></div>
-      <div class="header-content">
-        <h1 class="page-title">
-          <div class="title-icon">
-            <svg viewBox="0 0 24 24" fill="none">
-              <path d="M20 21V19C20 17.9391 19.5786 16.9217 18.8284 16.1716C18.0783 15.4214 17.0609 15 16 15H8C6.93913 15 5.92172 15.4214 5.17157 16.1716C4.42143 16.9217 4 17.9391 4 19V21" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-              <path d="M12 11C14.2091 11 16 9.20914 16 7C16 4.79086 14.2091 3 12 3C9.79086 3 8 4.79086 8 7C8 9.20914 9.79086 11 12 11Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
+  <div class="page-shell profile-theme">
+    <section class="page-hero">
+      <div class="hero-main">
+        <div class="avatar-card">
+          <div class="hero-avatar">
+            <img v-if="userInfo.avatar" :src="userInfo.avatar" class="avatar-image" alt="用户头像" />
+            <div v-else class="avatar-placeholder">{{ displayInitial }}</div>
           </div>
-          设施管理员中心
-        </h1>
-        <p class="page-subtitle">管理您的个人信息、安全设置和头像资料</p>
-      </div>
-    </div>
-
-    <div class="profile-cards">
-      <div class="profile-card" @click="handleEditProfile">
-        <div class="card-header">
-          <div class="avatar-section">
-            <div class="avatar-wrapper">
-              <img v-if="userInfo.avatar" :src="userInfo.avatar" class="avatar-image" alt="用户头像" />
-              <div v-else class="avatar-placeholder">{{ userInfo.realName ? userInfo.realName.charAt(0) : 'U' }}</div>
-              <div class="avatar-upload-overlay" @click.stop="handleAvatarUpload">
-                <el-icon><Camera /></el-icon>
-                <span>更换头像</span>
-              </div>
-            </div>
-          </div>
-          <div class="card-title">
-            <h3>个人信息</h3>
-            <p>更新设施管理员的基础资料、联系方式和头像信息</p>
-          </div>
-        </div>
-        <div class="card-content">
-          <div class="info-item">
-            <span class="label">用户名</span>
-            <span class="value">{{ userInfo.username || '-' }}</span>
-          </div>
-          <div class="info-item">
-            <span class="label">真实姓名</span>
-            <span class="value">{{ userInfo.realName || '-' }}</span>
-          </div>
-          <div class="info-item">
-            <span class="label">角色</span>
-            <span class="value">设施管理员</span>
-          </div>
-          <div class="info-item">
-            <span class="label">手机号</span>
-            <span class="value">{{ userInfo.phone || '未填写' }}</span>
-          </div>
-          <div class="info-item">
-            <span class="label">邮箱</span>
-            <span class="value">{{ userInfo.email || '未填写' }}</span>
-          </div>
-          <div class="info-item">
-            <span class="label">账号状态</span>
-            <span class="value">{{ userInfo.status === 'ACTIVE' ? '正常' : (userInfo.status || '未知') }}</span>
-          </div>
-        </div>
-        <div class="card-actions">
-          <el-button type="primary" class="action-btn">
-            <el-icon><Edit /></el-icon>
-            编辑资料
+          <el-button type="primary" plain class="avatar-trigger" @click="handleAvatarUpload">
+            更换头像
           </el-button>
+        </div>
+
+        <div class="hero-copy">
+          <span class="eyebrow">Maintainer Profile</span>
+          <h1>个人中心</h1>
+          <p>统一管理设施管理员的基础资料、安全设置和头像信息，保持与维护端其他页面一致的视觉层次和操作方式。</p>
+
+          <div class="hero-meta">
+            <article class="meta-card">
+              <span>当前身份</span>
+              <strong>设施管理员</strong>
+              <small>用于设施维护、预约审核与现场核销</small>
+            </article>
+            <article class="meta-card">
+              <span>资料完成度</span>
+              <strong>{{ profileCompletion }}%</strong>
+              <small>{{ completionDescription }}</small>
+            </article>
+          </div>
         </div>
       </div>
 
-      <div class="profile-card" @click="handleChangePassword">
-        <div class="card-header">
-          <div class="card-icon password-icon">
-            <svg viewBox="0 0 24 24" fill="none">
-              <rect x="3" y="11" width="18" height="11" rx="2" ry="2" stroke="currentColor" stroke-width="2"/>
-              <path d="M7 11V7C7 4.23858 9.23858 2 12 2C14.7614 2 17 4.23858 17 7V11" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-          </div>
-          <div class="card-title">
-            <h3>修改密码</h3>
-            <p>定期修改登录密码，保护设施管理员账户和业务操作权限安全</p>
-          </div>
-        </div>
-        <div class="card-content">
-          <div class="password-status">
-            <div class="status-item">
-              <div class="status-icon">
-                <svg viewBox="0 0 24 24" fill="none" width="16" height="16">
-                  <rect x="3" y="11" width="18" height="11" rx="2" ry="2" stroke="currentColor" stroke-width="2"/>
-                  <path d="M7 11V7C7 4.23858 9.23858 2 12 2C14.7614 2 17 4.23858 17 7V11" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                </svg>
-              </div>
-              <span class="status-text">建议定期更新密码，避免维护账号被误用或泄露。</span>
-            </div>
-          </div>
-        </div>
-        <div class="card-actions">
-          <el-button type="warning" class="action-btn">
-            <el-icon><Lock /></el-icon>
-            修改密码
-          </el-button>
-        </div>
+      <div class="hero-actions">
+        <el-button type="primary" size="large" class="action-button" @click="handleEditProfile">编辑资料</el-button>
+        <el-button type="warning" size="large" class="action-button" @click="handleChangePassword">修改密码</el-button>
       </div>
-    </div>
+    </section>
+
+    <section class="summary-grid">
+      <article class="summary-card">
+        <span class="summary-label">用户名</span>
+        <strong>{{ userInfo.username || '-' }}</strong>
+      </article>
+      <article class="summary-card">
+        <span class="summary-label">真实姓名</span>
+        <strong>{{ userInfo.realName || '未填写' }}</strong>
+      </article>
+      <article class="summary-card">
+        <span class="summary-label">联系方式</span>
+        <strong>{{ userInfo.phone || '未填写' }}</strong>
+      </article>
+      <article class="summary-card">
+        <span class="summary-label">账号状态</span>
+        <strong>{{ userStatusText }}</strong>
+      </article>
+    </section>
+
+    <section class="notice-card">
+      <div class="notice-copy">
+        <h2>资料完整性说明</h2>
+        <p>完善度按真实姓名、手机号、邮箱、头像 4 项基础资料计算，每项占 25%。</p>
+      </div>
+      <div class="notice-status">
+        <strong v-if="missingProfileFields.length">缺少：{{ missingProfileFields.join('、') }}</strong>
+        <strong v-else>当前资料已完整</strong>
+      </div>
+    </section>
+
+    <section class="panel-grid">
+      <article class="panel-card">
+        <div class="panel-header">
+          <div>
+            <h2>基础资料</h2>
+            <p>维护当前账号的姓名、邮箱、电话和头像等基础信息。</p>
+          </div>
+          <el-button type="primary" @click="handleEditProfile">编辑资料</el-button>
+        </div>
+
+        <div class="info-grid">
+          <div class="info-item">
+            <span class="info-label">用户名</span>
+            <strong>{{ userInfo.username || '-' }}</strong>
+          </div>
+          <div class="info-item">
+            <span class="info-label">真实姓名</span>
+            <strong>{{ userInfo.realName || '未填写' }}</strong>
+          </div>
+          <div class="info-item">
+            <span class="info-label">手机号</span>
+            <strong>{{ userInfo.phone || '未填写' }}</strong>
+          </div>
+          <div class="info-item">
+            <span class="info-label">邮箱</span>
+            <strong>{{ userInfo.email || '未填写' }}</strong>
+          </div>
+          <div class="info-item">
+            <span class="info-label">角色</span>
+            <strong>设施管理员</strong>
+          </div>
+          <div class="info-item">
+            <span class="info-label">账号状态</span>
+            <strong>{{ userStatusText }}</strong>
+          </div>
+        </div>
+      </article>
+
+      <article class="panel-card security-card">
+        <div class="panel-header">
+          <div>
+            <h2>安全设置</h2>
+            <p>定期修改密码，避免维护账号被误用或泄露。</p>
+          </div>
+          <el-button type="warning" @click="handleChangePassword">修改密码</el-button>
+        </div>
+
+        <div class="security-list">
+          <article class="security-item">
+            <span>密码安全</span>
+            <strong>建议 6 到 20 位并包含字母和数字</strong>
+          </article>
+          <article class="security-item">
+            <span>登录提醒</span>
+            <strong>完成改密后将重新登录以保证会话安全</strong>
+          </article>
+          <article class="security-item">
+            <span>资料同步</span>
+            <strong>资料更新后会同步刷新本地登录信息</strong>
+          </article>
+        </div>
+      </article>
+    </section>
 
     <el-dialog
       v-model="profileDialogVisible"
@@ -110,12 +139,7 @@
       :show-close="false"
     >
       <div class="dialog-header">
-        <div class="dialog-title-icon">
-          <svg viewBox="0 0 24 24" fill="none">
-            <path d="M20 21V19C20 17.9391 19.5786 16.9217 18.8284 16.1716C18.0783 15.4214 17.0609 15 16 15H8C6.93913 15 5.92172 15.4214 5.17157 16.1716C4.42143 16.9217 4 17.9391 4 19V21" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-            <path d="M12 11C14.2091 11 16 9.20914 16 7C16 4.79086 14.2091 3 12 3C9.79086 3 8 4.79086 8 7C8 9.20914 9.79086 11 12 11Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-          </svg>
-        </div>
+        <div class="dialog-title-icon">资</div>
         <span class="dialog-title-text">编辑个人信息</span>
       </div>
 
@@ -168,13 +192,8 @@
       class="profile-dialog"
       :show-close="false"
     >
-      <div class="dialog-header">
-        <div class="dialog-title-icon">
-          <svg viewBox="0 0 24 24" fill="none">
-            <rect x="3" y="11" width="18" height="11" rx="2" ry="2" stroke="currentColor" stroke-width="2"/>
-            <path d="M7 11V7C7 4.23858 9.23858 2 12 2C14.7614 2 17 4.23858 17 7V11" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-          </svg>
-        </div>
+      <div class="dialog-header warning-header">
+        <div class="dialog-title-icon warning-icon">密</div>
         <span class="dialog-title-text">修改密码</span>
       </div>
 
@@ -221,38 +240,38 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue';
-import { ElMessage } from 'element-plus';
-import { Edit, Lock, Camera, Upload } from '@element-plus/icons-vue';
-import { userAPI, fileAPI } from '../../api';
-import { clearAuth, getUserInfo, updateStoredUserInfo } from '../../utils/auth';
+import { computed, onMounted, ref } from 'vue'
+import { ElMessage } from 'element-plus'
+import { Upload } from '@element-plus/icons-vue'
+import { userAPI, fileAPI } from '../../api'
+import { clearAuth, getUserInfo, updateStoredUserInfo } from '../../utils/auth'
 
-const userInfo = ref({});
-const profileDialogVisible = ref(false);
-const passwordDialogVisible = ref(false);
-const profileFormRef = ref(null);
-const passwordFormRef = ref(null);
+const userInfo = ref({})
+const profileDialogVisible = ref(false)
+const passwordDialogVisible = ref(false)
+const profileFormRef = ref(null)
+const passwordFormRef = ref(null)
 
 const profileForm = ref({
   realName: '',
   phone: '',
   email: '',
   avatar: ''
-});
+})
 
-const avatarFile = ref(null);
+const avatarFile = ref(null)
 
 const passwordForm = ref({
   currentPassword: '',
   newPassword: '',
   confirmPassword: ''
-});
+})
 
 const profileRules = {
   realName: [{ required: true, message: '请输入真实姓名', trigger: 'blur' }],
   phone: [{ pattern: /^1[3-9]\d{9}$/, message: '请输入正确的手机号', trigger: 'blur' }],
   email: [{ type: 'email', message: '请输入正确的邮箱地址', trigger: 'blur' }]
-};
+}
 
 const passwordRules = {
   currentPassword: [{ required: true, message: '请输入当前密码', trigger: 'blur' }],
@@ -265,85 +284,116 @@ const passwordRules = {
     {
       validator: (rule, value, callback) => {
         if (value !== passwordForm.value.newPassword) {
-          callback(new Error('两次输入的密码不一致'));
+          callback(new Error('两次输入的密码不一致'))
         } else {
-          callback();
+          callback()
         }
       },
       trigger: 'blur'
     }
   ]
-};
+}
+
+const displayInitial = computed(() => {
+  const name = userInfo.value.realName || userInfo.value.username || 'U'
+  return name.charAt(0)
+})
+
+const profileCompletion = computed(() => {
+  const fields = [userInfo.value.realName, userInfo.value.phone, userInfo.value.email, userInfo.value.avatar]
+  const filledCount = fields.filter((item) => Boolean(item)).length
+  return Math.round((filledCount / fields.length) * 100)
+})
+
+const missingProfileFields = computed(() => {
+  const fields = [
+    { label: '真实姓名', value: userInfo.value.realName },
+    { label: '手机号', value: userInfo.value.phone },
+    { label: '邮箱', value: userInfo.value.email },
+    { label: '头像', value: userInfo.value.avatar }
+  ]
+  return fields.filter((item) => !item.value).map((item) => item.label)
+})
+
+const completionDescription = computed(() =>
+  missingProfileFields.value.length
+    ? `缺少 ${missingProfileFields.value.join('、')}`
+    : '真实姓名、手机号、邮箱、头像均已完善'
+)
+
+const userStatusText = computed(() =>
+  userInfo.value.status === 'ACTIVE' ? '正常' : (userInfo.value.status || '未知')
+)
 
 onMounted(() => {
-  loadUserInfo();
-});
+  loadUserInfo()
+})
 
 const loadUserInfo = () => {
-  const info = getUserInfo();
+  const info = getUserInfo()
   if (info) {
-    userInfo.value = info;
+    userInfo.value = info
     profileForm.value = {
       realName: userInfo.value.realName || '',
       phone: userInfo.value.phone || '',
       email: userInfo.value.email || '',
       avatar: userInfo.value.avatar || ''
-    };
+    }
   }
-};
+}
 
 const handleEditProfile = () => {
-  profileDialogVisible.value = true;
-};
+  profileDialogVisible.value = true
+}
 
 const handleChangePassword = () => {
-  passwordDialogVisible.value = true;
-};
+  passwordDialogVisible.value = true
+}
 
 const handleAvatarUpload = () => {
-  profileDialogVisible.value = true;
-};
+  profileDialogVisible.value = true
+}
 
 const beforeAvatarUpload = (file) => {
-  const isImage = file.type.startsWith('image/');
-  const isLt2M = file.size / 1024 / 1024 < 2;
+  const isImage = file.type.startsWith('image/')
+  const isLt2M = file.size / 1024 / 1024 < 2
 
   if (!isImage) {
-    ElMessage.error('只能上传图片文件');
-    return false;
+    ElMessage.error('只能上传图片文件')
+    return false
   }
   if (!isLt2M) {
-    ElMessage.error('图片大小不能超过 2MB');
-    return false;
+    ElMessage.error('图片大小不能超过 2MB')
+    return false
   }
-  return true;
-};
+  return true
+}
 
 const handleAvatarChange = (file) => {
   if (beforeAvatarUpload(file.raw)) {
-    avatarFile.value = file.raw;
-    const reader = new FileReader();
+    avatarFile.value = file.raw
+    const reader = new FileReader()
     reader.onload = (e) => {
-      profileForm.value.avatar = e.target.result;
-    };
-    reader.readAsDataURL(file.raw);
+      profileForm.value.avatar = e.target.result
+    }
+    reader.readAsDataURL(file.raw)
   }
-};
+}
 
 const handleProfileSubmit = async () => {
   try {
-    await profileFormRef.value.validate();
+    await profileFormRef.value.validate()
 
     if (avatarFile.value) {
       try {
-        const uploadResult = await fileAPI.uploadAvatar(avatarFile.value);
+        const uploadResult = await fileAPI.uploadAvatar(avatarFile.value)
         if (uploadResult.code === 200) {
-          profileForm.value.avatar = uploadResult.data;
+          profileForm.value.avatar = uploadResult.data
         }
       } catch (error) {
-        console.error('头像上传失败:', error);
-        ElMessage.error('头像上传失败，请重试');
-        return;
+        console.error('头像上传失败:', error)
+        ElMessage.error('头像上传失败，请重试')
+        return
       }
     }
 
@@ -352,366 +402,351 @@ const handleProfileSubmit = async () => {
       phone: profileForm.value.phone,
       email: profileForm.value.email,
       avatar: profileForm.value.avatar
-    };
+    }
 
-    const res = await userAPI.updateProfile(updatedUser);
-    const nextUser = { ...userInfo.value, ...res.data };
+    const res = await userAPI.updateProfile(updatedUser)
+    const nextUser = { ...userInfo.value, ...res.data }
 
-    updateStoredUserInfo(nextUser);
-    userInfo.value = nextUser;
+    updateStoredUserInfo(nextUser)
+    userInfo.value = nextUser
 
-    profileDialogVisible.value = false;
-    ElMessage.success('个人信息更新成功');
-    avatarFile.value = null;
+    profileDialogVisible.value = false
+    ElMessage.success('个人信息更新成功')
+    avatarFile.value = null
   } catch (error) {
-    console.error('更新个人信息失败:', error);
+    console.error('更新个人信息失败:', error)
   }
-};
+}
 
 const handlePasswordSubmit = async () => {
   try {
-    await passwordFormRef.value.validate();
+    await passwordFormRef.value.validate()
 
     const passwordData = {
       currentPassword: passwordForm.value.currentPassword,
       newPassword: passwordForm.value.newPassword
-    };
+    }
 
-    await userAPI.changePassword(userInfo.value.id, passwordData);
+    await userAPI.changePassword(userInfo.value.id, passwordData)
 
-    passwordDialogVisible.value = false;
-    ElMessage.success('密码修改成功，请重新登录');
+    passwordDialogVisible.value = false
+    ElMessage.success('密码修改成功，请重新登录')
 
     passwordForm.value = {
       currentPassword: '',
       newPassword: '',
       confirmPassword: ''
-    };
+    }
 
     setTimeout(() => {
-      clearAuth();
-      window.location.href = '/login';
-    }, 2000);
+      clearAuth()
+      window.location.href = '/login'
+    }, 2000)
   } catch (error) {
-    console.error('修改密码失败:', error);
+    console.error('修改密码失败:', error)
     if (error.response && error.response.data && error.response.data.message) {
-      ElMessage.error(error.response.data.message);
+      ElMessage.error(error.response.data.message)
     } else {
-      ElMessage.error('修改密码失败，请重试');
+      ElMessage.error('修改密码失败，请重试')
     }
   }
-};
+}
 </script>
 
 <style scoped>
-.profile-page {
-  min-height: 100vh;
-  background: linear-gradient(135deg, #f8fafc 0%, #f0f9ff 25%, #e6f7ff 50%, #f8fafc 100%);
+.profile-theme {
+  --theme-main: #0f766e;
+  --theme-soft: rgba(15, 118, 110, 0.12);
+  --theme-border: rgba(15, 118, 110, 0.12);
+  --theme-shadow: rgba(15, 118, 110, 0.14);
   padding: 24px;
-  position: relative;
+  min-height: 100%;
+  background:
+    radial-gradient(circle at top right, rgba(45, 212, 191, 0.2), transparent 28%),
+    linear-gradient(180deg, #effcf9 0%, #f8fdfc 46%, #eefbf7 100%);
 }
 
-.page-header {
-  position: relative;
-  margin-bottom: 32px;
-  overflow: hidden;
+.page-hero,
+.panel-card {
+  animation: rise-in 0.55s ease both;
 }
 
-.header-decoration {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 4px;
-  background: linear-gradient(90deg, #409eff 0%, #66b1ff 50%, #409eff 100%);
-  background-size: 200% 100%;
-  animation: gradient-shimmer 3s ease-in-out infinite;
-}
-
-.header-content {
-  background: #ffffff;
-  border-radius: 12px;
-  padding: 24px 32px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-  border: 1px solid #e4e7ed;
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  transition: all 0.3s ease;
-}
-
-.header-content:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
-}
-
-.page-title {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  font-size: 28px;
-  font-weight: 700;
-  color: #1a202c;
-  margin: 0;
-  line-height: 1.3;
-}
-
-.title-icon {
-  width: 48px;
-  height: 48px;
-  background: linear-gradient(135deg, #e6f7ff 0%, #bae7ff 100%);
-  border-radius: 12px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  box-shadow: 0 4px 12px rgba(64, 158, 255, 0.15);
-  transition: all 0.3s ease;
-}
-
-.title-icon:hover {
-  transform: scale(1.05);
-  box-shadow: 0 6px 16px rgba(64, 158, 255, 0.25);
-}
-
-.title-icon svg {
-  width: 24px;
-  height: 24px;
-  color: #409eff;
-}
-
-.page-subtitle {
-  margin: 0;
-  color: #718096;
-  font-size: 14px;
-  font-weight: 400;
-  opacity: 0.8;
-}
-
-.profile-cards {
+.page-hero {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
-  gap: 24px;
-}
-
-.profile-card {
-  background: #ffffff;
-  border-radius: 16px;
-  border: 1px solid #e4e7ed;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-  padding: 32px;
-  cursor: pointer;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  position: relative;
-  overflow: hidden;
-}
-
-.profile-card::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 4px;
-  background: linear-gradient(90deg, #409eff 0%, #66b1ff 50%, #409eff 100%);
-  background-size: 200% 100%;
-  opacity: 0;
-  transition: opacity 0.3s ease;
-}
-
-.profile-card:hover::before {
-  opacity: 1;
-  animation: gradient-shimmer 3s ease-in-out infinite;
-}
-
-.profile-card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
-  border-color: #bae7ff;
-}
-
-.card-header {
-  display: flex;
-  align-items: flex-start;
+  grid-template-columns: 1.6fr 280px;
   gap: 20px;
-  margin-bottom: 24px;
+  padding: 28px;
+  border-radius: 28px;
+  background: rgba(255, 255, 255, 0.86);
+  border: 1px solid var(--theme-border);
+  box-shadow: 0 24px 60px var(--theme-shadow);
 }
 
-.card-icon {
-  width: 64px;
-  height: 64px;
-  border-radius: 16px;
+.hero-main {
+  display: grid;
+  grid-template-columns: 120px minmax(0, 1fr);
+  gap: 20px;
+  align-items: center;
+}
+
+.avatar-card {
+  display: grid;
+  gap: 14px;
+  justify-items: center;
+}
+
+.hero-avatar {
+  width: 120px;
+  height: 120px;
+  border-radius: 32px;
+  overflow: hidden;
+  background: linear-gradient(135deg, #d9fff6 0%, #f3fffb 100%);
+  box-shadow: 0 14px 34px rgba(15, 118, 110, 0.16);
+}
+
+.avatar-image,
+.avatar-placeholder {
+  width: 100%;
+  height: 100%;
+}
+
+.avatar-image {
+  object-fit: cover;
+}
+
+.avatar-placeholder {
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
-  transition: all 0.3s ease;
-  flex-shrink: 0;
-}
-
-.password-icon {
-  background: linear-gradient(135deg, #fff7ed 0%, #fed7aa 100%);
-}
-
-.password-icon svg {
-  width: 32px;
-  height: 32px;
-  color: #f97316;
-}
-
-.card-title {
-  flex: 1;
-}
-
-.card-title h3 {
-  font-size: 20px;
+  color: #0f766e;
+  font-size: 42px;
   font-weight: 700;
-  color: #1a202c;
-  margin: 0 0 8px 0;
-  line-height: 1.3;
 }
 
-.card-title p {
-  font-size: 14px;
-  color: #718096;
+.avatar-trigger {
+  width: 120px;
+}
+
+.eyebrow {
+  display: inline-flex;
+  padding: 6px 12px;
+  border-radius: 999px;
+  background: var(--theme-soft);
+  color: var(--theme-main);
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.hero-copy h1 {
+  margin: 14px 0 10px;
+  font-size: 32px;
+  color: #0f172a;
+}
+
+.hero-copy p {
   margin: 0;
+  color: #52606d;
+  line-height: 1.7;
+  max-width: 760px;
+}
+
+.hero-meta {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+  margin-top: 20px;
+}
+
+.meta-card,
+.summary-card,
+.security-item {
+  padding: 18px 20px;
+  border-radius: 22px;
+  border: 1px solid var(--theme-border);
+  background: linear-gradient(135deg, #effff9 0%, #ffffff 100%);
+}
+
+.meta-card span,
+.summary-label,
+.security-item span,
+.info-label {
+  display: block;
+  color: #6b7280;
+  font-size: 13px;
+}
+
+.meta-card small {
+  display: block;
+  margin-top: 8px;
+  color: #6b7280;
+  font-size: 12px;
+  line-height: 1.6;
+}
+
+.meta-card strong,
+.summary-card strong,
+.security-item strong {
+  display: block;
+  margin-top: 10px;
+  color: #102a27;
+  font-size: 22px;
   line-height: 1.5;
 }
 
-.card-content {
-  margin-bottom: 24px;
+.hero-actions {
+  display: grid;
+  gap: 14px;
+  align-content: center;
+}
+
+.action-button {
+  width: 100%;
+  min-height: 48px;
+  border-radius: 18px;
+}
+
+.hero-actions :deep(.el-button + .el-button) {
+  margin-left: 0;
+}
+
+.summary-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 16px;
+  margin-top: 22px;
+}
+
+.summary-card {
+  box-shadow: 0 18px 40px rgba(17, 24, 39, 0.06);
+  background: rgba(255, 255, 255, 0.96);
+}
+
+.summary-card strong {
+  font-size: 24px;
+}
+
+.notice-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  margin-top: 20px;
+  padding: 20px 24px;
+  border-radius: 24px;
+  background: rgba(255, 255, 255, 0.92);
+  box-shadow: 0 18px 42px rgba(17, 24, 39, 0.08);
+}
+
+.notice-copy h2 {
+  margin: 0;
+  font-size: 18px;
+  color: #102a27;
+}
+
+.notice-copy p {
+  margin: 8px 0 0;
+  color: #667085;
+  font-size: 13px;
+}
+
+.notice-status strong {
+  display: inline-flex;
+  align-items: center;
+  padding: 10px 16px;
+  border-radius: 999px;
+  background: #effcf9;
+  color: #0f766e;
+  font-size: 13px;
+}
+
+.panel-grid {
+  display: grid;
+  grid-template-columns: 1.4fr 1fr;
+  gap: 20px;
+  margin-top: 20px;
+}
+
+.panel-card {
+  padding: 22px 24px;
+  border-radius: 26px;
+  background: rgba(255, 255, 255, 0.92);
+  box-shadow: 0 18px 42px rgba(17, 24, 39, 0.08);
+}
+
+.panel-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 18px;
+}
+
+.panel-header h2 {
+  margin: 0;
+  font-size: 20px;
+  color: #102a27;
+}
+
+.panel-header p {
+  margin: 8px 0 0;
+  color: #667085;
+  font-size: 13px;
+}
+
+.info-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
 }
 
 .info-item {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 12px;
-  padding: 12px 0;
-  border-bottom: 1px solid #f7fafc;
+  padding: 18px;
+  border-radius: 18px;
+  background: #f7fffd;
+  border: 1px solid rgba(15, 118, 110, 0.08);
 }
 
-.info-item:last-child {
-  border-bottom: none;
-}
-
-.info-item .label {
-  font-size: 14px;
-  color: #718096;
-  font-weight: 500;
-}
-
-.info-item .value {
-  font-size: 14px;
-  color: #2d3748;
-  font-weight: 600;
-  text-align: right;
+.info-item strong {
+  display: block;
+  margin-top: 10px;
+  color: #102a27;
+  line-height: 1.6;
   word-break: break-all;
 }
 
-.password-status {
-  padding: 16px;
-  background: #f7fafc;
-  border-radius: 12px;
-  border: 1px solid #e2e8f0;
+.security-list {
+  display: grid;
+  gap: 14px;
 }
 
-.status-item {
-  display: flex;
-  align-items: center;
-  gap: 12px;
+.security-card :deep(.el-button--warning) {
+  color: #ffffff;
 }
 
-.status-icon {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: #409eff;
-}
-
-.status-text {
-  font-size: 14px;
-  color: #4a5568;
-}
-
-.card-actions {
-  display: flex;
-  justify-content: center;
-}
-
-.action-btn {
-  background: linear-gradient(135deg, #409eff 0%, #1976d2 100%);
-  border: none;
-  border-radius: 12px;
-  padding: 12px 32px;
-  font-weight: 600;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  box-shadow: 0 4px 14px rgba(64, 158, 255, 0.3);
-  position: relative;
-  overflow: hidden;
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.action-btn::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: -100%;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
-  transition: left 0.5s;
-}
-
-.action-btn:hover::before {
-  left: 100%;
-}
-
-.action-btn:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 20px rgba(64, 158, 255, 0.4);
-  background: linear-gradient(135deg, #66b1ff 0%, #1976d2 100%);
-}
-
-.action-btn:active {
-  transform: translateY(0);
-}
-
-.action-btn.el-button--warning {
-  background: linear-gradient(135deg, #f97316 0%, #ea580c 100%);
-  box-shadow: 0 4px 14px rgba(249, 115, 22, 0.3);
-}
-
-.action-btn.el-button--warning:hover {
-  background: linear-gradient(135deg, #fb923c 0%, #ea580c 100%);
-  box-shadow: 0 8px 20px rgba(249, 115, 22, 0.4);
+.hero-actions :deep(.el-button--warning) {
+  color: #ffffff;
 }
 
 .profile-dialog {
-  border-radius: 16px;
+  border-radius: 20px;
   overflow: hidden;
 }
 
 .profile-dialog :deep(.el-dialog) {
-  border-radius: 16px;
+  border-radius: 20px;
   overflow: hidden;
 }
 
 .profile-dialog :deep(.el-dialog__header) {
   padding: 0;
   margin: 0;
-  border-bottom: none;
 }
 
-.profile-dialog :deep(.el-dialog__body) {
-  padding: 0;
-}
-
+.profile-dialog :deep(.el-dialog__body),
 .profile-dialog :deep(.el-dialog__footer) {
   padding: 0;
   margin: 0;
-  border-top: none;
 }
 
 .dialog-header {
@@ -719,170 +754,60 @@ const handlePasswordSubmit = async () => {
   align-items: center;
   gap: 12px;
   padding: 24px 32px;
-  background: linear-gradient(135deg, #e6f7ff 0%, #bae7ff 100%);
-  border-bottom: 1px solid #e4e7ed;
+  background: linear-gradient(135deg, #dffcf6 0%, #ecfffb 100%);
+  border-bottom: 1px solid rgba(15, 118, 110, 0.1);
+}
+
+.warning-header {
+  background: linear-gradient(135deg, #fff2e8 0%, #fff8f1 100%);
 }
 
 .dialog-title-icon {
-  width: 48px;
-  height: 48px;
-  background: rgba(64, 158, 255, 0.2);
-  border-radius: 12px;
+  width: 44px;
+  height: 44px;
+  border-radius: 14px;
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 4px 12px rgba(64, 158, 255, 0.15);
+  background: rgba(15, 118, 110, 0.12);
+  color: #0f766e;
+  font-weight: 700;
 }
 
-.dialog-title-icon svg {
-  width: 24px;
-  height: 24px;
-  color: #409eff;
+.warning-icon {
+  background: rgba(249, 115, 22, 0.12);
+  color: #ea580c;
 }
 
 .dialog-title-text {
   font-size: 20px;
   font-weight: 700;
-  color: #1a202c;
+  color: #0f172a;
 }
 
 .dialog-body {
-  padding: 32px;
-}
-
-.profile-form :deep(.el-form-item__label),
-.password-form :deep(.el-form-item__label) {
-  color: #2d3748;
-  font-weight: 600;
-  font-size: 14px;
-}
-
-.profile-form :deep(.el-input__wrapper),
-.password-form :deep(.el-input__wrapper) {
-  border-radius: 8px;
-  border: 1px solid #e2e8f0;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-  transition: all 0.3s ease;
-  background: #f7fafc;
-}
-
-.profile-form :deep(.el-input__wrapper:hover),
-.password-form :deep(.el-input__wrapper:hover) {
-  border-color: #cbd5e0;
-  background: #ffffff;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-}
-
-.profile-form :deep(.el-input__wrapper.is-focus),
-.password-form :deep(.el-input__wrapper.is-focus) {
-  border-color: #409eff;
-  background: #ffffff;
-  box-shadow: 0 0 0 3px rgba(64, 158, 255, 0.1);
+  padding: 28px 32px;
 }
 
 .dialog-footer {
   display: flex;
   justify-content: flex-end;
   gap: 12px;
-  padding: 24px 32px;
-  background: #f8fafc;
-  border-top: 1px solid #e4e7ed;
+  padding: 20px 32px 28px;
 }
 
 .cancel-btn {
-  border-radius: 8px;
-  border: 1px solid #e2e8f0;
-  color: #718096;
-  background: #ffffff;
-  transition: all 0.3s ease;
-}
-
-.cancel-btn:hover {
-  border-color: #cbd5e0;
-  background: #f7fafc;
-  transform: translateY(-1px);
+  border-radius: 10px;
 }
 
 .submit-btn {
-  background: linear-gradient(135deg, #409eff 0%, #1976d2 100%);
-  border: none;
-  border-radius: 8px;
+  border-radius: 10px;
+}
+
+.profile-form :deep(.el-form-item__label),
+.password-form :deep(.el-form-item__label) {
+  color: #1f2937;
   font-weight: 600;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  box-shadow: 0 4px 14px rgba(64, 158, 255, 0.3);
-}
-
-.submit-btn:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 6px 18px rgba(64, 158, 255, 0.4);
-  background: linear-gradient(135deg, #66b1ff 0%, #1976d2 100%);
-}
-
-.avatar-section {
-  flex-shrink: 0;
-}
-
-.avatar-wrapper {
-  position: relative;
-  width: 80px;
-  height: 80px;
-  border-radius: 50%;
-  overflow: hidden;
-  background: linear-gradient(135deg, #e6f7ff 0%, #bae7ff 100%);
-  box-shadow: 0 4px 12px rgba(64, 158, 255, 0.2);
-  transition: all 0.3s ease;
-}
-
-.avatar-wrapper:hover {
-  transform: scale(1.05);
-  box-shadow: 0 6px 16px rgba(64, 158, 255, 0.3);
-}
-
-.avatar-image {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-.avatar-placeholder {
-  width: 100%;
-  height: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 32px;
-  font-weight: 700;
-  color: #409eff;
-}
-
-.avatar-upload-overlay {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(0, 0, 0, 0.6);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  color: #ffffff;
-  opacity: 0;
-  transition: opacity 0.3s ease;
-  cursor: pointer;
-}
-
-.avatar-wrapper:hover .avatar-upload-overlay {
-  opacity: 1;
-}
-
-.avatar-upload-overlay .el-icon {
-  font-size: 24px;
-  margin-bottom: 4px;
-}
-
-.avatar-upload-overlay span {
-  font-size: 12px;
 }
 
 .avatar-form-item :deep(.el-form-item__content) {
@@ -899,83 +824,103 @@ const handlePasswordSubmit = async () => {
 .current-avatar {
   width: 100px;
   height: 100px;
-  border-radius: 50%;
+  border-radius: 28px;
   overflow: hidden;
-  background: linear-gradient(135deg, #e6f7ff 0%, #bae7ff 100%);
-  box-shadow: 0 4px 12px rgba(64, 158, 255, 0.2);
+  background: linear-gradient(135deg, #dffcf6 0%, #ecfffb 100%);
+  box-shadow: 0 10px 24px rgba(15, 118, 110, 0.16);
   flex-shrink: 0;
 }
 
-.avatar-preview {
+.avatar-preview,
+.avatar-preview-placeholder {
   width: 100%;
   height: 100%;
+}
+
+.avatar-preview {
   object-fit: cover;
 }
 
 .avatar-preview-placeholder {
-  width: 100%;
-  height: 100%;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 40px;
+  color: #0f766e;
+  font-size: 38px;
   font-weight: 700;
-  color: #409eff;
 }
 
 .upload-actions {
-  flex: 1;
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 10px;
 }
 
 .upload-tip {
   margin: 0;
   font-size: 12px;
-  color: #718096;
+  color: #6b7280;
 }
 
-@keyframes gradient-shimmer {
-  0%, 100% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
+@keyframes rise-in {
+  from {
+    opacity: 0;
+    transform: translateY(18px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
-@media (max-width: 768px) {
-  .profile-page {
-    padding: 16px;
+@media (max-width: 1200px) {
+  .summary-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
-  .header-content {
-    padding: 20px 24px;
-    flex-direction: column;
-    align-items: flex-start;
+  .panel-grid {
+    grid-template-columns: 1fr;
   }
+}
 
-  .page-title {
-    font-size: 24px;
-  }
-
-  .profile-cards {
+@media (max-width: 900px) {
+  .page-hero {
     grid-template-columns: 1fr;
   }
 
-  .profile-card {
-    padding: 24px;
+  .hero-main {
+    grid-template-columns: 1fr;
+    justify-items: start;
   }
 
-  .card-header {
-    flex-direction: column;
-    gap: 16px;
+  .hero-actions {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+@media (max-width: 768px) {
+  .profile-theme {
+    padding: 16px;
   }
 
-  .info-item {
+  .summary-grid,
+  .info-grid,
+  .hero-meta {
+    grid-template-columns: 1fr;
+  }
+
+  .notice-card {
     flex-direction: column;
     align-items: flex-start;
   }
 
-  .info-item .value {
-    text-align: left;
+  .hero-actions {
+    grid-template-columns: 1fr;
+  }
+
+  .panel-header {
+    flex-direction: column;
+    align-items: stretch;
   }
 
   .dialog-header,
@@ -987,7 +932,6 @@ const handlePasswordSubmit = async () => {
 
   .avatar-upload-section {
     flex-direction: column;
-    align-items: center;
   }
 }
 </style>

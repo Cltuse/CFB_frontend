@@ -2,19 +2,39 @@
   <div class="page-shell reservation-theme">
     <section class="page-hero">
       <div class="hero-copy">
-        <span class="eyebrow">Reservation Review</span>
+        <span class="eyebrow">Reservation Operations</span>
         <h1>预约处理</h1>
-        <p>统一处理本人负责场地的预约审核、签到核销与状态跟踪，同类页面采用一致布局和操作节奏。</p>
+        <p>集中处理本人负责设施的预约审核、签到核销和状态追踪，保持与维护端其他页面一致的操作节奏。</p>
+
+        <div class="hero-highlights">
+          <article class="highlight-card">
+            <span>当前待处理</span>
+            <strong>{{ stats.pending }}</strong>
+            <small>条预约待审核</small>
+          </article>
+          <article class="highlight-card">
+            <span>现场核销</span>
+            <strong>{{ verifyReadyCount }}</strong>
+            <small>条记录可操作</small>
+          </article>
+        </div>
       </div>
 
       <div class="hero-aside">
         <div class="mini-card">
           <span>待审核</span>
           <strong>{{ stats.pending }}</strong>
+          <small>优先处理新申请</small>
         </div>
         <div class="mini-card">
           <span>已通过</span>
           <strong>{{ stats.approved }}</strong>
+          <small>可继续现场核销</small>
+        </div>
+        <div class="mini-card">
+          <span>已完成</span>
+          <strong>{{ stats.completed }}</strong>
+          <small>签到签退流程已闭环</small>
         </div>
       </div>
     </section>
@@ -29,8 +49,8 @@
         <strong>{{ stats.pending }}</strong>
       </article>
       <article class="summary-card">
-        <span class="summary-label">已通过</span>
-        <strong>{{ stats.approved }}</strong>
+        <span class="summary-label">可核销</span>
+        <strong>{{ verifyReadyCount }}</strong>
       </article>
       <article class="summary-card">
         <span class="summary-label">已完成</span>
@@ -41,7 +61,7 @@
     <section class="control-card">
       <div class="control-copy">
         <h2>预约筛选</h2>
-        <p>状态切换、关键词搜索和现场核销都集中在这一层，减少来回跳转。</p>
+        <p>把状态切换、关键词检索和当前结果汇总放在一层，减少来回滚动和跳转。</p>
       </div>
 
       <div class="control-actions">
@@ -56,26 +76,55 @@
             {{ tab.label }}
           </button>
         </div>
-        <el-input
-          v-model="searchKeyword"
-          placeholder="搜索场地名称或申请人"
-          clearable
-          class="search-input"
-          @keyup.enter="handleSearch"
-          @clear="handleClearSearch"
-        >
-          <template #prefix>
-            <el-icon><Search /></el-icon>
-          </template>
-        </el-input>
-        <el-button type="primary" @click="handleSearch">搜索</el-button>
+
+        <div class="search-group">
+          <el-input
+            v-model="searchKeyword"
+            placeholder="搜索设施名称或申请人"
+            clearable
+            class="search-input"
+            @keyup.enter="handleSearch"
+            @clear="handleClearSearch"
+          >
+            <template #prefix>
+              <el-icon><Search /></el-icon>
+            </template>
+          </el-input>
+          <el-button type="primary" @click="handleSearch">搜索</el-button>
+        </div>
       </div>
     </section>
 
     <section class="panel-card">
-      <el-table :data="pagedList" v-loading="loading" stripe>
-        <el-table-column prop="facilityName" label="场地" min-width="150" />
-        <el-table-column prop="userName" label="申请人" min-width="120" />
+      <div class="panel-header">
+        <div>
+          <h2>预约列表</h2>
+          <p>当前筛选结果 {{ filteredList.length }} 条，支持审核、核销和详情查看。</p>
+        </div>
+      </div>
+
+      <el-table :data="pagedList" v-loading="loading" stripe class="reservation-table">
+        <el-table-column label="设施信息" min-width="220">
+          <template #default="{ row }">
+            <div class="facility-cell">
+              <div class="facility-avatar">
+                {{ getFacilityInitial(row.facilityName) }}
+              </div>
+              <div class="facility-meta">
+                <strong>{{ row.facilityName || '-' }}</strong>
+                <span>{{ row.verificationCode ? `核销码 ${row.verificationCode}` : '待生成核销码' }}</span>
+              </div>
+            </div>
+          </template>
+        </el-table-column>
+        <el-table-column label="申请人" min-width="140">
+          <template #default="{ row }">
+            <div class="applicant-cell">
+              <strong>{{ row.userName || '-' }}</strong>
+              <span>{{ row.phone || '未登记联系方式' }}</span>
+            </div>
+          </template>
+        </el-table-column>
         <el-table-column label="预约时间" min-width="220">
           <template #default="{ row }">
             <div class="time-stack">
@@ -99,13 +148,7 @@
             </el-tag>
           </template>
         </el-table-column>
-        <el-table-column label="核销码" width="120" align="center">
-          <template #default="{ row }">
-            <el-tag v-if="row.verificationCode" effect="plain">{{ row.verificationCode }}</el-tag>
-            <span v-else>-</span>
-          </template>
-        </el-table-column>
-        <el-table-column label="操作" width="260" fixed="right" align="center">
+        <el-table-column label="操作" width="250" fixed="right" align="center">
           <template #default="{ row }">
             <div class="row-actions">
               <el-button
@@ -133,6 +176,8 @@
         </el-table-column>
       </el-table>
 
+      <el-empty v-if="!loading && !filteredList.length" description="当前筛选条件下暂无预约记录" />
+
       <div class="pagination-wrap" v-if="filteredList.length">
         <el-pagination
           v-model:current-page="currentPage"
@@ -149,7 +194,7 @@
     <el-dialog v-model="detailDialogVisible" title="预约详情" width="760px">
       <div v-if="currentRow" class="detail-grid">
         <div class="detail-item">
-          <span class="detail-label">场地名称</span>
+          <span class="detail-label">设施名称</span>
           <strong>{{ currentRow.facilityName || '-' }}</strong>
         </div>
         <div class="detail-item">
@@ -191,9 +236,13 @@
       </div>
     </el-dialog>
 
-    <el-dialog v-model="auditDialogVisible" :title="auditAction === 'approve' ? '审核通过预约' : '驳回预约'" width="560px">
+    <el-dialog
+      v-model="auditDialogVisible"
+      :title="auditAction === 'approve' ? '审核通过预约' : '驳回预约'"
+      width="560px"
+    >
       <el-form ref="formRef" :model="auditForm" :rules="rules" label-position="top">
-        <el-form-item label="场地">
+        <el-form-item label="设施">
           <el-input :model-value="currentRow?.facilityName" disabled />
         </el-form-item>
         <el-form-item label="申请人">
@@ -288,6 +337,10 @@ const stats = computed(() => ({
   approved: reservationList.value.filter((item) => item.status === 'APPROVED').length,
   completed: reservationList.value.filter((item) => item.status === 'COMPLETED').length
 }))
+
+const verifyReadyCount = computed(() =>
+  reservationList.value.filter((item) => canVerify(item)).length
+)
 
 const filteredList = computed(() => {
   let list = [...reservationList.value]
@@ -462,21 +515,28 @@ const formatDateTime = (value) => {
   return new Date(value).toLocaleString('zh-CN', { hour12: false })
 }
 
+const getFacilityInitial = (name) => {
+  if (!name) {
+    return '预'
+  }
+  return name.slice(0, 1)
+}
+
 const resolveApiError = (error, fallback) =>
   error?.response?.data?.message || error?.message || fallback
 </script>
 
 <style scoped>
 .reservation-theme {
-  --theme-main: #d97706;
-  --theme-soft: rgba(217, 119, 6, 0.12);
-  --theme-border: rgba(217, 119, 6, 0.14);
-  --theme-shadow: rgba(217, 119, 6, 0.16);
+  --theme-main: #7c3aed;
+  --theme-soft: rgba(124, 58, 237, 0.12);
+  --theme-border: rgba(124, 58, 237, 0.12);
+  --theme-shadow: rgba(124, 58, 237, 0.14);
   padding: 24px;
   min-height: 100%;
   background:
-    radial-gradient(circle at top left, rgba(251, 191, 36, 0.2), transparent 26%),
-    linear-gradient(180deg, #fff9ed 0%, #fffdf7 48%, #fff7e8 100%);
+    radial-gradient(circle at top left, rgba(192, 132, 252, 0.2), transparent 28%),
+    linear-gradient(180deg, #faf7ff 0%, #fcfbff 46%, #f6f2ff 100%);
 }
 
 .page-hero,
@@ -487,24 +547,30 @@ const resolveApiError = (error, fallback) =>
 
 .page-hero {
   display: grid;
-  grid-template-columns: 1.7fr 1fr;
+  grid-template-columns: 1.5fr 1fr;
   gap: 20px;
   padding: 28px;
   border-radius: 28px;
-  background: rgba(255, 255, 255, 0.84);
+  background: rgba(255, 255, 255, 0.86);
   border: 1px solid var(--theme-border);
   box-shadow: 0 24px 60px var(--theme-shadow);
 }
 
 .eyebrow {
   display: inline-flex;
-  padding: 6px 12px;
+  align-self: flex-start;
+  align-items: center;
+  min-height: 32px;
+  padding: 6px 14px;
   border-radius: 999px;
-  background: var(--theme-soft);
+  border: 1px solid rgba(124, 58, 237, 0.14);
+  background: linear-gradient(135deg, rgba(124, 58, 237, 0.12), rgba(255, 255, 255, 0.92));
   color: var(--theme-main);
   font-size: 12px;
+  font-weight: 700;
   letter-spacing: 0.08em;
   text-transform: uppercase;
+  box-shadow: 0 10px 24px rgba(124, 58, 237, 0.1);
 }
 
 .hero-copy h1 {
@@ -517,6 +583,59 @@ const resolveApiError = (error, fallback) =>
   margin: 0;
   color: #5b6470;
   line-height: 1.7;
+  max-width: 760px;
+}
+
+.hero-copy {
+  display: flex;
+  flex-direction: column;
+}
+
+.hero-highlights {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+  margin-top: 20px;
+  max-width: 520px;
+}
+
+.highlight-card,
+.mini-card {
+  padding: 18px 20px;
+  border-radius: 22px;
+  border: 1px solid var(--theme-border);
+  background: linear-gradient(135deg, #f7f0ff 0%, #ffffff 100%);
+}
+
+.highlight-card {
+  box-shadow: 0 12px 28px rgba(124, 58, 237, 0.08);
+}
+
+.highlight-card span,
+.mini-card span,
+.mini-card small {
+  display: block;
+  color: #6b7280;
+}
+
+.highlight-card small {
+  display: block;
+  margin-top: 8px;
+  color: #8b5cf6;
+  font-size: 12px;
+}
+
+.highlight-card strong,
+.mini-card strong {
+  display: block;
+  margin-top: 10px;
+  color: #2e1065;
+  font-size: 26px;
+}
+
+.mini-card small {
+  margin-top: 8px;
+  font-size: 12px;
 }
 
 .hero-aside {
@@ -525,25 +644,8 @@ const resolveApiError = (error, fallback) =>
 }
 
 .mini-card {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  min-height: 110px;
-  padding: 18px 20px;
-  border-radius: 22px;
-  background: linear-gradient(135deg, #fff5df 0%, #ffffff 100%);
-  border: 1px solid var(--theme-border);
-}
-
-.mini-card span {
-  color: #6b7280;
-  font-size: 13px;
-}
-
-.mini-card strong {
-  margin-top: 10px;
-  color: #4b2c08;
-  font-size: 24px;
+  min-height: 118px;
+  box-shadow: 0 12px 28px rgba(124, 58, 237, 0.08);
 }
 
 .summary-grid {
@@ -591,16 +693,18 @@ const resolveApiError = (error, fallback) =>
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 18px;
+  gap: 20px;
 }
 
-.control-copy h2 {
+.control-copy h2,
+.panel-header h2 {
   margin: 0;
   font-size: 20px;
-  color: #3f2a0b;
+  color: #24104c;
 }
 
-.control-copy p {
+.control-copy p,
+.panel-header p {
   margin: 8px 0 0;
   color: #667085;
   font-size: 13px;
@@ -608,9 +712,9 @@ const resolveApiError = (error, fallback) =>
 
 .control-actions {
   display: flex;
-  align-items: center;
-  gap: 12px;
-  flex-wrap: wrap;
+  flex-direction: column;
+  gap: 14px;
+  align-items: flex-end;
 }
 
 .filter-tabs {
@@ -618,7 +722,9 @@ const resolveApiError = (error, fallback) =>
   gap: 8px;
   padding: 6px;
   border-radius: 18px;
-  background: #fff7eb;
+  background: #f7f0ff;
+  flex-wrap: wrap;
+  justify-content: flex-end;
 }
 
 .filter-chip {
@@ -626,35 +732,80 @@ const resolveApiError = (error, fallback) =>
   border: none;
   border-radius: 14px;
   background: transparent;
-  color: #7c5e32;
+  color: #6b4ba6;
   cursor: pointer;
   transition: all 0.25s ease;
 }
 
 .filter-chip.active {
   background: #ffffff;
-  color: #a95510;
-  box-shadow: 0 8px 20px rgba(217, 119, 6, 0.14);
+  color: #6d28d9;
+  box-shadow: 0 8px 18px rgba(124, 58, 237, 0.14);
+}
+
+.search-group {
+  display: flex;
+  gap: 12px;
+  align-items: center;
 }
 
 .search-input {
-  width: 260px;
+  width: 300px;
 }
 
+.panel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 18px;
+}
+
+.facility-cell,
+.applicant-cell,
+.facility-meta,
 .time-stack {
   display: flex;
   flex-direction: column;
-  gap: 4px;
 }
 
+.facility-cell {
+  flex-direction: row;
+  align-items: center;
+  gap: 14px;
+}
+
+.facility-avatar {
+  width: 48px;
+  height: 48px;
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #efe7ff 0%, #f8f4ff 100%);
+  color: #6d28d9;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.facility-meta strong,
+.applicant-cell strong {
+  color: #0f172a;
+}
+
+.facility-meta span,
+.applicant-cell span,
 .time-stack small {
+  margin-top: 4px;
   color: #6b7280;
+  font-size: 12px;
 }
 
 .row-actions {
   display: flex;
   justify-content: center;
   gap: 10px;
+  flex-wrap: wrap;
 }
 
 .pagination-wrap {
@@ -672,7 +823,7 @@ const resolveApiError = (error, fallback) =>
 .detail-item {
   padding: 16px;
   border-radius: 18px;
-  background: #fff8ef;
+  background: #f8f3ff;
 }
 
 .detail-item.full {
@@ -697,7 +848,7 @@ const resolveApiError = (error, fallback) =>
   padding: 16px;
   margin-bottom: 12px;
   border-radius: 18px;
-  background: #fff8ef;
+  background: #f8f3ff;
 }
 
 .verify-panel p {
@@ -708,6 +859,11 @@ const resolveApiError = (error, fallback) =>
 
 .verify-panel span {
   color: #6b7280;
+}
+
+.reservation-table :deep(.el-table__cell) {
+  padding-top: 14px;
+  padding-bottom: 14px;
 }
 
 @keyframes rise-in {
@@ -733,8 +889,22 @@ const resolveApiError = (error, fallback) =>
     grid-template-columns: 1fr;
   }
 
-  .control-card {
+  .control-card,
+  .control-actions {
     align-items: stretch;
+  }
+
+  .hero-highlights {
+    grid-template-columns: 1fr;
+    max-width: 100%;
+  }
+
+  .search-group {
+    width: 100%;
+  }
+
+  .search-input {
+    width: 100%;
   }
 }
 
@@ -751,10 +921,11 @@ const resolveApiError = (error, fallback) =>
   .filter-tabs {
     width: 100%;
     overflow-x: auto;
+    justify-content: flex-start;
   }
 
-  .search-input {
-    width: 100%;
+  .search-group {
+    flex-direction: column;
   }
 }
 </style>
