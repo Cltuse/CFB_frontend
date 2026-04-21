@@ -104,6 +104,12 @@
           </template>
         </el-table-column>
 
+        <el-table-column prop="maintainerName" label="设施负责人" min-width="150" align="center">
+          <template #default="{ row }">
+            <span class="location">{{ row.maintainerName || '未绑定' }}</span>
+          </template>
+        </el-table-column>
+
         <el-table-column prop="status" label="状态" min-width="110" align="center">
           <template #default="{ row }">
             <el-tag
@@ -195,6 +201,23 @@
         </el-form-item>
         <el-form-item label="存放位置" prop="location">
           <el-input v-model="form.location" placeholder="请输入存放位置" clearable />
+        </el-form-item>
+        <el-form-item label="设施负责人" prop="maintainerId">
+          <el-select
+            v-model="form.maintainerId"
+            style="width: 100%;"
+            placeholder="请选择设施负责人"
+            clearable
+            filterable
+          >
+            <el-option
+              v-for="item in maintainerOptions"
+              :key="item.id"
+              :label="item.realName ? `${item.realName} (${item.username})` : item.username"
+              :value="item.id"
+            />
+          </el-select>
+          <div class="form-tip">可选，不绑定则该设施暂未分配给设施管理员。</div>
         </el-form-item>
         <el-form-item label="状态" prop="status">
           <el-select v-model="form.status" style="width: 100%;" placeholder="请选择状态">
@@ -346,7 +369,7 @@ import {
   Tools, 
   Timer 
 } from '@element-plus/icons-vue';
-import { facilityAPI, facilityCategoryAPI, fileAPI } from '../../api';
+import { facilityAPI, facilityCategoryAPI, fileAPI, userAPI } from '../../api';
 
 const loading = ref(false);
 const facilityList = ref([]);
@@ -357,6 +380,7 @@ const dialogTitle = ref('添加设施');
 const formRef = ref(null);
 const isEdit = ref(false);
 const categoryOptions = ref([]);
+const maintainerOptions = ref([]);
 
 // 图片上传相关
 const imageDialogVisible = ref(false);
@@ -383,6 +407,7 @@ const form = ref({
   model: '',
   category: '',
   location: '',
+  maintainerId: null,
   status: 'AVAILABLE',
   description: '',
   purchaseDate: '',
@@ -411,6 +436,7 @@ const cellStyle = {
 onMounted(() => {
   loadFacilityList();
   loadCategoryOptions();
+  loadMaintainerOptions();
 });
 
 const loadFacilityList = async () => {
@@ -460,6 +486,16 @@ const loadCategoryOptions = async () => {
   }
 };
 
+const loadMaintainerOptions = async () => {
+  try {
+    const res = await userAPI.listMaintainers();
+    maintainerOptions.value = res.data || [];
+  } catch (error) {
+    console.error('加载设施负责人列表失败:', error);
+    maintainerOptions.value = [];
+  }
+};
+
 const handleSearch = async () => {
   pagination.page = 1;
   if (searchKeyword.value.trim()) {
@@ -504,6 +540,7 @@ const handleAdd = () => {
     model: '',
     category: '',
     location: '',
+    maintainerId: null,
     status: 'AVAILABLE',
     description: '',
     purchaseDate: '',
@@ -529,6 +566,7 @@ const handleEdit = (row) => {
   
   form.value = { 
     ...row,
+    maintainerId: row.maintainerId ?? null,
     _imageFile: null  // 清理临时图片文件引用
   };
   
@@ -1304,6 +1342,13 @@ const getStatusText = (status) => {
 
 .facility-form :deep(.el-select .el-input__wrapper) {
   cursor: pointer;
+}
+
+.form-tip {
+  margin-top: 6px;
+  line-height: 1.4;
+  font-size: 12px;
+  color: #718096;
 }
 
 .dialog-footer {

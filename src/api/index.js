@@ -12,7 +12,8 @@ export const userAPI = {
     update: (id, data) => request.put(`/user/${id}`, data),
     changePassword: (id, data) => request.post(`/user/${id}/change-password`, data),
     delete: (id) => request.delete(`/user/${id}`),
-    searchUsers: (keyword) => request.get('/user/search', { params: { keyword } })
+    searchUsers: (keyword) => request.get('/user/search', { params: { keyword } }),
+    listMaintainers: () => request.get('/user/maintainers')
 };
 
 // 反馈相关API

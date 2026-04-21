@@ -21,7 +21,7 @@ const routes = [
       { path: 'dashboard', name: 'AdminDashboard', component: () => import('../views/admin/Dashboard.vue') },
       { path: 'facility', name: 'AdminFacility', component: () => import('../views/admin/Facility.vue') },
       { path: 'facility-category', name: 'AdminFacilityCategory', component: () => import('../views/admin/FacilityCategory.vue') },
-      { path: 'reservation', name: 'AdminReservation', component: () => import('../views/admin/Reservation.vue') },
+      { path: 'reservation', name: 'AdminReservation', component: () => import('../views/admin/ReservationRecords.vue') },
       { path: 'maintenance', name: 'AdminMaintenance', component: () => import('../views/admin/Maintenance.vue') },
       { path: 'feedback', name: 'AdminFeedback', component: () => import('../views/admin/Feedback.vue') },
       { path: 'profile', name: 'AdminProfile', component: () => import('../views/admin/Profile.vue') },
@@ -58,6 +58,7 @@ const routes = [
       { path: 'dashboard', name: 'MaintainerDashboard', component: () => import('../views/maintainer/Dashboard.vue') },
       { path: 'maintenance', name: 'MaintainerMaintenance', component: () => import('../views/maintainer/maintenance.vue') },
       { path: 'facility', name: 'MaintainerFacility', component: () => import('../views/maintainer/Facility.vue') },
+      { path: 'reservation', name: 'MaintainerReservation', component: () => import('../views/maintainer/Reservation.vue') },
       { path: 'violation-report', name: 'MaintainerViolationReport', component: () => import('../views/maintainer/ViolationReport.vue') },
       { path: 'profile', name: 'MaintainerProfile', component: () => import('../views/maintainer/Profile.vue') }
     ]
