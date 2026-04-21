@@ -464,6 +464,7 @@ import { ElMessage } from 'element-plus';
 import { reservationAPI, facilityAPI, userAPI, adminAPI } from '../../api';
 import { Clock, CircleCheck, CircleClose, Check, Search, Key, Document } from '@element-plus/icons-vue';
 import * as echarts from 'echarts';
+import { formatActionMessage } from '../../utils/messageText';
 
 const activeTab = ref('PENDING');
 const reservationList = ref([]);
@@ -765,7 +766,7 @@ const handleSubmit = async () => {
     loadReservationList();
   } catch (error) {
     console.error('审核失败:', error);
-    ElMessage.error('审核失败，请重试');
+    ElMessage.error(formatActionMessage('审核失败', error.response?.data?.message || error.message, '审核失败，请稍后重试。'));
   } finally {
     submitLoading.value = false;
   }
@@ -858,7 +859,7 @@ const handleCheckin = async (row) => {
     loadReservationList();
   } catch (error) {
     console.error('签到失败:', error);
-    ElMessage.error('签到失败: ' + (error.response?.data?.message || '请重试'));
+    ElMessage.error(formatActionMessage('签到失败', error.response?.data?.message, '签到失败，请稍后重试。'));
   }
 };
 
@@ -870,7 +871,7 @@ const handleCheckout = async (row) => {
     loadReservationList();
   } catch (error) {
     console.error('签退失败:', error);
-    ElMessage.error('签退失败: ' + (error.response?.data?.message || '请重试'));
+    ElMessage.error(formatActionMessage('签退失败', error.response?.data?.message, '签退失败，请稍后重试。'));
   }
 };
 
@@ -896,7 +897,7 @@ const handleVerifySubmit = async () => {
     loadReservationList();
   } catch (error) {
     console.error('核销失败:', error);
-    ElMessage.error('核销失败: ' + (error.response?.data?.message || '请重试'));
+    ElMessage.error(formatActionMessage('核销失败', error.response?.data?.message, '核销失败，请稍后重试。'));
   } finally {
     verifyLoading.value = false;
   }

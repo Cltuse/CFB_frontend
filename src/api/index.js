@@ -1,6 +1,6 @@
 ﻿import request from '../utils/request';
 
-// 鐢ㄦ埛鐩稿叧API
+// 用户相关API
 export const userAPI = {
     login: (data) => request.post('/user/login', data),
     register: (data) => request.post('/user/register', data),
@@ -15,19 +15,19 @@ export const userAPI = {
     searchUsers: (keyword) => request.get('/user/search', { params: { keyword } })
 };
 
-// 绠＄悊鍛樺弽棣堢浉鍏矨PI
+// 反馈相关API
 export const feedbackAPI = {
-    // 鑾峰彇鎵€鏈夊弽棣?
+    // 获取反馈列表
     getFeedbacks: (page = 0, size = 10) => 
         request.get('/feedback/list', { 
             params: { page, size } 
         }),
     
-    // 鑾峰彇鍙嶉璇︽儏
+    // 获取反馈详情
     getFeedbackDetail: (id) => 
         request.get(`/feedback/${id}`),
     
-    // 鍥炲鍙嶉
+    // 回复反馈
     replyFeedback: (id, data) => request.post(`/feedback/${id}/reply`, null, {
         params: {
             reply: data.replyContent
@@ -36,19 +36,19 @@ export const feedbackAPI = {
     updateFeedbackStatus: (id, status) =>
         request.put(`/feedback/${id}/status`, null, { params: { status } }),
     
-    // 鍒犻櫎鍙嶉
+    // 删除反馈
     deleteFeedback: (id) => 
         request.delete(`/feedback/${id}`)
 };
 
-// 璁惧鐩稿叧API
+// 设施相关API
 export const facilityAPI = {
     list: () => request.get('/facility/list'),
     available: () => request.get('/facility/available'),
     getById: (id) => request.get(`/facility/${id}`),
     getDetail: (id, days = 7) => request.get(`/facility/${id}/detail`, { params: { days } }),
     search: (keyword) => request.get('/facility/search', { params: { keyword } }),
-    // 鍒嗛〉鎺ュ彛
+    // 分页查询设施列表
     listPage: (params) => request.get('/facility/listPage', { params }),
     searchPage: (keyword, params) => request.get('/facility/searchPage', {
         params: { keyword, ...params }
@@ -69,7 +69,7 @@ export const facilityAPI = {
     update: (id, data) => request.put(`/facility/${id}`, data),
     updateStatus: (id, status) => request.put(`/facility/${id}/status`, { status }),
     delete: (id) => request.delete(`/facility/${id}`),
-    // 鍥剧墖鐩稿叧鎺ュ彛
+    // 上传设施图片
     uploadImage: (idOrFile, file) => {
         if (file) {
             const formData = new FormData();
@@ -92,7 +92,7 @@ export const facilityAPI = {
     deleteImage: (id) => request.delete(`/facility/${id}/image`)
 };
 
-// 棰勭害鐩稿叧API
+// 预约相关API
 export const reservationAPI = {
     list: () => request.get('/reservation/list'),
     search: (keyword) => request.get('/reservation/search', { params: { keyword } }),
@@ -111,7 +111,7 @@ export const reservationAPI = {
     delete: (id) => request.delete(`/reservation/${id}`),
     getStatsByTimeRange: (range) => request.get('/reservation/stats/time-range', { params: { range } }),
     getCategoryStats: (range) => request.get('/reservation/stats/category', { params: { range } }),
-    // 绛惧埌绛鹃€€鐩稿叧鎺ュ彛
+    // 检查入
     checkin: (id) => request.put(`/reservation/${id}/checkin`),
     checkout: (id) => request.put(`/reservation/${id}/checkout`),
     verify: (id, verificationCode) => request.put(`/reservation/${id}/verify`, null, { params: { verificationCode } }),
@@ -121,7 +121,7 @@ export const reservationAPI = {
     })
 };
 
-// 缁存姢鐩稿叧API
+// 维护相关API
 export const maintenanceAPI = {
     list: () => request.get('/maintenance/list'),
     getByfacilityId: (facilityId) => request.get(`/maintenance/facility/${facilityId}`),
@@ -138,7 +138,7 @@ export const maintenanceAPI = {
     getSummaryStats: () => request.get('/maintenance/stats/summary')
 };
 
-// 閫氱煡鐩稿叧API
+// 通知相关API
 export const noticeAPI = {
     list: (params) => request.get('/notice/list', { params }),
     published: () => request.get('/notice/published'),
@@ -148,7 +148,7 @@ export const noticeAPI = {
     delete: (id) => request.delete(`/notice/${id}`)
 };
 
-// 璁惧绫诲埆鐩稿叧API
+// 设施分类相关API
 export const facilityCategoryAPI = {
     list: () => request.get('/facility-category/list'),
     active: () => request.get('/facility-category/active'),
@@ -157,10 +157,10 @@ export const facilityCategoryAPI = {
     update: (id, data) => request.put(`/facility-category/${id}`, data),
     delete: (id) => request.delete(`/facility-category/${id}`),
     toggleStatus: (id) => request.put(`/facility-category/${id}/toggle-status`),
-    // 鎼滅储鎺ュ彛
+    // 分页查询设施分类列表
     search: (keyword) => request.get('/facility-category/search', { params: { keyword } }),
     searchByName: (keyword) => request.get('/facility-category/search/name', { params: { keyword } }),
-    // 鍒嗛〉鎺ュ彛
+    // 分页查询设施分类列表
     listPage: (params) => request.get('/facility-category/page', { params }),
     searchPage: (keyword, params) => request.get('/facility-category/search/page', {
         params: { keyword, ...params }
@@ -173,7 +173,7 @@ export const facilityCategoryAPI = {
     })
 };
 
-// 鏂囦欢涓婁紶鐩稿叧API
+// 文件上传下载API
 export const fileAPI = {
     uploadFacilityImage: (facilityId, file) => {
         const formData = new FormData();
@@ -196,30 +196,30 @@ export const fileAPI = {
     deleteFile: (fileUrl) => request.delete('/file/delete', { params: { fileUrl } })
 };
 
-// 绠＄悊鍛樹笓灞炲姛鑳紸PI
+// 管理员相关API
 export const adminAPI = {
-    // 棰勭害瑙勫垯閰嶇疆绠＄悊
+    // 获取预约规则配置
     getRuleConfigs: () => request.get('/admin/rule-configs'),
     getRuleConfigHistory: (categoryId) => request.get('/admin/rule-configs/history', { params: { categoryId } }),
     createRuleConfig: (data) => request.post('/admin/rule-configs', data),
     getRuleConfigById: (id) => request.get(`/admin/rule-configs/${id}`),
     
-    // 榛戝悕鍗曠鐞?
+    // 获取黑名单列表
     getBlacklist: (params) => request.get('/admin/blacklist', { params }),
     getBlacklistStats: () => request.get('/admin/blacklist/stats'),
     addToBlacklist: (data) => request.post('/admin/blacklist', data),
     removeFromBlacklist: (id) => request.put(`/admin/blacklist/${id}/remove`),
     autoExpireBlacklist: () => request.put('/admin/blacklist/auto-expire'),
     
-    // 鎿嶄綔鏃ュ織瀹¤
+    // 获取操作日志列表
     getOperationLogs: (params) => request.get('/admin/operation-logs', { params }),
     getOperationLogById: (id) => request.get(`/admin/operation-logs/${id}`),
     getOperationTypes: () => request.get('/admin/operation-logs/types'),
     
-    // 鐢ㄦ埛鎼滅储锛堢敤浜庨粦鍚嶅崟娣诲姞锛?
+    // 分页查询用户列表
     searchUsers: (keyword) => request.get('/user/search', { params: { keyword } }),
     
-    // 杩濊璁板綍绠＄悊
+    // 分页查询违规记录列表
     getAllViolations: (page = 0, size = 10, userName = '', violationType = '', status = '') => 
         request.get('/violation/all', { params: { page, size, userName, violationType, status } }),
     recordViolation: (data) => request.post('/violation/record', data),
@@ -236,7 +236,7 @@ export const adminAPI = {
         params: { status }
     }),
     
-    // 缁熻鏁版嵁
+    // 获取统计信息
     getDashboardStats: () => request.get('/admin/stats/dashboard'),
     getUserStats: () => request.get('/admin/stats/users'),
     getReservationStats: () => request.get('/admin/reservation-stats'),
@@ -244,7 +244,7 @@ export const adminAPI = {
     getFacilityStats: () => request.get('/admin/stats/facilities')
 };
 
-// 杩濊璁板綍绠＄悊API
+// 违规记录相关API
 export const violationAPI = {
     getAllViolations: (page = 0, size = 10, userName = '', violationType = '', status = '') => 
         request.get('/violation/all', { params: { page, size, userName, violationType, status } }),
@@ -266,9 +266,9 @@ export const violationAPI = {
     getViolationStats: () => request.get('/violation/stats')
 };
 
-// 鐢ㄦ埛绔浉鍏矨PI
+// 用户客户端相关API
 export const userClientAPI = {
-    // 杩濊璁板綍鐩稿叧
+    // 获取我的违规记录
     getMyViolationRecords: (userId, page = 0, size = 10) => 
         request.get(`/user-client/violation-records/${userId}`, { 
             params: { page, size } 
@@ -279,7 +279,7 @@ export const userClientAPI = {
             params: { userId } 
         }),
 
-    // 鍙嶉绠＄悊鐩稿叧
+    // 获取我的反馈
     getMyFeedbacks: (userId, page = 0, size = 10) => 
         request.get(`/user-client/feedbacks/${userId}`, { 
             params: { page, size } 
@@ -292,7 +292,7 @@ export const userClientAPI = {
             params: { userId } 
         }),
 
-    // 棰勭害瑙勫垯鐩稿叧
+    // 获取所有规则配置项
     getAllRuleConfigs: () => request.get('/user-client/rule-configs'),
     
     getRuleConfigByCategory: (categoryId) => 

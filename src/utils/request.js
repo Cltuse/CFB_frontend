@@ -3,6 +3,7 @@ import { ElMessage } from 'element-plus'
 import router from '../router'
 import { clearAuth, getToken } from './auth'
 import { apiBaseUrl } from '../config/env'
+import { normalizeUserMessage } from './messageText'
 
 const MEDIA_URL_KEYS = new Set(['imageUrl', 'avatar', 'userAvatar'])
 
@@ -73,8 +74,9 @@ request.interceptors.response.use(
       return res
     }
 
-    ElMessage.error(res.message || '请求失败')
-    return Promise.reject(new Error(res.message || '请求失败'))
+    const normalizedMessage = normalizeUserMessage(res.message, '请求失败，请稍后重试。')
+    ElMessage.error(normalizedMessage)
+    return Promise.reject(new Error(normalizedMessage))
   },
   error => {
     const status = error.response?.status
@@ -84,11 +86,11 @@ request.interceptors.response.use(
       if (router.currentRoute.value.path !== '/login') {
         router.push('/login')
       }
-      ElMessage.error('登录已失效，请重新登录')
+      ElMessage.error(normalizeUserMessage('登录已失效，请重新登录'))
     } else if (status === 403) {
-      ElMessage.error('无权限访问该资源')
+      ElMessage.error(normalizeUserMessage(error.response?.data?.message || '无权限访问该资源'))
     } else {
-      ElMessage.error(error.message || '网络错误')
+      ElMessage.error(normalizeUserMessage(error.response?.data?.message || error.message, '网络连接异常，请稍后重试。'))
     }
 
     return Promise.reject(error)

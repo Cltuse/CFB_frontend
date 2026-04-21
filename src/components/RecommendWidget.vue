@@ -110,11 +110,11 @@ const fetchRecommendations = async () => {
     if (response.code === 200) {
       recommendations.value = response.data || []
     } else {
-      ElMessage.error('获取推荐失败')
+      ElMessage.error('推荐内容加载失败，请稍后重试。')
     }
   } catch (error) {
     console.error('获取推荐失败:', error)
-    ElMessage.error('获取推荐失败')
+    ElMessage.error('推荐内容加载失败，请稍后重试。')
   } finally {
     loading.value = false
   }
@@ -126,14 +126,14 @@ const refreshRecommendations = async () => {
   try {
     const response = await regenerateRecommendations(props.userId)
     if (response.code === 200) {
-      ElMessage.success('推荐刷新成功')
+      ElMessage.success('推荐内容已刷新。')
       await fetchRecommendations()
     } else {
-      ElMessage.error('刷新推荐失败')
+      ElMessage.error('推荐刷新失败，请稍后重试。')
     }
   } catch (error) {
     console.error('刷新推荐失败:', error)
-    ElMessage.error('刷新推荐失败')
+    ElMessage.error('推荐刷新失败，请稍后重试。')
   } finally {
     refreshing.value = false
   }

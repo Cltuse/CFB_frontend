@@ -219,7 +219,7 @@
         <span class="dialog-footer">
           <el-button @click="addDialogVisible = false">取消</el-button>
           <el-button type="danger" @click="handleAddSubmit" :loading="addLoading">
-            娣诲姞
+            添加黑名单
           </el-button>
         </span>
       </template>
@@ -488,7 +488,7 @@ onMounted(() => {
   min-height: calc(100vh - 88px);
 }
 
-/* 椤甸潰鏍囬鍖哄煙 */
+/* 页面标题样式 */
 .page-header {
   position: relative;
   background: #ffffff;
@@ -613,7 +613,7 @@ onMounted(() => {
   transform: translateY(-1px);
 }
 
-/* 缁熻淇℃伅 */
+/* 统计卡片样式 */
 .stats-row {
   margin-bottom: 24px;
   padding: 0 40px;
@@ -713,7 +713,7 @@ onMounted(() => {
   color: #909399;
 }
 
-/* 琛ㄦ牸瀹瑰櫒 */
+/* 黑名单卡片样式 */
 .blacklist-card {
   margin: 0 40px 24px;
   border-radius: 0;
@@ -793,7 +793,7 @@ onMounted(() => {
   color: #606266;
 }
 
-/* 瀵硅瘽妗嗘牱寮?*/
+/* 黑名单弹窗 */
 .blacklist-dialog :deep(.el-dialog) {
   border-radius: 16px;
   overflow: hidden;
@@ -888,13 +888,13 @@ onMounted(() => {
   color: #2d3748;
 }
 
-/* 鍔ㄧ敾鏁堟灉 */
+/* 梯度加载动画 */
 @keyframes gradient-shimmer {
   0%, 100% { background-position: 0% 50%; }
   50% { background-position: 100% 50%; }
 }
 
-/* 鍝嶅簲寮忚璁?*/
+/* 响应式布局 */
 @media (max-width: 768px) {
   .header-content {
     padding: 24px 20px 16px;

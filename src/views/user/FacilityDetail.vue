@@ -289,6 +289,7 @@ import {
   Checked
 } from '@element-plus/icons-vue';
 import { facilityAPI, reservationAPI } from '../../api';
+import { normalizeUserMessage } from '../../utils/messageText';
 
 const route = useRoute();
 const router = useRouter();
@@ -329,7 +330,10 @@ const checkAvailability = async () => {
 
     if (response.data) {
       isTimeAvailable.value = response.data.available;
-      availabilityMessage.value = response.data.message || (response.data.available ? '该时间段可用' : '该时段已被预约');
+      availabilityMessage.value = normalizeUserMessage(
+        response.data.message,
+        response.data.available ? '当前时段可以预约。' : '当前时段已被其他预约占用，请重新选择时间。'
+      );
     }
   } catch (error) {
     console.error('检查可用性失败:', error);
@@ -413,11 +417,11 @@ const loadFacilityDetail = async () => {
       facility.value = res.data.facility;
       reservations.value = res.data.reservations || [];
     } else {
-      ElMessage.error(res.message || '加载设施详情失败');
+      ElMessage.error(normalizeUserMessage(res.message, '设施详情加载失败，请稍后重试。'));
     }
   } catch (error) {
     console.error('加载设施详情失败:', error);
-    ElMessage.error('加载设施详情失败');
+    ElMessage.error('设施详情加载失败，请稍后重试。');
   } finally {
     loading.value = false;
   }
@@ -511,19 +515,14 @@ const handleSubmit = async () => {
     await formRef.value.validate();
 
     const response = await reservationAPI.create(form.value);
-    ElMessage.success(response.message || '预约成功');
+    ElMessage.success(normalizeUserMessage(response.message, '预约提交成功。'));
 
     dialogVisible.value = false;
     loadFacilityDetail();
   } catch (error) {
     console.error('预约失败:', error);
     if (error.response?.data?.message) {
-      const message = error.response.data.message;
-      if (message.includes('已被预约') || message.includes('冲突')) {
-        ElMessage.error('该时段已被预约，请选择其他时间');
-      } else {
-        ElMessage.error(message);
-      }
+      ElMessage.error(normalizeUserMessage(error.response.data.message, '预约提交失败，请稍后重试。'));
     }
   }
 };

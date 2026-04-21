@@ -283,6 +283,7 @@ import { ref, onMounted, computed } from 'vue';
 import { ElMessage, ElMessageBox } from 'element-plus';
 import { Search, Clock, CircleCheck, CircleClose, Check, View, Close } from '@element-plus/icons-vue';
 import { reservationAPI } from '../../api';
+import { formatActionMessage } from '../../utils/messageText';
 
 const reservationList = ref([]);
 const viewDialogVisible = ref(false);
@@ -405,7 +406,7 @@ const handleCheckin = (row) => {
       loadMyReservations();
     } catch (error) {
       console.error('签到失败:', error);
-      ElMessage.error(error.response?.data?.message || '签到失败');
+      ElMessage.error(formatActionMessage('签到失败', error.response?.data?.message, '签到失败，请稍后重试。'));
     }
   }).catch(() => {});
 };
@@ -423,7 +424,7 @@ const handleCheckout = (row) => {
       loadMyReservations();
     } catch (error) {
       console.error('签退失败:', error);
-      ElMessage.error(error.response?.data?.message || '签退失败');
+      ElMessage.error(formatActionMessage('签退失败', error.response?.data?.message, '签退失败，请稍后重试。'));
     }
   }).catch(() => {});
 };
