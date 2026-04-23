@@ -1,4 +1,4 @@
-﻿<template>
+<template>
   <div class="blacklist">
     <!-- 页面标题区域 -->
     <div class="page-header">

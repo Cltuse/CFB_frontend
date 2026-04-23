@@ -13,7 +13,7 @@
         </div>
 
         <div class="hero-copy">
-          <span class="eyebrow">Maintainer Profile</span>
+          <span class="eyebrow">管理员资料</span>
           <h1>个人中心</h1>
           <p>统一管理设施管理员的基础资料、安全设置和头像信息，保持与维护端其他页面一致的视觉层次和操作方式。</p>
 

@@ -2,7 +2,7 @@
   <div class="page-shell facility-theme">
     <section class="page-hero">
       <div class="hero-copy">
-        <span class="eyebrow">Facility Operations</span>
+        <span class="eyebrow">设施运营</span>
         <h1>设施管理</h1>
         <p>统一查看本人负责场地的状态、预约安排和维护入口，详情页同步展示未来排期。</p>
       </div>
@@ -131,7 +131,7 @@
           <section class="detail-hero">
             <img :src="detailFacility.imageUrl || fallbackImage" :alt="detailFacility.name">
             <div class="detail-hero-copy">
-              <span class="eyebrow">Facility Detail</span>
+              <span class="eyebrow">设施详情</span>
               <h2>{{ detailFacility.name }}</h2>
               <p>{{ detailFacility.description || '暂无场地介绍。' }}</p>
               <div class="detail-tags">

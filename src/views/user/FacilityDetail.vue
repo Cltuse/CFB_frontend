@@ -1,4 +1,4 @@
-﻿<template>
+<template>
   <div class="facility-detail-page">
     <!-- 返回按钮 -->
     <div class="back-section">

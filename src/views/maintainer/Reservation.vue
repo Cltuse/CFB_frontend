@@ -2,7 +2,7 @@
   <div class="page-shell reservation-theme">
     <section class="page-hero">
       <div class="hero-copy">
-        <span class="eyebrow">Reservation Operations</span>
+        <span class="eyebrow">预约运营</span>
         <h1>预约处理</h1>
         <p>集中处理本人负责设施的预约审核、签到核销和状态追踪，保持与维护端其他页面一致的操作节奏。</p>
 

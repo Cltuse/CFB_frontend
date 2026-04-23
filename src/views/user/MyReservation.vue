@@ -324,7 +324,7 @@ const filteredReservationList = computed(() => {
   }
 
   // 按开始时间倒序排序（最新的记录显示在最前面）
-  return filtered.sort((a, b) => {
+  return [...filtered].sort((a, b) => {
     const timeA = new Date(a.startTime).getTime();
     const timeB = new Date(b.startTime).getTime();
     return timeB - timeA;

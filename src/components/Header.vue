@@ -12,7 +12,7 @@
         </div>
         <div class="logo-text">
           <h1 class="system-title">校园公共设施预约管理系统</h1>
-          <p class="system-subtitle">Campus Public Facility Booking System</p>
+          <p class="system-subtitle">校园公共设施预约管理平台</p>
         </div>
       </div>
 
@@ -110,7 +110,7 @@ const handleLogout = () => {
   left: 0;
   right: 0;
   height: 3px;
-  background: linear-gradient(90deg, #409eff 0%, #66b1ff 50%, #409eff 100%);
+  background: linear-gradient(90deg, var(--feature-primary, #409eff) 0%, var(--feature-secondary, #66b1ff) 50%, var(--feature-primary, #409eff) 100%);
   background-size: 200% 100%;
   animation: gradient-shimmer 3s ease-in-out infinite;
 }
@@ -133,7 +133,11 @@ const handleLogout = () => {
 .logo-icon {
   width: 48px;
   height: 48px;
-  background: linear-gradient(135deg, #e6f7ff 0%, #bae7ff 100%);
+  background: linear-gradient(
+    135deg,
+    color-mix(in srgb, var(--feature-primary, #409eff) 16%, #ffffff) 0%,
+    color-mix(in srgb, var(--feature-secondary, #66b1ff) 24%, #ffffff) 100%
+  );
   border-radius: 12px;
   display: flex;
   align-items: center;
@@ -143,7 +147,7 @@ const handleLogout = () => {
 .logo-icon svg {
   width: 24px;
   height: 24px;
-  color: #409eff;
+  color: var(--feature-primary, #409eff);
 }
 
 .system-title {
@@ -170,7 +174,11 @@ const handleLogout = () => {
   align-items: center;
   gap: 12px;
   padding: 8px 16px;
-  background: linear-gradient(135deg, #f8fafc 0%, #e6f7ff 100%);
+  background: linear-gradient(
+    135deg,
+    #f8fafc 0%,
+    color-mix(in srgb, var(--feature-soft, rgba(64, 158, 255, 0.15)) 95%, #ffffff) 100%
+  );
   border-radius: 12px;
 }
 
@@ -178,7 +186,7 @@ const handleLogout = () => {
   width: 36px;
   height: 36px;
   border-radius: 10px;
-  background: linear-gradient(135deg, #409eff 0%, #1976d2 100%);
+  background: linear-gradient(135deg, var(--feature-primary, #409eff) 0%, var(--feature-secondary, #1976d2) 100%);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -202,13 +210,17 @@ const handleLogout = () => {
   width: 32px;
   height: 32px;
   border-radius: 8px;
-  background: linear-gradient(135deg, #f8fafc 0%, #e6f7ff 100%);
-  border: 1px solid rgba(64, 158, 255, 0.2);
+  background: linear-gradient(
+    135deg,
+    #f8fafc 0%,
+    color-mix(in srgb, var(--feature-soft, rgba(64, 158, 255, 0.15)) 95%, #ffffff) 100%
+  );
+  border: 1px solid color-mix(in srgb, var(--feature-primary, #409eff) 24%, #ffffff);
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  color: #409eff;
+  color: var(--feature-primary, #409eff);
 }
 
 .custom-dropdown-menu {

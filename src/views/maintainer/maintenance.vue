@@ -2,7 +2,7 @@
   <div class="page-shell maintenance-theme">
     <section class="page-hero">
       <div class="hero-copy">
-        <span class="eyebrow">Maintenance Flow</span>
+        <span class="eyebrow">维护流程</span>
         <h1>维护登记</h1>
         <p>统一管理本人负责场地的维护任务，保持创建、编辑、完成和详情查看都在同一操作节奏里。</p>
       </div>

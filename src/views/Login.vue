@@ -18,7 +18,7 @@
           </svg>
         </div>
         <h1 class="title">校园公共设施预约管理系统</h1>
-        <p class="subtitle">Campus Public Facility Booking System</p>
+        <p class="subtitle">校园公共设施预约管理平台</p>
       </div>
 
       <el-form :model="loginForm" :rules="rules" ref="loginFormRef" class="login-form">

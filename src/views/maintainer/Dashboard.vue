@@ -2,7 +2,7 @@
   <div class="dashboard-shell">
     <section class="dashboard-hero">
       <div class="hero-copy">
-        <span class="eyebrow">Operations Dashboard</span>
+        <span class="eyebrow">运营总览</span>
         <h1>维护端决策看板</h1>
         <p>把维护任务、设施热度、预约高峰和热门区域放到同一个视角里，方便你快速判断开放策略和处理优先级。</p>
       </div>

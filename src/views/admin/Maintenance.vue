@@ -1,234 +1,377 @@
 <template>
   <div class="maintenance-page">
-    <!-- 页面标题区域 -->
-    <div class="page-header">
-      <div class="header-decoration"></div>
-      <div class="header-content">
-        <h1 class="page-title">
-          <div class="title-icon">
-            <svg viewBox="0 0 24 24" fill="none">
-              <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-          </div>
-          设施维护管理
-        </h1>
-        <p class="page-subtitle">管理设施维护记录，跟踪设施维护状态和历史</p>
+    <section class="page-hero">
+      <div class="hero-copy">
+        <span class="hero-eyebrow">维护任务中心</span>
+        <h1>维护管理</h1>
+        <p>统一查看设施维护计划、负责人、时间安排和处理结果，让管理员能更快完成分派、跟进和回溯。</p>
+        <div class="hero-actions">
+          <el-button type="primary" class="primary-btn" @click="handleAdd">
+            <el-icon><Plus /></el-icon>
+            新建维护记录
+          </el-button>
+          <el-button class="secondary-btn" @click="loadMaintenanceList">
+            <el-icon><RefreshRight /></el-icon>
+            刷新数据
+          </el-button>
+        </div>
       </div>
-    </div>
 
-    <!-- 搜索和工具栏 -->
-    <div class="toolbar">
-      <div class="search-section">
+      <div class="hero-side">
+        <article class="hero-note">
+          <span>当前筛选结果</span>
+          <strong>{{ filteredMaintenanceList.length }}</strong>
+          <small>与筛选条件实时同步</small>
+        </article>
+        <article class="hero-note">
+          <span>进行中的任务</span>
+          <strong>{{ stats.inProgress }}</strong>
+          <small>建议优先跟进负责人与完成时间</small>
+        </article>
+      </div>
+    </section>
+
+    <section class="summary-grid">
+      <article class="summary-card">
+        <span class="summary-label">维护总数</span>
+        <strong>{{ stats.total }}</strong>
+        <p>全部维护记录</p>
+      </article>
+      <article class="summary-card">
+        <span class="summary-label">待处理</span>
+        <strong>{{ stats.pending }}</strong>
+        <p>等待确认或派发</p>
+      </article>
+      <article class="summary-card">
+        <span class="summary-label">已完成</span>
+        <strong>{{ stats.completed }}</strong>
+        <p>已关闭的维护任务</p>
+      </article>
+      <article class="summary-card">
+        <span class="summary-label">累计费用</span>
+        <strong>{{ formatCurrency(stats.totalCost) }}</strong>
+        <p>已录入的维护成本</p>
+      </article>
+    </section>
+
+    <section class="control-card">
+      <div class="section-copy">
+        <h2>筛选与操作</h2>
+        <p>按设施、负责人、描述、状态和类型快速定位维护任务。</p>
+      </div>
+
+      <div class="control-actions">
         <el-input
           v-model="searchKeyword"
-          placeholder="搜索设施名称或设施管理员..."
-          size="large"
           class="search-input"
+          placeholder="搜索设施、负责人或描述"
           clearable
           @keyup.enter="handleSearch"
-          @clear="handleClearSearch"
+          @clear="handleClearFilters"
         >
           <template #prefix>
             <el-icon><Search /></el-icon>
           </template>
-          <template #append>
-            <el-button @click="handleSearch" type="primary" size="large">
-              搜索
-            </el-button>
-          </template>
         </el-input>
-      </div>
-      <div class="button-section">
-        <el-button type="primary" size="large" class="add-button" @click="handleAdd">
-          <el-icon><Plus /></el-icon>
-          添加维护记录
-        </el-button>
-      </div>
-    </div>
 
-    <!-- 维护记录表格 -->
-    <div class="table-container">
+        <el-select
+          v-model="statusFilter"
+          class="filter-select"
+          clearable
+          placeholder="任务状态"
+          @change="handleSearch"
+        >
+          <el-option label="待处理" value="PENDING" />
+          <el-option label="进行中" value="IN_PROGRESS" />
+          <el-option label="已完成" value="COMPLETED" />
+          <el-option label="已取消" value="CANCELLED" />
+        </el-select>
+
+        <el-select
+          v-model="typeFilter"
+          class="filter-select"
+          clearable
+          placeholder="维护类型"
+          @change="handleSearch"
+        >
+          <el-option label="常规维护" value="ROUTINE" />
+          <el-option label="故障维修" value="REPAIR" />
+          <el-option label="设备升级" value="UPGRADE" />
+          <el-option label="其他" value="OTHER" />
+        </el-select>
+
+        <el-button class="secondary-btn" @click="handleClearFilters">清空筛选</el-button>
+      </div>
+    </section>
+
+    <section class="panel-card">
+      <div class="panel-head">
+        <div class="section-copy">
+          <h2>维护记录列表</h2>
+          <p>点击行可查看详情，也可以直接编辑或删除当前任务。</p>
+        </div>
+        <div class="panel-meta">
+          <span class="meta-chip">共 {{ filteredMaintenanceList.length }} 条</span>
+          <span class="meta-chip muted-chip">第 {{ pagination.page }} 页</span>
+        </div>
+      </div>
+
       <el-table
-        :data="maintenanceList"
-        class="maintenance-table"
-        :header-cell-style="headerCellStyle"
-        :cell-style="cellStyle"
-        @row-click="handleRowClick"
+        :data="pagedMaintenanceList"
         v-loading="loading"
-        stripe
+        class="maintenance-table"
+        @row-click="openDetail"
       >
-        <el-table-column prop="facilityName" label="设施名称" min-width="180">
+        <el-table-column label="设施信息" min-width="280">
           <template #default="{ row }">
-            <div class="facility-name">
-              <div class="name">{{ row.facilityName }}</div>
-              <div class="type">维护类型: {{ getMaintenanceTypeText(row.maintenanceType) }}</div>
+            <div class="facility-cell">
+              <div class="facility-icon">
+                <el-icon><Tools /></el-icon>
+              </div>
+              <div class="facility-copy">
+                <strong>{{ row.facilityName || getFacilityName(row.facilityId) || '未命名设施' }}</strong>
+                <span>{{ row.description || '暂无维护描述' }}</span>
+              </div>
             </div>
           </template>
         </el-table-column>
 
-        <el-table-column prop="maintenanceType" label="维护类型" width="150" align="center">
+        <el-table-column label="维护类型" width="130" align="center">
           <template #default="{ row }">
-            <el-tag class="type-tag" effect="light">
+            <el-tag effect="light" class="soft-tag">
               {{ getMaintenanceTypeText(row.maintenanceType) }}
             </el-tag>
           </template>
         </el-table-column>
 
-        <el-table-column prop="maintainer" label="设施管理员" width="150">
+        <el-table-column label="负责人" min-width="140">
           <template #default="{ row }">
-            <span class="maintainer">{{ row.maintainer || '-' }}</span>
+            <div class="info-stack">
+              <strong>{{ row.maintainer || '未分配' }}</strong>
+              <small>{{ row.maintainerId ? `ID: ${row.maintainerId}` : '待指派' }}</small>
+            </div>
           </template>
         </el-table-column>
 
-        <el-table-column prop="status" label="状态" width="140" align="center">
+        <el-table-column label="计划时间" min-width="220">
           <template #default="{ row }">
-            <el-tag
-              :type="getStatusType(row.status)"
-              class="status-tag"
-              effect="light"
-            >
-              <el-icon><CircleCheck v-if="row.status === 'COMPLETED'" /><Tools v-else /></el-icon>
+            <div class="info-stack">
+              <strong>{{ formatDateTime(row.startTime) }}</strong>
+              <small>{{ row.endTime ? `结束：${formatDateTime(row.endTime)}` : '结束时间待定' }}</small>
+            </div>
+          </template>
+        </el-table-column>
+
+        <el-table-column label="状态" width="120" align="center">
+          <template #default="{ row }">
+            <el-tag :type="getStatusType(row.status)" effect="light" class="status-tag">
               {{ getStatusText(row.status) }}
             </el-tag>
           </template>
         </el-table-column>
 
-        <el-table-column prop="cost" label="费用" width="130" align="center">
+        <el-table-column label="费用" width="120" align="center">
           <template #default="{ row }">
-            <span class="cost">¥{{ row.cost ? row.cost.toLocaleString() : '-' }}</span>
+            <span class="cost-text">{{ formatCurrency(row.cost) }}</span>
           </template>
         </el-table-column>
 
-        <el-table-column prop="startTime" label="开始时间" width="220" align="center">
+        <el-table-column label="操作" width="220" fixed="right" align="center">
           <template #default="{ row }">
-            <span class="time">{{ row.startTime || '-' }}</span>
-          </template>
-        </el-table-column>
-        <el-table-column prop="endTime" label="结束时间" width="220" align="center">
-          <template #default="{ row }">
-            <span class="time">{{ row.endTime || '-' }}</span>
-          </template>
-        </el-table-column>
-
-        <el-table-column label="操作" width="220" align="center" fixed="right">
-          <template #default="{ row }">
-            <div class="action-buttons">
-              <el-button
-                size="small"
-                type="primary"
-                :plain="true"
-                class="action-btn edit-btn"
-                @click.stop="handleEdit(row)"
-              >
-                <el-icon><Edit /></el-icon>
-                编辑
-              </el-button>
-              <el-button
-                size="small"
-                type="danger"
-                :plain="true"
-                class="action-btn delete-btn"
-                @click.stop="handleDelete(row)"
-              >
-                <el-icon><Delete /></el-icon>
-                删除
-              </el-button>
+            <div class="row-actions">
+              <el-button link type="primary" @click.stop="openDetail(row)">详情</el-button>
+              <el-button link type="primary" @click.stop="handleEdit(row)">编辑</el-button>
+              <el-button link type="danger" @click.stop="handleDelete(row)">删除</el-button>
             </div>
           </template>
         </el-table-column>
       </el-table>
 
-      <!-- 分页 -->
-      <div class="pagination-container" v-if="total > 0">
+      <el-empty v-if="!loading && !filteredMaintenanceList.length" description="当前没有符合条件的维护记录" />
+
+      <div v-if="filteredMaintenanceList.length" class="pagination-wrap">
         <el-pagination
           v-model:current-page="pagination.page"
           v-model:page-size="pagination.size"
-          :page-sizes="[10, 20, 50, 100]"
-          :total="total"
+          :page-sizes="[8, 12, 20, 50]"
+          :total="filteredMaintenanceList.length"
           layout="total, sizes, prev, pager, next, jumper"
           @size-change="handleSizeChange"
           @current-change="handleCurrentChange"
-          class="custom-pagination"
         />
       </div>
-    </div>
+    </section>
 
-    <!-- 添加/编辑对话框 -->
-    <el-dialog
-      :title="dialogTitle"
-      v-model="dialogVisible"
-      width="600px"
-      class="maintenance-dialog"
-      :close-on-click-modal="false"
+    <el-drawer
+      v-model="detailDrawerVisible"
+      :with-header="false"
+      size="720px"
+      class="detail-drawer"
     >
-      <el-form :model="form" :rules="rules" ref="formRef" class="maintenance-form" label-width="100px">
-        <el-form-item label="设施" prop="facilityId">
-          <el-select v-model="form.facilityId" style="width: 100%;" placeholder="请选择设施">
-            <el-option
-              v-for="item in facilityOptions"
-              :key="item.id"
-              :label="item.name"
-              :value="item.id"
+      <div v-if="currentRow" v-loading="detailLoading" class="detail-layout">
+        <section class="detail-hero">
+          <div class="detail-heading">
+            <span class="hero-eyebrow">维护详情</span>
+            <h2>{{ currentRow.facilityName || getFacilityName(currentRow.facilityId) || '维护任务' }}</h2>
+            <p>{{ currentRow.description || '暂无维护描述，建议补充任务背景和处理目标。' }}</p>
+            <div class="detail-tags">
+              <el-tag class="soft-tag" effect="light">{{ getMaintenanceTypeText(currentRow.maintenanceType) }}</el-tag>
+              <el-tag :type="getStatusType(currentRow.status)" effect="light" class="status-tag">
+                {{ getStatusText(currentRow.status) }}
+              </el-tag>
+              <el-tag effect="light" class="soft-tag">{{ currentRow.maintainer || '未分配负责人' }}</el-tag>
+            </div>
+          </div>
+
+          <div class="detail-actions">
+            <el-button type="primary" class="primary-btn" @click="handleEdit(currentRow)">编辑任务</el-button>
+            <el-button class="secondary-btn" @click="detailDrawerVisible = false">关闭</el-button>
+          </div>
+        </section>
+
+        <section class="detail-grid">
+          <article class="detail-card">
+            <span>开始时间</span>
+            <strong>{{ formatDateTime(currentRow.startTime) }}</strong>
+          </article>
+          <article class="detail-card">
+            <span>结束时间</span>
+            <strong>{{ formatDateTime(currentRow.endTime) }}</strong>
+          </article>
+          <article class="detail-card">
+            <span>维护费用</span>
+            <strong>{{ formatCurrency(currentRow.cost) }}</strong>
+          </article>
+          <article class="detail-card">
+            <span>记录编号</span>
+            <strong>#{{ currentRow.id }}</strong>
+          </article>
+        </section>
+
+        <section class="detail-panel">
+          <div class="section-copy">
+            <h2>处理结果</h2>
+            <p>如需补充处理过程或结论，可直接在编辑弹窗中维护。</p>
+          </div>
+          <div class="detail-content">
+            {{ currentRow.result || '当前还没有填写处理结果。' }}
+          </div>
+        </section>
+      </div>
+    </el-drawer>
+
+    <el-dialog
+      v-model="dialogVisible"
+      :title="dialogTitle"
+      width="680px"
+      class="editor-dialog"
+      destroy-on-close
+    >
+      <el-form ref="formRef" :model="form" :rules="rules" label-position="top" class="editor-form">
+        <div class="form-grid">
+          <el-form-item label="设施" prop="facilityId">
+            <el-select v-model="form.facilityId" filterable placeholder="请选择设施">
+              <el-option
+                v-for="item in facilityOptions"
+                :key="item.id"
+                :label="item.name"
+                :value="item.id"
+              />
+            </el-select>
+          </el-form-item>
+
+          <el-form-item label="维护类型" prop="maintenanceType">
+            <el-select v-model="form.maintenanceType" placeholder="请选择维护类型">
+              <el-option label="常规维护" value="ROUTINE" />
+              <el-option label="故障维修" value="REPAIR" />
+              <el-option label="设备升级" value="UPGRADE" />
+              <el-option label="其他" value="OTHER" />
+            </el-select>
+          </el-form-item>
+
+          <el-form-item label="负责人" prop="maintainerId">
+            <el-select
+              v-model="form.maintainerId"
+              filterable
+              placeholder="请选择负责人"
+              @change="handleMaintainerChange"
+            >
+              <el-option
+                v-for="item in maintainerOptions"
+                :key="item.id"
+                :label="item.realName || item.username"
+                :value="item.id"
+              />
+            </el-select>
+          </el-form-item>
+
+          <el-form-item label="任务状态" prop="status">
+            <el-select v-model="form.status" placeholder="请选择状态">
+              <el-option label="待处理" value="PENDING" />
+              <el-option label="进行中" value="IN_PROGRESS" />
+              <el-option label="已完成" value="COMPLETED" />
+              <el-option label="已取消" value="CANCELLED" />
+            </el-select>
+          </el-form-item>
+
+          <el-form-item label="开始时间" prop="startTime">
+            <el-date-picker
+              v-model="form.startTime"
+              type="datetime"
+              value-format="YYYY-MM-DD HH:mm:ss"
+              placeholder="选择开始时间"
+              style="width: 100%"
             />
-          </el-select>
-        </el-form-item>
-        <el-form-item label="维护类型" prop="maintenanceType">
-          <el-select v-model="form.maintenanceType" style="width: 100%;" placeholder="请选择维护类型">
-            <el-option label="定期维护" value="ROUTINE" />
-            <el-option label="维修" value="REPAIR" />
-            <el-option label="升级" value="UPGRADE" />
-          </el-select>
-        </el-form-item>
-        <el-form-item label="设施管理员" prop="maintainerId">
-          <el-select v-model="form.maintainerId" style="width: 100%;" placeholder="请选择设施管理员" @change="handleMaintainerChange">
-            <el-option
-              v-for="item in maintainerOptions"
-              :key="item.id"
-              :label="item.realName || item.username"
-              :value="item.id"
+          </el-form-item>
+
+          <el-form-item label="结束时间" prop="endTime">
+            <el-date-picker
+              v-model="form.endTime"
+              type="datetime"
+              value-format="YYYY-MM-DD HH:mm:ss"
+              placeholder="选择结束时间"
+              style="width: 100%"
             />
-          </el-select>
-        </el-form-item>
-        <el-form-item label="费用" prop="cost">
-          <el-input-number v-model="form.cost" :min="0" :precision="2" style="width: 100%;" placeholder="请输入维护费用" />
-        </el-form-item>
-        <el-form-item label="开始时间" prop="startTime">
-          <el-date-picker
-            v-model="form.startTime"
-            type="datetime"
-            placeholder="选择开始时间"
-            style="width: 100%;"
-            value-format="YYYY-MM-DD HH:mm:ss"
-          />
-        </el-form-item>
-        <el-form-item label="结束时间" prop="endTime">
-          <el-date-picker
-            v-model="form.endTime"
-            type="datetime"
-            placeholder="选择结束时间"
-            style="width: 100%;"
-            value-format="YYYY-MM-DD HH:mm:ss"
-          />
-        </el-form-item>
-        <el-form-item label="状态" prop="status">
-          <el-select v-model="form.status" style="width: 100%;" placeholder="请选择状态">
-            <el-option label="待处理" value="PENDING" />
-            <el-option label="进行中" value="IN_PROGRESS" />
-            <el-option label="已完成" value="COMPLETED" />
-            <el-option label="已取消" value="CANCELLED" />
-          </el-select>
-        </el-form-item>
+          </el-form-item>
+
+          <el-form-item label="维护费用" prop="cost">
+            <el-input-number v-model="form.cost" :min="0" :precision="2" style="width: 100%" />
+          </el-form-item>
+
+          <el-form-item label="负责人姓名">
+            <el-input :model-value="form.maintainer || '将随负责人自动带出'" disabled />
+          </el-form-item>
+        </div>
+
         <el-form-item label="维护描述" prop="description">
-          <el-input type="textarea" v-model="form.description" :rows="3" placeholder="请输入维护描述信息" maxlength="200" show-word-limit />
+          <el-input
+            v-model="form.description"
+            type="textarea"
+            :rows="4"
+            maxlength="300"
+            show-word-limit
+            placeholder="请输入维护背景、故障现象或计划安排"
+          />
         </el-form-item>
-        <el-form-item label="维护结果" prop="result">
-          <el-input type="textarea" v-model="form.result" :rows="3" placeholder="请输入维护结果信息" maxlength="200" show-word-limit />
+
+        <el-form-item label="处理结果" prop="result">
+          <el-input
+            v-model="form.result"
+            type="textarea"
+            :rows="4"
+            maxlength="300"
+            show-word-limit
+            placeholder="请输入维护结果或后续建议"
+          />
         </el-form-item>
       </el-form>
+
       <template #footer>
         <div class="dialog-footer">
-          <el-button @click="dialogVisible = false">取消</el-button>
-          <el-button type="primary" @click="handleSubmit">{{ isEdit ? '更新' : '创建' }}</el-button>
+          <el-button class="secondary-btn" @click="dialogVisible = false">取消</el-button>
+          <el-button type="primary" class="primary-btn" @click="handleSubmit">
+            {{ isEdit ? '保存修改' : '创建记录' }}
+          </el-button>
         </div>
       </template>
     </el-dialog>
@@ -236,31 +379,31 @@
 </template>
 
 <script setup>
-import { ref, reactive, onMounted } from 'vue';
+import { computed, nextTick, onMounted, reactive, ref, watch } from 'vue';
 import { ElMessage, ElMessageBox } from 'element-plus';
-import { maintenanceAPI, facilityAPI, userAPI } from '../../api';
+import { Plus, RefreshRight, Search, Tools } from '@element-plus/icons-vue';
+import { facilityAPI, maintenanceAPI, userAPI } from '../../api';
 
 const loading = ref(false);
-const maintenanceList = ref([]);
+const detailLoading = ref(false);
+const allMaintenanceList = ref([]);
 const facilityOptions = ref([]);
 const maintainerOptions = ref([]);
 const searchKeyword = ref('');
-const isSearchMode = ref(false);
+const statusFilter = ref('');
+const typeFilter = ref('');
 const dialogVisible = ref(false);
-const dialogTitle = ref('添加维护记录');
-const formRef = ref(null);
+const detailDrawerVisible = ref(false);
 const isEdit = ref(false);
+const formRef = ref(null);
+const currentRow = ref(null);
 
-// 搜索和分页
-const total = ref(0);
 const pagination = reactive({
   page: 1,
-  size: 10,
-  sortBy: 'id',
-  sortDir: 'desc'
+  size: 8
 });
 
-const form = ref({
+const form = reactive({
   id: null,
   facilityId: null,
   maintenanceType: 'ROUTINE',
@@ -277,21 +420,52 @@ const form = ref({
 const rules = {
   facilityId: [{ required: true, message: '请选择设施', trigger: 'change' }],
   maintenanceType: [{ required: true, message: '请选择维护类型', trigger: 'change' }],
-  maintainerId: [{ required: true, message: '请选择设施管理员', trigger: 'change' }]
+  maintainerId: [{ required: true, message: '请选择负责人', trigger: 'change' }],
+  description: [{ required: true, message: '请输入维护描述', trigger: 'blur' }]
 };
 
-// 表格样式
-const headerCellStyle = {
-  backgroundColor: '#f8fafc',
-  color: '#4a5568',
-  fontWeight: '600',
-  borderBottom: '1px solid #e2e8f0'
-};
+const dialogTitle = computed(() => (isEdit.value ? '编辑维护记录' : '新建维护记录'));
 
-const cellStyle = {
-  borderBottom: '1px solid #e2e8f0',
-  padding: '16px 12px'
-};
+const filteredMaintenanceList = computed(() => {
+  const keyword = searchKeyword.value.trim().toLowerCase();
+
+  return allMaintenanceList.value.filter((item) => {
+    const matchKeyword =
+      !keyword ||
+      [item.facilityName, item.maintainer, item.description, item.result]
+        .filter(Boolean)
+        .some((field) => String(field).toLowerCase().includes(keyword));
+
+    const matchStatus = !statusFilter.value || item.status === statusFilter.value;
+    const matchType = !typeFilter.value || normalizeMaintenanceType(item.maintenanceType) === typeFilter.value;
+
+    return matchKeyword && matchStatus && matchType;
+  });
+});
+
+const pagedMaintenanceList = computed(() => {
+  const start = (pagination.page - 1) * pagination.size;
+  const end = start + pagination.size;
+  return filteredMaintenanceList.value.slice(start, end);
+});
+
+const stats = computed(() => ({
+  total: allMaintenanceList.value.length,
+  pending: allMaintenanceList.value.filter((item) => item.status === 'PENDING').length,
+  inProgress: allMaintenanceList.value.filter((item) => item.status === 'IN_PROGRESS').length,
+  completed: allMaintenanceList.value.filter((item) => item.status === 'COMPLETED').length,
+  totalCost: allMaintenanceList.value.reduce((sum, item) => sum + (Number(item.cost) || 0), 0)
+}));
+
+watch(
+  () => [filteredMaintenanceList.value.length, pagination.size],
+  () => {
+    const maxPage = Math.max(1, Math.ceil(filteredMaintenanceList.value.length / pagination.size));
+    if (pagination.page > maxPage) {
+      pagination.page = maxPage;
+    }
+  }
+);
 
 onMounted(() => {
   loadMaintenanceList();
@@ -299,106 +473,75 @@ onMounted(() => {
   loadMaintainerOptions();
 });
 
-const loadMaintenanceList = async () => {
+async function loadMaintenanceList() {
   try {
     loading.value = true;
-
     const result = await maintenanceAPI.list();
-
-    if (result.code === 200) {
-      let filteredData = result.data || [];
-
-      // 如果有搜索关键词，进行前端过滤
-      if (isSearchMode.value && searchKeyword.value.trim()) {
-        const keyword = searchKeyword.value.trim().toLowerCase();
-        filteredData = filteredData.filter(item =>
-          (item.facilityName && item.facilityName.toLowerCase().includes(keyword)) ||
-          (item.maintainer && item.maintainer.toLowerCase().includes(keyword))
-        );
-      }
-
-      // 前端分页处理
-      total.value = filteredData.length;
-      const startIndex = (pagination.page - 1) * pagination.size;
-      const endIndex = startIndex + pagination.size;
-      maintenanceList.value = filteredData.slice(startIndex, endIndex);
-    } else {
-      ElMessage.error(result.message || '获取维护记录列表失败');
-    }
+    allMaintenanceList.value = Array.isArray(result.data) ? result.data : [];
   } catch (error) {
-    console.error('加载维护记录列表失败:', error);
-    ElMessage.error('网络错误，请重试');
+    console.error('加载维护记录失败:', error);
+    ElMessage.error('加载维护记录失败');
+    allMaintenanceList.value = [];
   } finally {
     loading.value = false;
   }
-};
+}
 
-const loadFacilityOptions = async () => {
+async function loadFacilityOptions() {
   try {
     const res = await facilityAPI.list();
-    facilityOptions.value = res.data;
+    facilityOptions.value = Array.isArray(res.data) ? res.data : [];
   } catch (error) {
-    console.error('加载设施列表失败:', error);
+    console.error('加载设施选项失败:', error);
+    facilityOptions.value = [];
   }
-};
+}
 
-const loadMaintainerOptions = async () => {
+async function loadMaintainerOptions() {
   try {
-    const res = await userAPI.list({ page: 0, size: 1000 });
-    if (res.data && res.data.content) {
-      maintainerOptions.value = res.data.content;
-    }
+    const res = await userAPI.listMaintainers();
+    const data = Array.isArray(res.data) ? res.data : res.data?.content || [];
+    maintainerOptions.value = data;
   } catch (error) {
-    console.error('加载维护人员列表失败:', error);
+    try {
+      const fallback = await userAPI.list({ page: 0, size: 1000 });
+      maintainerOptions.value = Array.isArray(fallback.data)
+        ? fallback.data
+        : fallback.data?.content || [];
+    } catch (innerError) {
+      console.error('加载负责人选项失败:', innerError);
+      maintainerOptions.value = [];
+    }
   }
-};
+}
 
-const handleMaintainerChange = (maintainerId) => {
-  const maintainer = maintainerOptions.value.find(item => item.id === maintainerId);
-  if (maintainer) {
-    form.value.maintainer = maintainer.realName || maintainer.username;
-  }
-};
-
-const handleSearch = async () => {
+function handleSearch() {
   pagination.page = 1;
-  if (searchKeyword.value.trim()) {
-    isSearchMode.value = true;
-  } else {
-    isSearchMode.value = false;
-  }
-  loadMaintenanceList();
-};
+}
 
-// 清除搜索
-const handleClearSearch = () => {
+function handleClearFilters() {
   searchKeyword.value = '';
-  isSearchMode.value = false;
+  statusFilter.value = '';
+  typeFilter.value = '';
   pagination.page = 1;
-  loadMaintenanceList();
-};
+}
 
-// 分页处理
-const handleSizeChange = (size) => {
+function handleSizeChange(size) {
   pagination.size = size;
   pagination.page = 1;
-  loadMaintenanceList();
-};
+}
 
-const handleCurrentChange = (page) => {
+function handleCurrentChange(page) {
   pagination.page = page;
-  loadMaintenanceList();
-};
+}
 
-// 处理行点击
-const handleRowClick = (row) => {
-  handleEdit(row);
-};
+function handleMaintainerChange(maintainerId) {
+  const target = maintainerOptions.value.find((item) => item.id === maintainerId);
+  form.maintainer = target ? target.realName || target.username || '' : '';
+}
 
-const handleAdd = () => {
-  isEdit.value = false;
-  dialogTitle.value = '添加维护记录';
-  form.value = {
+function resetForm() {
+  Object.assign(form, {
     id: null,
     facilityId: null,
     maintenanceType: 'ROUTINE',
@@ -410,511 +553,579 @@ const handleAdd = () => {
     status: 'PENDING',
     description: '',
     result: ''
-  };
-  dialogVisible.value = true;
-};
+  });
+}
 
-const handleEdit = (row) => {
+function handleAdd() {
+  isEdit.value = false;
+  resetForm();
+  dialogVisible.value = true;
+  nextTick(() => formRef.value?.clearValidate());
+}
+
+function handleEdit(row) {
   isEdit.value = true;
-  dialogTitle.value = '编辑维护记录';
-  form.value = { ...row };
+  Object.assign(form, {
+    id: row.id,
+    facilityId: row.facilityId ?? findFacilityIdByName(row.facilityName),
+    maintenanceType: normalizeMaintenanceType(row.maintenanceType),
+    maintainerId: row.maintainerId ?? findMaintainerIdByName(row.maintainer),
+    maintainer: row.maintainer || '',
+    cost: Number(row.cost) || 0,
+    startTime: row.startTime || '',
+    endTime: row.endTime || '',
+    status: row.status || 'PENDING',
+    description: row.description || '',
+    result: row.result || ''
+  });
   dialogVisible.value = true;
-};
+  nextTick(() => formRef.value?.clearValidate());
+}
 
-const handleSubmit = async () => {
+async function openDetail(row) {
+  detailDrawerVisible.value = true;
+  detailLoading.value = true;
+  currentRow.value = row;
+
+  try {
+    const result = await maintenanceAPI.getById(row.id);
+    currentRow.value = result.data || row;
+  } catch (error) {
+    console.error('加载维护详情失败:', error);
+    currentRow.value = row;
+  } finally {
+    detailLoading.value = false;
+  }
+}
+
+async function handleSubmit() {
   try {
     await formRef.value.validate();
+    const payload = { ...form };
+    const editedId = payload.id;
 
-    if (isEdit.value) {
-      await maintenanceAPI.update(form.value.id, form.value);
-      ElMessage.success('更新成功');
-    } else {
-      await maintenanceAPI.create(form.value);
-      ElMessage.success('添加成功');
+    const response = isEdit.value
+      ? await maintenanceAPI.update(form.id, payload)
+      : await maintenanceAPI.create(payload);
+
+    if (response?.code && response.code !== 200) {
+      ElMessage.error(response.message || '保存维护记录失败');
+      return;
     }
 
+    ElMessage.success(isEdit.value ? '维护记录已更新' : '维护记录已创建');
     dialogVisible.value = false;
-    loadMaintenanceList();
-  } catch (error) {
-    console.error('提交失败:', error);
-  }
-};
+    await loadMaintenanceList();
 
-const handleDelete = (row) => {
-  ElMessageBox.confirm('确认删除该维护记录？', '提示', {
-    confirmButtonText: '确定',
-    cancelButtonText: '取消',
-    type: 'warning'
-  }).then(async () => {
-    try {
-      await maintenanceAPI.delete(row.id);
-      ElMessage.success('删除成功');
-      loadMaintenanceList();
-    } catch (error) {
-      console.error('删除失败:', error);
+    if (detailDrawerVisible.value && currentRow.value?.id === editedId) {
+      await openDetail({ ...currentRow.value, id: editedId });
     }
-  }).catch(() => {});
-};
-
-const getMaintenanceTypeText = (type) => {
-  const map = {
-    'ROUTINE': '定期维护',
-    'REPAIR': '维修',
-    'UPGRADE': '升级'
-  };
-  return map[type] || type;
-};
-
-const getStatusType = (status) => {
-  if (!status || status.trim() === '') {
-    return 'info';
+  } catch (error) {
+    console.error('提交维护记录失败:', error);
   }
+}
+
+function handleDelete(row) {
+  ElMessageBox.confirm(
+    `确认删除“${row.facilityName || '该维护记录'}”吗？`,
+    '删除确认',
+    {
+      confirmButtonText: '确认删除',
+      cancelButtonText: '取消',
+      type: 'warning'
+    }
+  )
+    .then(async () => {
+      await maintenanceAPI.delete(row.id);
+      ElMessage.success('维护记录已删除');
+      if (currentRow.value?.id === row.id) {
+        detailDrawerVisible.value = false;
+      }
+      await loadMaintenanceList();
+    })
+    .catch(() => {});
+}
+
+function normalizeMaintenanceType(type) {
   const map = {
-    'PENDING': 'info',
-    'IN_PROGRESS': 'warning',
-    'COMPLETED': 'success',
-    'CANCELLED': 'danger'
+    常规维护: 'ROUTINE',
+    ROUTINE: 'ROUTINE',
+    故障维修: 'REPAIR',
+    REPAIR: 'REPAIR',
+    设备升级: 'UPGRADE',
+    UPGRADE: 'UPGRADE',
+    其他: 'OTHER',
+    OTHER: 'OTHER'
+  };
+  return map[type] || 'OTHER';
+}
+
+function getMaintenanceTypeText(type) {
+  const map = {
+    ROUTINE: '常规维护',
+    REPAIR: '故障维修',
+    UPGRADE: '设备升级',
+    OTHER: '其他'
+  };
+  return map[normalizeMaintenanceType(type)] || '其他';
+}
+
+function getStatusType(status) {
+  const map = {
+    PENDING: 'info',
+    IN_PROGRESS: 'warning',
+    COMPLETED: 'success',
+    CANCELLED: 'danger'
   };
   return map[status] || 'info';
-};
+}
 
-const getStatusText = (status) => {
-  if (!status || status.trim() === '') {
-    return '未知';
-  }
+function getStatusText(status) {
   const map = {
-    'PENDING': '待处理',
-    'IN_PROGRESS': '进行中',
-    'COMPLETED': '已完成',
-    'CANCELLED': '已取消'
+    PENDING: '待处理',
+    IN_PROGRESS: '进行中',
+    COMPLETED: '已完成',
+    CANCELLED: '已取消'
   };
-  return map[status] || status;
-};
+  return map[status] || '未知状态';
+}
+
+function getFacilityName(facilityId) {
+  return facilityOptions.value.find((item) => item.id === facilityId)?.name || '';
+}
+
+function findFacilityIdByName(name) {
+  return facilityOptions.value.find((item) => item.name === name)?.id ?? null;
+}
+
+function findMaintainerIdByName(name) {
+  return maintainerOptions.value.find((item) => (item.realName || item.username) === name)?.id ?? null;
+}
+
+function formatDateTime(value) {
+  if (!value) {
+    return '未设置';
+  }
+  return new Date(value).toLocaleString('zh-CN', { hour12: false });
+}
+
+function formatCurrency(value) {
+  const amount = Number(value);
+  if (!Number.isFinite(amount)) {
+    return '未录入';
+  }
+  return `¥${amount.toLocaleString('zh-CN', { maximumFractionDigits: 2 })}`;
+}
 </script>
 
 <style scoped>
 .maintenance-page {
-  padding: 0;
-  background: linear-gradient(135deg, #f8fafc 0%, #f0f9ff 25%, #e6f7ff 50%, #f8fafc 100%);
-  min-height: calc(100vh - 88px);
+  display: grid;
+  gap: 20px;
+  color: #24374a;
 }
 
-/* 页面标题区域 */
-.page-header {
-  position: relative;
-  background: #ffffff;
-  margin: 0 0 24px 0;
-  border-radius: 0;
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
-  overflow: hidden;
+.page-hero,
+.control-card,
+.panel-card,
+.detail-hero,
+.detail-panel,
+.detail-card {
+  border-radius: 28px;
+  border: 1px solid rgba(132, 165, 205, 0.18);
+  background: rgba(255, 255, 255, 0.92);
+  box-shadow: 0 18px 40px rgba(30, 41, 59, 0.06);
 }
 
-.header-decoration {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 3px;
-  background: linear-gradient(90deg, #409eff 0%, #66b1ff 50%, #409eff 100%);
-  background-size: 200% 100%;
-  animation: gradient-shimmer 3s ease-in-out infinite;
+.page-hero {
+  display: grid;
+  grid-template-columns: minmax(0, 1.6fr) 320px;
+  gap: 20px;
+  padding: 28px;
+  background:
+    radial-gradient(circle at top right, rgba(180, 205, 235, 0.42), transparent 30%),
+    linear-gradient(145deg, #f9fbff 0%, #ffffff 62%);
 }
 
-.header-content {
-  padding: 32px 40px 24px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-
-.page-title {
-  display: flex;
-  align-items: center;
-  font-size: 28px;
-  font-weight: 700;
-  color: #1a202c;
-  margin: 0;
-}
-
-.title-icon {
-  width: 48px;
-  height: 48px;
-  background: linear-gradient(135deg, #e6f7ff 0%, #bae7ff 100%);
-  border-radius: 12px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-right: 16px;
-  box-shadow: 0 4px 12px rgba(64, 158, 255, 0.15);
-}
-
-.title-icon svg {
-  width: 24px;
-  height: 24px;
-  color: #409eff;
-}
-
-.page-subtitle {
-  font-size: 14px;
-  color: #718096;
-  margin: 0 0 0 64px;
-  font-weight: 400;
-}
-
-/* 工具栏 */
-.toolbar {
-  margin-bottom: 24px;
-  padding: 0;
-  display: flex;
-  gap: 16px;
-  align-items: center;
-  flex-wrap: wrap;
-}
-
-.search-section {
-  flex: 1;
-  min-width: 300px;
-}
-
-.search-input {
-  border-radius: 12px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  transition: all 0.3s ease;
-}
-
-.search-input :deep(.el-input__wrapper) {
-  border-radius: 12px;
-  border: 1px solid #e2e8f0;
-  background: #ffffff;
-  height: 48px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-}
-
-.search-input :deep(.el-input__wrapper:hover) {
-  border-color: #cbd5e0;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-}
-
-.search-input :deep(.el-input__wrapper.is-focus) {
-  border-color: #409eff;
-  box-shadow: 0 0 0 3px rgba(64, 158, 255, 0.1), 0 4px 6px rgba(0, 0, 0, 0.1);
-}
-
-.search-input :deep(.el-input__inner) {
-  font-size: 15px;
-  height: 46px;
-  font-weight: 500;
-}
-
-.button-section {
-  flex-shrink: 0;
-}
-
-.add-button {
-  border-radius: 12px;
-  font-weight: 600;
-  height: 48px;
-  padding: 0 24px;
-  background: linear-gradient(135deg, #409eff 0%, #1976d2 100%);
-  border: none;
-  box-shadow: 0 4px 14px rgba(64, 158, 255, 0.3);
-  transition: all 0.3s ease;
-}
-
-.add-button:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 20px rgba(64, 158, 255, 0.4);
-  background: linear-gradient(135deg, #66b1ff 0%, #409eff 100%);
-}
-
-/* 表格容器 */
-.table-container {
-  background: #ffffff;
-  border-radius: 0;
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
-  overflow: hidden;
-  width: 100%;
-}
-
-.maintenance-table {
-  width: 100%;
-}
-
-.maintenance-table :deep(.el-table) {
-  width: 100% !important;
-}
-
-.maintenance-table :deep(.el-table__header-wrapper) {
-  width: 100% !important;
-}
-
-.maintenance-table :deep(.el-table__body-wrapper) {
-  width: 100% !important;
-}
-
-.maintenance-table :deep(.el-table__header) {
-  width: 100% !important;
-}
-
-.maintenance-table :deep(.el-table__body) {
-  width: 100% !important;
-}
-
-.facility-name .name {
-  font-weight: 600;
-  color: #2d3748;
-  font-size: 14px;
-}
-
-.facility-name .type {
-  font-size: 12px;
-  color: #718096;
-  margin-top: 2px;
-}
-
-.type-tag {
-  border-radius: 6px;
-  font-weight: 500;
-  font-size: 12px;
-  padding: 4px 8px;
-  background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
-  border: 1px solid #bae6fd;
-  color: #0369a1;
-}
-
-.maintainer {
-  color: #4a5568;
-  font-size: 14px;
-}
-
-.cost {
-  color: #059669;
-  font-weight: 600;
-  font-size: 14px;
-}
-
-.time {
-  color: #4a5568;
-  font-size: 14px;
-}
-
-/* 状态标签 */
-.status-tag {
-  border-radius: 6px;
-  font-weight: 500;
-  padding: 4px 8px;
+.hero-eyebrow {
   display: inline-flex;
   align-items: center;
-  gap: 4px;
-}
-
-/* 操作按钮 */
-.action-buttons {
-  display: flex;
-  gap: 8px;
-  justify-content: center;
-}
-
-.action-btn {
-  border-radius: 8px;
-  font-weight: 500;
   padding: 6px 12px;
-  transition: all 0.3s ease;
-}
-
-.edit-btn {
-  border-color: #409eff;
-  color: #409eff;
-}
-
-.edit-btn:hover {
-  background: linear-gradient(135deg, #409eff 0%, #1976d2 100%);
-  border-color: transparent;
-  color: white;
-  transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(64, 158, 255, 0.3);
-}
-
-.delete-btn {
-  border-color: #f56565;
-  color: #f56565;
-}
-
-.delete-btn:hover {
-  background: linear-gradient(135deg, #f56565 0%, #e53e3e 100%);
-  border-color: transparent;
-  color: white;
-  transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(245, 101, 101, 0.3);
-}
-
-/* 分页容器 */
-.pagination-container {
-  padding: 20px 0;
-  display: flex;
-  justify-content: center;
-}
-
-.custom-pagination :deep(.el-pagination) {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.custom-pagination :deep(.el-pagination__total) {
-  color: #4a5568;
-  font-weight: 500;
-  margin-right: 16px;
-}
-
-.custom-pagination :deep(.el-pager) {
-  display: flex;
-  gap: 4px;
-}
-
-.custom-pagination :deep(.el-pager li) {
-  border-radius: 6px;
-  transition: all 0.3s ease;
-}
-
-.custom-pagination :deep(.el-pager li.is-active) {
-  background: linear-gradient(135deg, #409eff 0%, #1976d2 100%);
-  color: #ffffff;
+  border-radius: 999px;
+  background: rgba(167, 193, 226, 0.22);
+  color: #5579a4;
+  font-size: 12px;
   font-weight: 600;
+  letter-spacing: 0.08em;
 }
 
-.custom-pagination :deep(.el-select) {
-  margin: 0 8px;
+.hero-copy h1,
+.section-copy h2,
+.detail-heading h2 {
+  margin: 14px 0 10px;
+  color: #17314d;
 }
 
-.custom-pagination :deep(.el-input__wrapper) {
-  border-radius: 6px;
-  border-color: #e2e8f0;
+.hero-copy h1 {
+  font-size: 34px;
 }
 
-.custom-pagination :deep(.el-input__inner) {
+.hero-copy p,
+.section-copy p,
+.detail-heading p {
+  margin: 0;
+  color: #67778f;
+  line-height: 1.8;
+}
+
+.hero-actions,
+.control-actions,
+.panel-meta,
+.row-actions,
+.detail-tags,
+.detail-actions,
+.dialog-footer {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: center;
+}
+
+.hero-actions {
+  margin-top: 24px;
+}
+
+.primary-btn,
+.secondary-btn {
+  min-height: 44px;
+  padding: 0 18px;
+  border-radius: 14px;
+}
+
+.primary-btn {
+  border: none;
+  background: linear-gradient(135deg, #6d93be 0%, #5178a6 100%);
+  box-shadow: 0 12px 24px rgba(81, 120, 166, 0.2);
+}
+
+.secondary-btn {
+  border: 1px solid rgba(132, 165, 205, 0.24);
+  background: rgba(255, 255, 255, 0.86);
+  color: #4b6788;
+}
+
+.hero-side {
+  display: grid;
+  gap: 14px;
+}
+
+.hero-note {
+  min-height: 128px;
+  padding: 22px;
+  border-radius: 24px;
+  background: linear-gradient(180deg, #f8fbff 0%, #ffffff 100%);
+  border: 1px solid rgba(132, 165, 205, 0.16);
+}
+
+.hero-note span,
+.hero-note small,
+.summary-label,
+.summary-card p,
+.meta-chip,
+.detail-card span {
+  color: #72839b;
+}
+
+.hero-note strong,
+.summary-card strong,
+.detail-card strong,
+.cost-text,
+.facility-copy strong,
+.info-stack strong {
+  color: #19324e;
+}
+
+.hero-note strong {
+  display: block;
+  margin: 14px 0 8px;
+  font-size: 30px;
+}
+
+.summary-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.summary-card {
+  padding: 20px 22px;
+  border-radius: 24px;
+  border: 1px solid rgba(132, 165, 205, 0.14);
+  background: rgba(255, 255, 255, 0.94);
+  box-shadow: 0 14px 30px rgba(30, 41, 59, 0.05);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.summary-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 18px 34px rgba(30, 41, 59, 0.08);
+}
+
+.summary-card strong {
+  display: block;
+  margin: 12px 0 8px;
+  font-size: 28px;
+}
+
+.summary-card p {
+  margin: 0;
   font-size: 13px;
 }
 
-/* 对话框样式 */
-.maintenance-dialog :deep(.el-dialog) {
-  border-radius: 16px;
-  overflow: hidden;
-  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
-}
-
-.maintenance-dialog :deep(.el-dialog__header) {
-  background: linear-gradient(135deg, #f8fafc 0%, #e6f7ff 100%);
-  padding: 24px 24px 16px;
-  border-bottom: 1px solid #e2e8f0;
-}
-
-.maintenance-dialog :deep(.el-dialog__title) {
-  color: #1a202c;
-  font-weight: 600;
-  font-size: 18px;
-}
-
-.maintenance-dialog :deep(.el-dialog__body) {
+.control-card,
+.panel-card {
   padding: 24px;
 }
 
-.maintenance-form :deep(.el-form-item__label) {
-  color: #4a5568;
+.control-card {
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+}
+
+.panel-head {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 18px;
+}
+
+.meta-chip {
+  padding: 8px 12px;
+  border-radius: 999px;
+  background: rgba(172, 197, 228, 0.22);
+  font-size: 12px;
   font-weight: 600;
 }
 
-.maintenance-form :deep(.el-input__wrapper) {
-  border-radius: 8px;
-  border: 1px solid #e2e8f0;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-  transition: all 0.3s ease;
+.muted-chip {
+  background: rgba(240, 245, 251, 0.94);
 }
 
-.maintenance-form :deep(.el-input__wrapper:hover) {
-  border-color: #cbd5e0;
+.search-input {
+  width: 300px;
 }
 
-.maintenance-form :deep(.el-input__wrapper.is-focus) {
-  border-color: #409eff;
-  box-shadow: 0 0 0 3px rgba(64, 158, 255, 0.1);
+.filter-select {
+  width: 150px;
 }
 
-.maintenance-form :deep(.el-textarea__inner) {
-  border-radius: 8px;
-  border: 1px solid #e2e8f0;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-  transition: all 0.3s ease;
+.facility-cell {
+  display: flex;
+  align-items: center;
+  gap: 14px;
 }
 
-.maintenance-form :deep(.el-textarea__inner:hover) {
-  border-color: #cbd5e0;
+.facility-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 52px;
+  height: 52px;
+  border-radius: 18px;
+  background: linear-gradient(135deg, #e7f0fb 0%, #dce8f8 100%);
+  color: #587ba5;
+  flex-shrink: 0;
 }
 
-.maintenance-form :deep(.el-textarea__inner:focus) {
-  border-color: #409eff;
-  box-shadow: 0 0 0 3px rgba(64, 158, 255, 0.1);
+.facility-copy,
+.info-stack {
+  display: grid;
+  gap: 6px;
 }
 
-.maintenance-form :deep(.el-select .el-input__wrapper) {
-  cursor: pointer;
+.facility-copy span,
+.info-stack small {
+  color: #73839a;
+  font-size: 13px;
+  line-height: 1.6;
 }
 
-.dialog-footer {
-  padding: 16px 24px 24px;
-  text-align: right;
+.soft-tag {
+  border: none;
+  background: rgba(174, 198, 227, 0.26);
+  color: #557aa5;
 }
 
-.dialog-footer .el-button {
-  border-radius: 8px;
-  font-weight: 500;
-  padding: 10px 20px;
-}
-
-.dialog-footer .el-button--primary {
-  background: linear-gradient(135deg, #409eff 0%, #1976d2 100%);
+.status-tag {
   border: none;
 }
 
-/* 动画效果 */
-@keyframes gradient-shimmer {
-  0%, 100% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
+.cost-text {
+  font-weight: 700;
 }
 
-/* 响应式设计 */
-@media (max-width: 768px) {
-  .header-content {
-    padding: 24px 20px 16px;
+.pagination-wrap {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 20px;
+}
+
+.detail-layout {
+  display: grid;
+  gap: 18px;
+  padding: 8px 4px 20px;
+}
+
+.detail-hero {
+  display: flex;
+  justify-content: space-between;
+  gap: 18px;
+  padding: 24px;
+  background:
+    radial-gradient(circle at top right, rgba(180, 205, 235, 0.34), transparent 30%),
+    linear-gradient(145deg, #f8fbff 0%, #ffffff 100%);
+}
+
+.detail-tags {
+  margin-top: 18px;
+}
+
+.detail-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.detail-card {
+  padding: 18px;
+}
+
+.detail-card span {
+  display: block;
+  font-size: 12px;
+}
+
+.detail-card strong {
+  display: block;
+  margin-top: 10px;
+  font-size: 18px;
+}
+
+.detail-panel {
+  padding: 22px;
+}
+
+.detail-content {
+  margin-top: 16px;
+  padding: 18px;
+  border-radius: 20px;
+  background: #f8fbff;
+  color: #20344c;
+  line-height: 1.8;
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.maintenance-table :deep(.el-table__row) {
+  cursor: pointer;
+}
+
+.maintenance-page :deep(.el-input__wrapper),
+.maintenance-page :deep(.el-select__wrapper),
+.maintenance-page :deep(.el-textarea__inner),
+.maintenance-page :deep(.el-date-editor.el-input__wrapper),
+.maintenance-page :deep(.el-input-number .el-input__wrapper) {
+  border-radius: 14px;
+  background: #f9fbff;
+  box-shadow: none;
+  border: 1px solid rgba(132, 165, 205, 0.2);
+}
+
+.maintenance-page :deep(.el-table) {
+  --el-table-border-color: rgba(132, 165, 205, 0.14);
+  --el-table-header-bg-color: #f7fbff;
+  --el-table-row-hover-bg-color: #f7fbff;
+  border-radius: 20px;
+  overflow: hidden;
+}
+
+.maintenance-page :deep(.el-dialog),
+.maintenance-page :deep(.el-drawer__body) {
+  background: #fcfdff;
+}
+
+.maintenance-page :deep(.el-dialog) {
+  border-radius: 28px;
+  overflow: hidden;
+}
+
+.maintenance-page :deep(.el-dialog__header) {
+  margin: 0;
+  padding: 22px 24px 10px;
+}
+
+.maintenance-page :deep(.el-dialog__body) {
+  padding: 12px 24px 18px;
+}
+
+.maintenance-page :deep(.el-dialog__footer) {
+  padding: 0 24px 24px;
+}
+
+@media (max-width: 1180px) {
+  .summary-grid,
+  .detail-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .page-hero,
+  .control-card {
+    grid-template-columns: 1fr;
+    display: grid;
+  }
+}
+
+@media (max-width: 820px) {
+  .maintenance-page {
+    gap: 16px;
+  }
+
+  .summary-grid,
+  .detail-grid,
+  .form-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .page-hero,
+  .control-card,
+  .panel-card,
+  .detail-hero {
+    padding: 18px;
+  }
+
+  .panel-head,
+  .detail-hero {
     flex-direction: column;
-    align-items: flex-start;
   }
 
-  .page-subtitle {
-    margin: 8px 0 0 0;
-  }
-
-  .page-title {
-    font-size: 24px;
-  }
-
-  .title-icon {
-    width: 40px;
-    height: 40px;
-  }
-
-  .title-icon svg {
-    width: 20px;
-    height: 20px;
-  }
-
-  .action-buttons {
-    flex-direction: column;
-    gap: 6px;
-  }
-
-  .action-btn {
+  .search-input,
+  .filter-select,
+  .control-actions,
+  .detail-actions {
     width: 100%;
+  }
+
+  .control-actions > * {
+    width: 100%;
+  }
+
+  .hero-copy h1 {
+    font-size: 28px;
   }
 }
 </style>

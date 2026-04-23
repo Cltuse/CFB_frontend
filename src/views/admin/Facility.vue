@@ -1,4 +1,4 @@
-﻿<template>
+<template>
   <div class="facility-page">
     <!-- 页面标题区域 -->
     <div class="page-header">
