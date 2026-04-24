@@ -1,79 +1,184 @@
 :root {
-  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
+  font-family: 'Microsoft YaHei', 'PingFang SC', 'Helvetica Neue', Helvetica, Arial, sans-serif;
   line-height: 1.5;
   font-weight: 400;
-
-  color-scheme: light dark;
-  color: rgba(255, 255, 255, 0.87);
-  background-color: #242424;
-
+  color: #213547;
+  background-color: #f5f7fb;
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  --shell-radius-sm: 14px;
+  --shell-radius-md: 18px;
+  --shell-radius-lg: 24px;
+  --shell-radius-xl: 28px;
+  --shell-shadow: 0 18px 40px rgba(30, 41, 59, 0.08);
+  --shell-shadow-strong: 0 24px 54px rgba(30, 41, 59, 0.11);
+  --shell-transition: 220ms ease;
 }
 
-a {
-  font-weight: 500;
-  color: #646cff;
-  text-decoration: inherit;
-}
-a:hover {
-  color: #535bf2;
-}
-
-body {
-  margin: 0;
-  display: flex;
-  place-items: center;
+html,
+body,
+#app {
   min-width: 320px;
   min-height: 100vh;
 }
 
-h1 {
-  font-size: 3.2em;
-  line-height: 1.1;
+body {
+  margin: 0;
+  background:
+    radial-gradient(circle at top left, rgba(221, 232, 244, 0.56), transparent 24%),
+    linear-gradient(180deg, #f7f9fc 0%, #f3f6fb 100%);
 }
 
-button {
-  border-radius: 8px;
-  border: 1px solid transparent;
-  padding: 0.6em 1.2em;
-  font-size: 1em;
-  font-weight: 500;
-  font-family: inherit;
-  background-color: #1a1a1a;
-  cursor: pointer;
-  transition: border-color 0.25s;
-}
-button:hover {
-  border-color: #646cff;
-}
-button:focus,
-button:focus-visible {
-  outline: 4px auto -webkit-focus-ring-color;
+a {
+  color: inherit;
+  text-decoration: none;
 }
 
-.card {
-  padding: 2em;
+button,
+input,
+select,
+textarea {
+  font: inherit;
 }
 
-#app {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 2rem;
-  text-align: center;
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
 }
 
-@media (prefers-color-scheme: light) {
-  :root {
-    color: #213547;
-    background-color: #ffffff;
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
   }
-  a:hover {
-    color: #747bff;
-  }
-  button {
-    background-color: #f9f9f9;
+}
+
+.admin-layout,
+.maintainer-layout,
+.user-layout {
+  --feature-primary-deep: color-mix(in srgb, var(--feature-primary) 78%, #1e2d3d 22%);
+  --feature-border: color-mix(in srgb, var(--feature-primary) 16%, #dce4ee 84%);
+  --feature-soft-bg: color-mix(in srgb, var(--feature-primary) 8%, #ffffff 92%);
+  --feature-soft-surface: color-mix(in srgb, var(--feature-primary) 11%, #ffffff 89%);
+  --feature-chip-bg: color-mix(in srgb, var(--feature-primary) 12%, #ffffff 88%);
+  --layout-shell-bg:
+    radial-gradient(circle at top left, color-mix(in srgb, var(--feature-secondary) 22%, transparent), transparent 23%),
+    linear-gradient(180deg, #f8fbfd 0%, #f4f7fb 100%);
+  --layout-sidebar-border: color-mix(in srgb, var(--feature-primary) 14%, #dbe5ef 86%);
+  --layout-sidebar-shadow: 0 16px 38px color-mix(in srgb, var(--feature-primary) 12%, transparent);
+}
+
+.admin-layout .route-content-shell > *,
+.maintainer-layout .route-content-shell > *,
+.user-layout .route-content-shell > * {
+  min-height: 100%;
+}
+
+.admin-layout :is(.page-hero, .page-header, .summary-card, .stat-card, .control-card, .panel-card, .hero-note, .feature-card, .chart-card, .detail-panel, .detail-summary-card, .table-container, .toolbar, .pagination-container, .hero-profile-card, .mini-card, .empty-state),
+.maintainer-layout :is(.page-hero, .page-header, .summary-card, .stat-card, .control-card, .panel-card, .hero-note, .feature-card, .chart-card, .detail-panel, .detail-summary-card, .table-container, .toolbar, .pagination-container, .hero-profile-card, .mini-card, .empty-state),
+.user-layout :is(.page-hero, .page-header, .summary-card, .stat-card, .control-card, .panel-card, .hero-note, .feature-card, .chart-card, .detail-panel, .detail-summary-card, .table-container, .toolbar, .pagination-container, .hero-profile-card, .mini-card, .empty-state) {
+  border-radius: var(--shell-radius-xl) !important;
+  transition:
+    transform var(--shell-transition),
+    box-shadow var(--shell-transition),
+    border-color var(--shell-transition);
+}
+
+.admin-layout :is(.summary-card, .stat-card, .feature-card, .chart-card, .detail-summary-card):hover,
+.maintainer-layout :is(.summary-card, .stat-card, .feature-card, .chart-card, .detail-summary-card):hover,
+.user-layout :is(.summary-card, .stat-card, .feature-card, .chart-card, .detail-summary-card):hover {
+  transform: translateY(-3px);
+  box-shadow: var(--shell-shadow-strong) !important;
+}
+
+.admin-layout :is(.page-hero, .page-header, .control-card, .panel-card, .table-container, .toolbar, .pagination-container, .feature-card, .chart-card, .detail-panel),
+.maintainer-layout :is(.page-hero, .page-header, .control-card, .panel-card, .table-container, .toolbar, .pagination-container, .feature-card, .chart-card, .detail-panel),
+.user-layout :is(.page-hero, .page-header, .control-card, .panel-card, .table-container, .toolbar, .pagination-container, .feature-card, .chart-card, .detail-panel) {
+  box-shadow: var(--shell-shadow) !important;
+}
+
+.admin-layout :is(.page-hero, .page-header, .summary-card, .stat-card, .control-card, .panel-card, .hero-note, .feature-card, .chart-card, .detail-panel, .detail-summary-card, .table-container, .toolbar, .pagination-container, .hero-profile-card, .mini-card, .empty-state),
+.maintainer-layout :is(.page-hero, .page-header, .summary-card, .stat-card, .control-card, .panel-card, .hero-note, .feature-card, .chart-card, .detail-panel, .detail-summary-card, .table-container, .toolbar, .pagination-container, .hero-profile-card, .mini-card, .empty-state),
+.user-layout :is(.page-hero, .page-header, .summary-card, .stat-card, .control-card, .panel-card, .hero-note, .feature-card, .chart-card, .detail-panel, .detail-summary-card, .table-container, .toolbar, .pagination-container, .hero-profile-card, .mini-card, .empty-state) {
+  border-color: var(--feature-border) !important;
+}
+
+.admin-layout :is(.hero-eyebrow, .eyebrow, .dialog-eyebrow, .meta-chip),
+.maintainer-layout :is(.hero-eyebrow, .eyebrow, .dialog-eyebrow, .meta-chip),
+.user-layout :is(.hero-eyebrow, .eyebrow, .dialog-eyebrow, .meta-chip) {
+  border-radius: 999px !important;
+  background: var(--feature-chip-bg) !important;
+  color: var(--feature-primary-deep) !important;
+}
+
+.admin-layout :is(.page-hero, .page-header),
+.maintainer-layout :is(.page-hero, .page-header),
+.user-layout :is(.page-hero, .page-header) {
+  align-items: start !important;
+}
+
+.admin-layout :is(.panel-head, .hero-actions, .control-actions, .panel-meta, .dialog-footer, .feature-actions, .row-actions, .action-buttons),
+.maintainer-layout :is(.panel-head, .hero-actions, .control-actions, .panel-meta, .dialog-footer, .feature-actions, .row-actions, .action-buttons),
+.user-layout :is(.panel-head, .hero-actions, .control-actions, .panel-meta, .dialog-footer, .feature-actions, .row-actions, .action-buttons) {
+  gap: 12px;
+}
+
+.admin-layout :is(.el-input__wrapper, .el-select__wrapper, .el-textarea__inner, .el-date-editor.el-input__wrapper, .el-input-number .el-input__wrapper, .el-time-editor.el-input__wrapper),
+.maintainer-layout :is(.el-input__wrapper, .el-select__wrapper, .el-textarea__inner, .el-date-editor.el-input__wrapper, .el-input-number .el-input__wrapper, .el-time-editor.el-input__wrapper),
+.user-layout :is(.el-input__wrapper, .el-select__wrapper, .el-textarea__inner, .el-date-editor.el-input__wrapper, .el-input-number .el-input__wrapper, .el-time-editor.el-input__wrapper) {
+  border-radius: var(--shell-radius-sm) !important;
+  border-color: var(--feature-border) !important;
+}
+
+.admin-layout :is(.el-input__wrapper.is-focus, .el-select__wrapper.is-focused, .el-date-editor.el-input__wrapper.is-focus, .el-input-number .el-input__wrapper.is-focus, .el-time-editor.el-input__wrapper.is-focus),
+.maintainer-layout :is(.el-input__wrapper.is-focus, .el-select__wrapper.is-focused, .el-date-editor.el-input__wrapper.is-focus, .el-input-number .el-input__wrapper.is-focus, .el-time-editor.el-input__wrapper.is-focus),
+.user-layout :is(.el-input__wrapper.is-focus, .el-select__wrapper.is-focused, .el-date-editor.el-input__wrapper.is-focus, .el-input-number .el-input__wrapper.is-focus, .el-time-editor.el-input__wrapper.is-focus) {
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--feature-primary) 12%, transparent) !important;
+}
+
+.admin-layout :is(.primary-btn, .el-button--primary),
+.maintainer-layout :is(.primary-btn, .el-button--primary),
+.user-layout :is(.primary-btn, .el-button--primary) {
+  background: linear-gradient(135deg, var(--feature-primary) 0%, var(--feature-primary-deep) 100%) !important;
+  border-color: transparent !important;
+  box-shadow: 0 12px 24px color-mix(in srgb, var(--feature-primary) 20%, transparent) !important;
+}
+
+.admin-layout :is(.secondary-btn, .el-button--default),
+.maintainer-layout :is(.secondary-btn, .el-button--default),
+.user-layout :is(.secondary-btn, .el-button--default) {
+  border-color: var(--feature-border) !important;
+}
+
+.admin-layout :is(.el-dialog, .el-drawer, .el-drawer__body),
+.maintainer-layout :is(.el-dialog, .el-drawer, .el-drawer__body),
+.user-layout :is(.el-dialog, .el-drawer, .el-drawer__body) {
+  border-radius: var(--shell-radius-xl) !important;
+}
+
+.admin-layout :is(.el-table, .el-card),
+.maintainer-layout :is(.el-table, .el-card),
+.user-layout :is(.el-table, .el-card) {
+  border-radius: var(--shell-radius-lg) !important;
+}
+
+.admin-layout :is(.el-pagination .btn-next, .el-pagination .btn-prev, .el-pagination .el-pager li),
+.maintainer-layout :is(.el-pagination .btn-next, .el-pagination .btn-prev, .el-pagination .el-pager li),
+.user-layout :is(.el-pagination .btn-next, .el-pagination .btn-prev, .el-pagination .el-pager li) {
+  border-radius: 12px !important;
+}
+
+@media (max-width: 768px) {
+  .admin-layout :is(.page-hero, .page-header, .summary-card, .stat-card, .control-card, .panel-card, .hero-note, .feature-card, .chart-card, .detail-panel, .detail-summary-card, .table-container, .toolbar, .pagination-container, .hero-profile-card, .mini-card, .empty-state),
+  .maintainer-layout :is(.page-hero, .page-header, .summary-card, .stat-card, .control-card, .panel-card, .hero-note, .feature-card, .chart-card, .detail-panel, .detail-summary-card, .table-container, .toolbar, .pagination-container, .hero-profile-card, .mini-card, .empty-state),
+  .user-layout :is(.page-hero, .page-header, .summary-card, .stat-card, .control-card, .panel-card, .hero-note, .feature-card, .chart-card, .detail-panel, .detail-summary-card, .table-container, .toolbar, .pagination-container, .hero-profile-card, .mini-card, .empty-state) {
+    border-radius: calc(var(--shell-radius-lg) + 2px) !important;
   }
 }

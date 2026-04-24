@@ -1,28 +1,16 @@
-<template>
+﻿<template>
   <div class="blacklist-page">
     <section class="page-hero">
       <div class="hero-copy">
-        <span class="hero-eyebrow">风险限制中心</span>
+        <span class="hero-eyebrow">Blacklist Management</span>
         <h1>黑名单管理</h1>
-        <p>集中维护限制用户的生效状态、有效期与拉黑原因，方便快速核查和解除限制。</p>
-        <div class="hero-actions">
+        <p>展示系统内所有被限制的用户记录，包括生效状态、有效期、拉黑原因等信息。</p>
+        
+      </div>
+      <div class="hero-actions">
           <el-button type="danger" class="danger-btn" @click="handleAddBlacklist">新增黑名单</el-button>
           <el-button class="secondary-btn" @click="loadBlacklist">刷新列表</el-button>
         </div>
-      </div>
-
-      <div class="hero-side">
-        <article class="hero-note">
-          <span>当前结果</span>
-          <strong>{{ pagination.total }}</strong>
-          <small>与筛选条件和分页保持同步</small>
-        </article>
-        <article class="hero-note">
-          <span>生效中</span>
-          <strong>{{ stats.activeCount }}</strong>
-          <small>仍在限制期内的黑名单记录</small>
-        </article>
-      </div>
     </section>
 
     <section class="summary-grid">

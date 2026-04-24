@@ -5,10 +5,10 @@ const FEATURE_THEMES = {
     title: '数据总览',
     description: '统一查看核心趋势、任务负载和关键提醒，保持日常管理节奏一致。',
     badge: '总览模块',
-    primary: '#5b86b0',
-    secondary: '#93b9db',
-    soft: 'rgba(147, 185, 219, 0.16)',
-    glow: 'rgba(91, 134, 176, 0.16)'
+    primary: '#5bb7b0',
+    secondary: '#8fd8d2',
+    soft: 'rgba(143, 216, 210, 0.18)',
+    glow: 'rgba(91, 183, 176, 0.18)'
   },
   facility: {
     key: 'facility',
@@ -16,10 +16,10 @@ const FEATURE_THEMES = {
     title: '设施管理',
     description: '围绕场地、分类和可用状态进行统一管理，保持信息层级清晰稳定。',
     badge: '设施模块',
-    primary: '#4f9b96',
-    secondary: '#89cbc2',
-    soft: 'rgba(137, 203, 194, 0.16)',
-    glow: 'rgba(79, 155, 150, 0.15)'
+    primary: '#69b6c4',
+    secondary: '#9dd7df',
+    soft: 'rgba(157, 215, 223, 0.18)',
+    glow: 'rgba(105, 182, 196, 0.18)'
   },
   reservation: {
     key: 'reservation',
@@ -27,10 +27,10 @@ const FEATURE_THEMES = {
     title: '预约处理',
     description: '覆盖申请、审批和履约状态，便于快速识别高峰、异常与资源分配情况。',
     badge: '预约模块',
-    primary: '#5f8fbe',
-    secondary: '#9ec2e3',
-    soft: 'rgba(158, 194, 227, 0.16)',
-    glow: 'rgba(95, 143, 190, 0.16)'
+    primary: '#78adff',
+    secondary: '#b5d0ff',
+    soft: 'rgba(181, 208, 255, 0.18)',
+    glow: 'rgba(120, 173, 255, 0.18)'
   },
   maintenance: {
     key: 'maintenance',
@@ -38,10 +38,10 @@ const FEATURE_THEMES = {
     title: '维护登记',
     description: '统一维护任务的创建、编辑与跟踪，让现场处理链路更顺畅、信息更集中。',
     badge: '维护模块',
-    primary: '#6a8ec0',
-    secondary: '#a8c1e2',
-    soft: 'rgba(168, 193, 226, 0.16)',
-    glow: 'rgba(106, 142, 192, 0.16)'
+    primary: '#8c97d8',
+    secondary: '#c1c9f2',
+    soft: 'rgba(193, 201, 242, 0.18)',
+    glow: 'rgba(140, 151, 216, 0.18)'
   },
   violation: {
     key: 'violation',
@@ -49,10 +49,10 @@ const FEATURE_THEMES = {
     title: '违规记录',
     description: '管理违规与黑名单信息，帮助快速识别风险并保持后续治理节奏。',
     badge: '纪律模块',
-    primary: '#8c79a2',
-    secondary: '#b9a8ca',
-    soft: 'rgba(185, 168, 202, 0.15)',
-    glow: 'rgba(140, 121, 162, 0.14)'
+    primary: '#b07ac6',
+    secondary: '#d7b1e7',
+    soft: 'rgba(215, 177, 231, 0.18)',
+    glow: 'rgba(176, 122, 198, 0.18)'
   },
   notice: {
     key: 'notice',
@@ -60,10 +60,10 @@ const FEATURE_THEMES = {
     title: '系统通知',
     description: '统一发布与查看系统通知，保证消息传递及时、清晰并具备可追踪性。',
     badge: '通知模块',
-    primary: '#668ea8',
-    secondary: '#a2c2d6',
-    soft: 'rgba(162, 194, 214, 0.16)',
-    glow: 'rgba(102, 142, 168, 0.15)'
+    primary: '#4f98ba',
+    secondary: '#9fd3e7',
+    soft: 'rgba(159, 211, 231, 0.18)',
+    glow: 'rgba(79, 152, 186, 0.18)'
   },
   feedback: {
     key: 'feedback',
@@ -71,10 +71,10 @@ const FEATURE_THEMES = {
     title: '意见反馈',
     description: '集中处理建议和问题反馈，减少信息散落，提升响应效率与体验。',
     badge: '反馈模块',
-    primary: '#8e8a72',
-    secondary: '#c2bda1',
-    soft: 'rgba(194, 189, 161, 0.16)',
-    glow: 'rgba(142, 138, 114, 0.14)'
+    primary: '#df8f73',
+    secondary: '#f2bfac',
+    soft: 'rgba(242, 191, 172, 0.18)',
+    glow: 'rgba(223, 143, 115, 0.18)'
   },
   profile: {
     key: 'profile',
@@ -82,10 +82,10 @@ const FEATURE_THEMES = {
     title: '账户信息',
     description: '管理个人资料与安全设置，保持账户状态稳定可控。',
     badge: '个人模块',
-    primary: '#5c96a1',
-    secondary: '#99c4cd',
-    soft: 'rgba(153, 196, 205, 0.16)',
-    glow: 'rgba(92, 150, 161, 0.15)'
+    primary: '#7cc8ad',
+    secondary: '#b9e6d1',
+    soft: 'rgba(185, 230, 209, 0.18)',
+    glow: 'rgba(124, 200, 173, 0.18)'
   },
   user: {
     key: 'user',
@@ -93,10 +93,10 @@ const FEATURE_THEMES = {
     title: '用户管理',
     description: '统一管理用户、角色与状态，提升权限治理的透明度和一致性。',
     badge: '用户模块',
-    primary: '#7688b4',
-    secondary: '#adb9dc',
-    soft: 'rgba(173, 185, 220, 0.16)',
-    glow: 'rgba(118, 136, 180, 0.15)'
+    primary: '#8897d8',
+    secondary: '#c0c8f1',
+    soft: 'rgba(192, 200, 241, 0.18)',
+    glow: 'rgba(136, 151, 216, 0.18)'
   },
   policy: {
     key: 'policy',
@@ -104,10 +104,10 @@ const FEATURE_THEMES = {
     title: '策略管理',
     description: '维护业务规则与阈值配置，保证流程执行口径一致。',
     badge: '规则模块',
-    primary: '#6691aa',
-    secondary: '#a2c6d8',
-    soft: 'rgba(162, 198, 216, 0.16)',
-    glow: 'rgba(102, 145, 170, 0.15)'
+    primary: '#f0b36f',
+    secondary: '#f6d09f',
+    soft: 'rgba(246, 208, 159, 0.18)',
+    glow: 'rgba(240, 179, 111, 0.18)'
   },
   logs: {
     key: 'logs',
@@ -115,10 +115,10 @@ const FEATURE_THEMES = {
     title: '操作日志',
     description: '记录关键操作历史，便于审计追溯、问题定位与责任确认。',
     badge: '日志模块',
-    primary: '#7a8a99',
-    secondary: '#b3c0cb',
-    soft: 'rgba(179, 192, 203, 0.16)',
-    glow: 'rgba(122, 138, 153, 0.14)'
+    primary: '#7b92a8',
+    secondary: '#b8c8d7',
+    soft: 'rgba(184, 200, 215, 0.18)',
+    glow: 'rgba(123, 146, 168, 0.18)'
   },
   default: {
     key: 'default',
@@ -126,10 +126,10 @@ const FEATURE_THEMES = {
     title: '管理控制台',
     description: '以统一布局承载各项功能，减少切换成本与视觉负担。',
     badge: '通用模块',
-    primary: '#4f9b96',
-    secondary: '#89cbc2',
-    soft: 'rgba(137, 203, 194, 0.16)',
-    glow: 'rgba(79, 155, 150, 0.15)'
+    primary: '#5bb7b0',
+    secondary: '#8fd8d2',
+    soft: 'rgba(143, 216, 210, 0.18)',
+    glow: 'rgba(91, 183, 176, 0.18)'
   }
 }
 

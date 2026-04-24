@@ -2,27 +2,14 @@
   <div class="admin-feedback-page">
     <section class="page-hero">
       <div class="hero-copy">
-        <span class="hero-eyebrow">用户沟通面板</span>
+        <span class="hero-eyebrow">Feedback Management</span>
         <h1>意见反馈管理</h1>
-        <p>把反馈列表、状态筛选、回复入口和详情查看整理到同一套浅亮卡片布局里，方便管理员更快判断哪些问题需要优先跟进。</p>
-        <div class="hero-actions">
+        <p>展示系统内所有用户提交的反馈记录，包括标题、正文、提交用户、状态、创建时间等信息。</p>
+      </div>
+      <div class="hero-actions">
           <el-button type="primary" class="primary-btn" @click="refreshData">刷新反馈</el-button>
           <el-button class="secondary-btn" @click="handleClearSearch">清空筛选</el-button>
         </div>
-      </div>
-
-      <div class="hero-side">
-        <article class="hero-note">
-          <span>当前页已加载</span>
-          <strong>{{ feedbacks.length }}</strong>
-          <small>本页从接口获取到的反馈数量</small>
-        </article>
-        <article class="hero-note">
-          <span>待处理</span>
-          <strong>{{ pendingFeedbacks }}</strong>
-          <small>建议优先查看尚未回复的反馈</small>
-        </article>
-      </div>
     </section>
 
     <section class="summary-grid">
@@ -31,11 +18,11 @@
         <strong>{{ total }}</strong>
         <p>接口返回的全部反馈记录总量</p>
       </article>
-      <article class="summary-card">
-        <span class="summary-label">筛选结果</span>
-        <strong>{{ filteredFeedbackList.length }}</strong>
-        <p>当前页中符合筛选条件的反馈条数</p>
-      </article>
+      <article class="hero-note">
+          <span>待处理</span>
+          <strong>{{ pendingFeedbacks }}</strong>
+          <p>建议优先查看尚未回复的反馈</p>
+        </article>
       <article class="summary-card">
         <span class="summary-label">已处理</span>
         <strong>{{ processedFeedbacks }}</strong>

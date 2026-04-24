@@ -2,27 +2,15 @@
   <div class="admin-notice-page">
     <section class="page-hero">
       <div class="hero-copy">
-        <span class="hero-eyebrow">公告发布中心</span>
+        <span class="hero-eyebrow">Notice Management</span>
         <h1>通知管理</h1>
-        <p>统一整理系统公告的发布、编辑与排期状态，让公告列表、当前筛选结果和发布入口保持在同一个清爽的信息面板中。</p>
-        <div class="hero-actions">
+        <p>展示系统内所有通知记录，包括通知内容、发布时间、状态等信息。</p>
+        
+      </div>
+      <div class="hero-actions">
           <el-button type="primary" class="primary-btn" @click="handleAdd">发布通知</el-button>
           <el-button class="secondary-btn" @click="loadNoticeList">刷新列表</el-button>
         </div>
-      </div>
-
-      <div class="hero-side">
-        <article class="hero-note">
-          <span>当前页记录</span>
-          <strong>{{ noticeList.length }}</strong>
-          <small>已加载到页面中的通知数量</small>
-        </article>
-        <article class="hero-note">
-          <span>筛选结果</span>
-          <strong>{{ filteredNoticeList.length }}</strong>
-          <small>会随搜索关键字实时变化</small>
-        </article>
-      </div>
     </section>
 
     <section class="summary-grid">
@@ -51,7 +39,7 @@
     <section class="control-card">
       <div class="section-copy">
         <h2>搜索与发布节奏</h2>
-        <p>可按标题或正文关键字快速检索当前页公告，适合在发布高峰时快速回看历史内容并继续编辑。</p>
+        <p>根据通知标题或内容搜索，快速定位到相关记录。</p>
       </div>
 
       <div class="control-actions">
@@ -77,7 +65,7 @@
       <div class="panel-head">
         <div class="section-copy">
           <h2>通知列表</h2>
-          <p>列表保留核心字段展示，点击任意行即可继续编辑，减少在单独详情页之间来回切换。</p>
+          <p>展示系统内所有通知记录，包括通知内容、发布时间、状态等信息。</p>
         </div>
         <div class="panel-meta">
           <span class="meta-chip">共 {{ total }} 条</span>

@@ -2,30 +2,17 @@
   <div class="facility-page">
     <section class="page-hero">
       <div class="hero-copy">
-        <span class="hero-eyebrow">资源配置中枢</span>
-        <h1>设施管理</h1>
-        <p>集中维护设施资料、负责人和图片状态，让管理员能更顺畅地完成新增、编辑、筛查和图片维护。</p>
-        <div class="hero-actions">
+        <span class="hero-eyebrow">Facility Management</span>
+        <h1>设施管理</h1>     
+        <p>展示系统内所有设施的详细信息，包括名称、型号、分类、状态等。</p>
+      </div>
+      <div class="hero-actions" >
           <el-button type="primary" class="primary-btn" @click="handleAdd">
             <el-icon><Plus /></el-icon>
-            新建设施
+            新增设施
           </el-button>
           <el-button class="secondary-btn" @click="loadFacilityList">重新加载</el-button>
         </div>
-      </div>
-
-      <div class="hero-side">
-        <article class="hero-note">
-          <span>设施总数</span>
-          <strong>{{ facilityStats.total }}</strong>
-          <small>按当前分页接口返回的数据总量统计</small>
-        </article>
-        <article class="hero-note">
-          <span>当前页记录</span>
-          <strong>{{ facilityList.length }}</strong>
-          <small>便于对照筛选结果和分页切换</small>
-        </article>
-      </div>
     </section>
 
     <section class="summary-grid">
@@ -53,8 +40,8 @@
 
     <section class="control-card">
       <div class="section-copy">
-        <h2>筛选与录入</h2>
-        <p>支持按设施名称、型号和分类快速搜索，同时保留负责人、图片和状态编辑入口。</p>
+        <h2>筛选设施</h2>
+        <p>根据设施名称、型号或分类进行快速筛选，方便定位目标设施。</p>
       </div>
 
       <div class="control-actions">

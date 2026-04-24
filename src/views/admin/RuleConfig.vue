@@ -2,27 +2,15 @@
   <div class="rule-config-page">
     <section class="page-hero">
       <div class="hero-copy">
-        <span class="hero-eyebrow">规则中枢</span>
+        <span class="hero-eyebrow">Rule Config</span>
         <h1>预约规则配置</h1>
-        <p>统一管理不同设施类别的预约时长、提前天数、审批要求与开放时段，让规则查看和调整更加清晰。</p>
-        <div class="hero-actions">
+        <p>管理不同设施类别的预约规则，包括预约时长、提前天数、审批要求与开放时段。</p>
+        
+      </div>
+      <div class="hero-actions">
           <el-button type="primary" class="primary-btn" @click="handleCreate">新建规则</el-button>
           <el-button class="secondary-btn" @click="loadRuleConfigs">刷新列表</el-button>
         </div>
-      </div>
-
-      <div class="hero-side">
-        <article class="hero-note">
-          <span>筛选结果</span>
-          <strong>{{ ruleStats.filtered }}</strong>
-          <small>与当前关键字实时同步</small>
-        </article>
-        <article class="hero-note">
-          <span>需要审批</span>
-          <strong>{{ ruleStats.needApproval }}</strong>
-          <small>启用了预约审批流程的规则数量</small>
-        </article>
-      </div>
     </section>
 
     <section class="summary-grid">
@@ -77,7 +65,7 @@
       <div class="panel-head">
         <div class="section-copy">
           <h2>规则配置列表</h2>
-          <p>展示预约时长、提前预订范围、每日限制与审批设置等核心参数。</p>
+          <p>所有已配置的预约规则，包括预约时长、提前预订范围、每日限制与审批设置等核心参数。</p>
         </div>
         <div class="panel-meta">
           <span class="meta-chip">共 {{ filteredRuleConfigs.length }} 条</span>

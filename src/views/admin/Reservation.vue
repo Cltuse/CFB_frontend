@@ -2,27 +2,15 @@
   <div class="admin-reservation-page">
     <section class="page-hero">
       <div class="hero-copy">
-        <span class="hero-eyebrow">预约协同中心</span>
+        <span class="hero-eyebrow">Reservation</span>
         <h1>预约记录管理</h1>
-        <p>集中处理预约审核、签到状态与详情查看，减少在列表和详情之间的来回跳转。</p>
-        <div class="hero-actions">
+        <p>管理系统内所有预约记录，包括预约状态、申请人、设施、时间等信息。</p>
+        
+      </div>
+      <div class="hero-actions">
           <el-button type="primary" class="primary-btn" @click="loadReservationList">刷新列表</el-button>
           <el-button class="secondary-btn" @click="handleClearSearch">清空筛选</el-button>
         </div>
-      </div>
-
-      <div class="hero-side">
-        <article class="hero-note">
-          <span>当前结果</span>
-          <strong>{{ total }}</strong>
-          <small>{{ currentTabLabel }}</small>
-        </article>
-        <article class="hero-note">
-          <span>待签到</span>
-          <strong>{{ pendingCheckins }}</strong>
-          <small>已通过但尚未完成签到的预约</small>
-        </article>
-      </div>
     </section>
 
     <section class="stats-grid">
@@ -51,9 +39,11 @@
     <section class="control-card">
       <div class="section-copy">
         <h2>筛选与视图切换</h2>
-        <p>按预约状态切换工作视图，并结合设施名称或申请人快速定位目标记录。</p>
+        
+        <p>根据预约状态、设施名称或申请人筛选预约记录。</p>
+        
       </div>
-
+      
       <el-tabs v-model="activeTab" class="status-tabs" @tab-change="handleTabChange">
         <el-tab-pane label="待审核" name="PENDING" />
         <el-tab-pane label="已通过" name="APPROVED" />
@@ -61,7 +51,6 @@
         <el-tab-pane label="已拒绝" name="REJECTED" />
         <el-tab-pane label="全部" name="ALL" />
       </el-tabs>
-
       <div class="control-actions">
         <el-input
           v-model="searchKeyword"
@@ -79,6 +68,8 @@
           </template>
         </el-input>
       </div>
+
+
     </section>
 
     <section class="panel-card">

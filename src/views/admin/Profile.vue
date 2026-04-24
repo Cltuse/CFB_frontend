@@ -2,13 +2,10 @@
   <div class="admin-profile-page">
     <section class="page-hero">
       <div class="hero-copy">
-        <span class="hero-eyebrow">账户安全中心</span>
+        <span class="hero-eyebrow">Profile</span>
         <h1>个人中心</h1>
-        <p>重新整理管理员个人信息、头像、安全设置和密码修改流程，让个人中心不再只是两张普通卡片，而是一个完整、统一的管理面板。</p>
-        <div class="hero-actions">
-          <el-button type="primary" class="primary-btn" @click="handleEditProfile">编辑资料</el-button>
-          <el-button class="secondary-btn" @click="handleChangePassword">修改密码</el-button>
-        </div>
+        <p>展示管理员个人信息、头像、安全设置和密码修改流程。</p>
+        
       </div>
 
       <div class="hero-side">
@@ -57,7 +54,7 @@
           </div>
           <div>
             <h2>个人资料</h2>
-            <p>集中维护头像、姓名、手机号和邮箱等基础信息，保证后台日志和通知展示的一致性。</p>
+            <p>管理员个人信息、头像、安全设置和密码修改流程。</p>
           </div>
         </div>
 
@@ -92,7 +89,7 @@
           </div>
           <div>
             <h2>账号安全</h2>
-            <p>提供密码更新入口，建议定期修改管理员密码，避免公共设备登录后带来安全风险。</p>
+            <p>管理员账号安全设置，包括密码修改、角色管理等。</p>
           </div>
         </div>
 

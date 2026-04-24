@@ -1,5 +1,5 @@
 <template>
-  <div class="user-layout">
+  <div class="user-layout" :style="layoutVars">
     <Header />
     <div class="main-container">
       <aside class="sidebar-container">
@@ -74,14 +74,19 @@
 </template>
 
 <script setup>
-import { ref, watch } from 'vue';
+import { computed, ref, watch } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
+import { buildFeatureVars, resolveFeatureTheme } from '../utils/featureTheme';
 import { Star, Box, Calendar, Bell, User, Warning, ChatDotRound } from '@element-plus/icons-vue';
 import Header from '../components/Header.vue';
 
 const router = useRouter();
 const route = useRoute();
 const activeMenu = ref(route.path);
+const currentTheme = computed(() => resolveFeatureTheme(route.path));
+const layoutVars = computed(() => ({
+  ...buildFeatureVars(currentTheme.value)
+}));
 
 watch(
   () => route.path,
@@ -100,7 +105,7 @@ const handleMenuSelect = (index) => {
   height: 100vh;
   display: flex;
   flex-direction: column;
-  background: linear-gradient(135deg, #fbfdff 0%, #f5f8fc 52%, #f8fbff 100%);
+  background: var(--layout-shell-bg);
 }
 
 .main-container {
@@ -111,9 +116,9 @@ const handleMenuSelect = (index) => {
 
 .sidebar-container {
   width: 200px;
-  background: #ffffff;
-  border-right: 1px solid rgba(211, 219, 231, 0.72);
-  box-shadow: 10px 0 28px rgba(15, 23, 42, 0.06);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.98) 0%, rgba(252, 253, 255, 0.96) 100%);
+  border-right: 1px solid var(--layout-sidebar-border);
+  box-shadow: var(--layout-sidebar-shadow);
   display: flex;
   flex-direction: column;
   overflow: hidden;
@@ -122,13 +127,13 @@ const handleMenuSelect = (index) => {
 .side-menu {
   flex: 1;
   border: none;
-  background: #ffffff;
+  background: transparent;
   padding: 20px 0;
 }
 
 .side-menu :deep(.el-menu-item) {
   margin: 0 12px 8px;
-  border-radius: 14px;
+  border-radius: 16px;
   padding: 0 16px;
   height: 50px;
   line-height: 50px;
@@ -139,16 +144,16 @@ const handleMenuSelect = (index) => {
 }
 
 .side-menu :deep(.el-menu-item:hover) {
-  color: #252b47;
+  color: var(--feature-strong);
   transform: translateX(4px);
-  background: linear-gradient(135deg, #f5f8ff 0%, #ffffff 100%);
-  box-shadow: 0 10px 18px rgba(144, 166, 204, 0.14);
+  background: linear-gradient(135deg, var(--feature-soft) 0%, #ffffff 100%);
+  box-shadow: 0 10px 22px var(--feature-glow);
 }
 
 .side-menu :deep(.el-menu-item.is-active) {
   color: #ffffff;
-  background: linear-gradient(135deg, #8fb7ff 0%, #6ba5ff 100%);
-  box-shadow: 0 12px 24px rgba(107, 165, 255, 0.26);
+  background: linear-gradient(135deg, var(--feature-primary) 0%, var(--feature-secondary) 100%);
+  box-shadow: 0 12px 28px var(--feature-glow);
   font-weight: 600;
 }
 
@@ -159,13 +164,12 @@ const handleMenuSelect = (index) => {
 }
 
 .side-menu :deep(.el-menu-item:hover .el-icon) {
-  transform: scale(1.1);
-  color: #6ba5ff;
+  transform: scale(1.08);
+  color: var(--feature-primary);
 }
 
 .side-menu :deep(.el-menu-item.is-active .el-icon) {
   color: #ffffff;
-  transform: scale(1.1);
 }
 
 .menu-text {
@@ -182,18 +186,30 @@ const handleMenuSelect = (index) => {
   height: 3px;
   margin: 0 16px;
   border-radius: 999px;
-  background: linear-gradient(90deg, #b8d2ff 0%, #8fb7ff 50%, #b8d2ff 100%);
+  background: linear-gradient(90deg, var(--feature-primary) 0%, var(--feature-secondary) 50%, var(--feature-primary) 100%);
 }
 
 .content-area {
   flex: 1;
   padding: 24px;
   overflow-y: auto;
-  background: linear-gradient(135deg, #fbfdff 0%, #f7faff 48%, #fdfcff 100%);
+  background: transparent;
 }
 
 .route-content-shell {
   min-height: 100%;
+  animation: route-shell-enter 0.35s ease;
+}
+
+@keyframes route-shell-enter {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 @media (max-width: 768px) {

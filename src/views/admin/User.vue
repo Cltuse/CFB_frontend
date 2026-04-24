@@ -2,27 +2,15 @@
   <div class="admin-user-page">
     <section class="page-hero">
       <div class="hero-copy">
-        <span class="hero-eyebrow">账号协同中心</span>
+        <span class="hero-eyebrow">User Management</span>
         <h1>用户管理</h1>
-        <p>把用户列表、角色筛选、状态查看和新增入口整合为统一的卡片式工作区，方便管理员快速完成账号维护与权限核对。</p>
-        <div class="hero-actions">
+        <p>管理所有用户账号，包括管理员、设施管理员和普通用户。</p>
+        
+      </div>
+      <div class="hero-actions">
           <el-button type="primary" class="primary-btn" @click="handleAdd">新增用户</el-button>
           <el-button class="secondary-btn" @click="loadUserList">刷新列表</el-button>
         </div>
-      </div>
-
-      <div class="hero-side">
-        <article class="hero-note">
-          <span>当前页加载</span>
-          <strong>{{ userList.length }}</strong>
-          <small>本页接口返回的用户数量</small>
-        </article>
-        <article class="hero-note">
-          <span>管理角色</span>
-          <strong>{{ userStats.management }}</strong>
-          <small>管理员与设施管理员合计数量</small>
-        </article>
-      </div>
     </section>
 
     <section class="summary-grid">

@@ -2,10 +2,12 @@
   <div class="violation-records-page">
     <section class="page-hero">
       <div class="hero-copy">
-        <span class="hero-eyebrow">风控与处罚</span>
+        <span class="hero-eyebrow">Violation Records</span>
         <h1>违规记录管理</h1>
-        <p>集中处理用户违规、处罚分和关联预约，减少页面跳转，让查看、处理和撤销都保持同一套操作体验。</p>
-        <div class="hero-actions">
+        <p>所有用户违规记录，包括违规类型、处罚分、关联预约等信息。</p>
+        
+      </div>
+      <div class="hero-actions">
           <el-button type="primary" class="primary-btn" @click="showAddDialog">
             <el-icon><Plus /></el-icon>
             新增违规
@@ -15,15 +17,7 @@
             刷新数据
           </el-button>
         </div>
-      </div>
 
-      <div class="hero-side">
-        <article class="hero-note">
-          <span>待处理违规</span>
-          <strong>{{ pendingViolations }}</strong>
-          <small>建议优先处理仍在待审的记录</small>
-        </article>
-      </div>
     </section>
 
     <section class="stats-grid">

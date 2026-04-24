@@ -2,51 +2,15 @@
   <div class="facility-category-page">
     <section class="page-hero">
       <div class="hero-copy">
-        <span class="hero-eyebrow">分类配置中心</span>
+        <span class="hero-eyebrow">Facility Category</span>
         <h1>设施分类</h1>
-        <p>统一管理设施分类的名称、排序和启停状态，让前台展示和管理员录入都保持清晰稳定。</p>
+        <p>展示系统内所有设施的分类信息，包括名称、描述、排序等。</p>       
+      </div>
         <div class="hero-actions">
           <el-button type="primary" class="primary-btn" @click="handleAdd">新建分类</el-button>
           <el-button class="secondary-btn" @click="fetchCategories">刷新列表</el-button>
         </div>
-      </div>
-
-      <div class="hero-side">
-        <article class="hero-note">
-          <span>分类总数</span>
-          <strong>{{ categoryStats.total }}</strong>
-          <small>按当前分页接口返回的总量统计</small>
-        </article>
-        <article class="hero-note">
-          <span>当前页记录</span>
-          <strong>{{ categoryStats.currentPage }}</strong>
-          <small>方便查看当前筛选和分页结果</small>
-        </article>
-      </div>
-    </section>
-
-    <section class="summary-grid">
-      <article class="summary-card">
-        <span class="summary-label">启用分类</span>
-        <strong>{{ categoryStats.active }}</strong>
-        <p>当前页中可正常用于设施录入和展示的分类</p>
-      </article>
-      <article class="summary-card">
-        <span class="summary-label">停用分类</span>
-        <strong>{{ categoryStats.inactive }}</strong>
-        <p>可作为清理、复核和恢复的待处理项</p>
-      </article>
-      <article class="summary-card">
-        <span class="summary-label">搜索状态</span>
-        <strong>{{ isSearchMode ? '检索中' : '全部' }}</strong>
-        <p>当前是否处于关键字筛选模式</p>
-      </article>
-      <article class="summary-card">
-        <span class="summary-label">当前排序</span>
-        <strong>{{ pagination.sortDir === 'asc' ? '升序' : '降序' }}</strong>
-        <p>按分类排序值展示当前列表内容</p>
-      </article>
-    </section>
+    </section>    
 
     <section class="control-card">
       <div class="section-copy">

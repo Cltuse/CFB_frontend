@@ -2,27 +2,15 @@
   <div class="admin-log-page">
     <section class="page-hero">
       <div class="hero-copy">
-        <span class="hero-eyebrow">审计追踪中心</span>
+        <span class="hero-eyebrow">Operation Log</span>
         <h1>操作日志</h1>
-        <p>围绕管理员日常审计场景重新整理日志页结构，让筛选条件、结果摘要和明细查看保持在同一条工作流中，减少页面内容杂乱感。</p>
-        <div class="hero-actions">
+        <p>展示系统内所有操作记录，包括操作人、操作时间、操作类型、操作对象等信息。</p>
+        
+      </div>
+      <div class="hero-actions">
           <el-button type="primary" class="primary-btn" @click="loadOperationLogs">刷新日志</el-button>
           <el-button class="secondary-btn" @click="resetSearch">清空筛选</el-button>
         </div>
-      </div>
-
-      <div class="hero-side">
-        <article class="hero-note">
-          <span>日志总数</span>
-          <strong>{{ pagination.total }}</strong>
-          <small>符合当前接口查询条件的全部记录</small>
-        </article>
-        <article class="hero-note">
-          <span>当前页操作人</span>
-          <strong>{{ operatorCount }}</strong>
-          <small>本页去重后的操作人数量</small>
-        </article>
-      </div>
     </section>
 
     <section class="summary-grid">
@@ -51,7 +39,7 @@
     <section class="control-card">
       <div class="section-copy">
         <h2>多条件筛选</h2>
-        <p>支持按操作人、操作类型和时间范围联合筛选，适合快速回溯预约审核、反馈处理、黑名单变更等关键动作。</p>
+        <p>根据操作人、操作类型、时间范围等条件筛选操作记录，快速定位到相关记录。</p>
       </div>
 
       <el-form :model="searchForm" class="search-form" label-position="top">

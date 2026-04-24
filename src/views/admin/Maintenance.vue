@@ -2,9 +2,11 @@
   <div class="maintenance-page">
     <section class="page-hero">
       <div class="hero-copy">
-        <span class="hero-eyebrow">维护任务中心</span>
+        <span class="hero-eyebrow">Maintenance Management</span>
         <h1>维护管理</h1>
-        <p>统一查看设施维护计划、负责人、时间安排和处理结果，让管理员能更快完成分派、跟进和回溯。</p>
+        <p>展示系统内所有设施的维护记录，包括设施名称、负责人、时间安排、处理结果等信息。</p>
+        
+      </div>
         <div class="hero-actions">
           <el-button type="primary" class="primary-btn" @click="handleAdd">
             <el-icon><Plus /></el-icon>
@@ -15,20 +17,6 @@
             刷新数据
           </el-button>
         </div>
-      </div>
-
-      <div class="hero-side">
-        <article class="hero-note">
-          <span>当前筛选结果</span>
-          <strong>{{ filteredMaintenanceList.length }}</strong>
-          <small>与筛选条件实时同步</small>
-        </article>
-        <article class="hero-note">
-          <span>进行中的任务</span>
-          <strong>{{ stats.inProgress }}</strong>
-          <small>建议优先跟进负责人与完成时间</small>
-        </article>
-      </div>
     </section>
 
     <section class="summary-grid">
@@ -57,7 +45,7 @@
     <section class="control-card">
       <div class="section-copy">
         <h2>筛选与操作</h2>
-        <p>按设施、负责人、描述、状态和类型快速定位维护任务。</p>
+        <p>根据设施、负责人、状态和类型筛选维护记录。</p>
       </div>
 
       <div class="control-actions">

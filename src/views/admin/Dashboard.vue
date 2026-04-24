@@ -2,10 +2,12 @@
   <div class="admin-dashboard-page">
     <section class="page-hero">
       <div class="hero-copy">
-        <span class="hero-eyebrow">运营总览中心</span>
-        <h1>数据统计</h1>
-        <p>围绕设施、预约和用户三个核心维度重做管理员首页，让统计卡、图表和近期预约变化保持统一的层次感，不再出现一半旧布局一半新皮肤的割裂效果。</p>
-        <div class="hero-actions">
+        <span class="hero-eyebrow">Data Statistics</span>
+        <h1>数据统计</h1>        
+        <p>展示平台当前的设施、预约、用户等数据统计信息，帮助管理员快速了解系统运行状态。</p>
+      </div>
+
+      <div class="hero-actions">
           <el-button type="primary" class="primary-btn" @click="loadDashboard">刷新概览</el-button>
           <el-select v-model="timeRange" class="range-select" @change="handleTimeRangeChange">
             <el-option label="近 7 天" value="7d" />
@@ -14,20 +16,6 @@
             <el-option label="近一年" value="365d" />
           </el-select>
         </div>
-      </div>
-
-      <div class="hero-side">
-        <article class="hero-note">
-          <span>今日新增预约</span>
-          <strong>{{ reservationSummary.todayTotal }}</strong>
-          <small>当天创建的预约记录数量</small>
-        </article>
-        <article class="hero-note">
-          <span>待审核预约</span>
-          <strong>{{ reservationSummary.pendingReservations }}</strong>
-          <small>需要管理员跟进处理的预约申请</small>
-        </article>
-      </div>
     </section>
 
     <section class="stats-grid">
@@ -50,29 +38,6 @@
         <span class="stat-label">用户总数</span>
         <strong>{{ overview.totalUser }}</strong>
         <p>系统中的全部用户账号数量</p>
-      </article>
-    </section>
-
-    <section class="summary-grid">
-      <article class="summary-card">
-        <span class="summary-label">已通过预约</span>
-        <strong>{{ reservationSummary.approvedReservations }}</strong>
-        <p>已经通过审核、等待执行的预约</p>
-      </article>
-      <article class="summary-card">
-        <span class="summary-label">已完成预约</span>
-        <strong>{{ reservationSummary.completedReservations }}</strong>
-        <p>已经结束并归档的预约记录</p>
-      </article>
-      <article class="summary-card">
-        <span class="summary-label">已签到</span>
-        <strong>{{ reservationSummary.checkedInReservations }}</strong>
-        <p>已完成签到但尚未签退的预约</p>
-      </article>
-      <article class="summary-card">
-        <span class="summary-label">失约次数</span>
-        <strong>{{ reservationSummary.missedReservations }}</strong>
-        <p>超过预约时间未签到的记录</p>
       </article>
     </section>
 
