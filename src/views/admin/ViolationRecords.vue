@@ -1175,3 +1175,41 @@ function getStatusText(status) {
   }
 }
 </style>
+<style scoped>
+.violation-records-page {
+  --theme-main: #f09782;
+  --theme-deep: #d86d59;
+  --theme-soft: rgba(255, 213, 205, 0.28);
+  --theme-border: rgba(240, 151, 130, 0.16);
+  --theme-shadow: rgba(95, 46, 36, 0.08);
+  min-height: 100%;
+  background:
+    radial-gradient(circle at top left, rgba(255, 228, 222, 0.76), transparent 26%),
+    radial-gradient(circle at right center, rgba(255, 246, 244, 0.92), transparent 24%),
+    linear-gradient(180deg, #fffaf8 0%, #fff7f5 48%, #fff4f2 100%);
+}
+
+.page-hero,
+.stat-card,
+.control-card,
+.panel-card {
+  animation: admin-violation-rise 0.55s ease both;
+  border-color: var(--theme-border);
+  box-shadow: 0 22px 50px var(--theme-shadow);
+}
+
+.page-hero {
+  background:
+    radial-gradient(circle at top right, var(--theme-soft), transparent 30%),
+    linear-gradient(145deg, rgba(255, 246, 244, 0.96) 0%, #ffffff 62%);
+}
+
+.stat-card {
+  border-radius: 24px;
+}
+
+@keyframes admin-violation-rise {
+  from { opacity: 0; transform: translateY(16px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+</style>

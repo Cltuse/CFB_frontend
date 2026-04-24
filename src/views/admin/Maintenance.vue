@@ -742,9 +742,21 @@ function formatCurrency(value) {
   grid-template-columns: minmax(0, 1.6fr) 320px;
   gap: 20px;
   padding: 28px;
-  background:
-    radial-gradient(circle at top right, rgba(180, 205, 235, 0.42), transparent 30%),
-    linear-gradient(145deg, #f9fbff 0%, #ffffff 62%);
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(145deg, #f8fbff 0%, #ffffff 68%);
+}
+
+.page-hero::before {
+  content: '';
+  position: absolute;
+  top: -86px;
+  right: -50px;
+  width: 240px;
+  height: 240px;
+  border-radius: 999px;
+  background: radial-gradient(circle, rgba(173, 197, 228, 0.26) 0%, rgba(173, 197, 228, 0.08) 44%, transparent 72%);
+  pointer-events: none;
 }
 
 .hero-eyebrow {
@@ -789,6 +801,14 @@ function formatCurrency(value) {
   flex-wrap: wrap;
   gap: 12px;
   align-items: center;
+}
+
+.hero-copy,
+.hero-side,
+.detail-heading,
+.detail-actions {
+  position: relative;
+  z-index: 1;
 }
 
 .hero-actions {
@@ -982,9 +1002,21 @@ function formatCurrency(value) {
   justify-content: space-between;
   gap: 18px;
   padding: 24px;
-  background:
-    radial-gradient(circle at top right, rgba(180, 205, 235, 0.34), transparent 30%),
-    linear-gradient(145deg, #f8fbff 0%, #ffffff 100%);
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(145deg, #f8fbff 0%, #ffffff 100%);
+}
+
+.detail-hero::before {
+  content: '';
+  position: absolute;
+  top: -72px;
+  right: -34px;
+  width: 200px;
+  height: 200px;
+  border-radius: 999px;
+  background: radial-gradient(circle, rgba(173, 197, 228, 0.22) 0%, rgba(173, 197, 228, 0.08) 48%, transparent 72%);
+  pointer-events: none;
 }
 
 .detail-tags {
@@ -1127,5 +1159,52 @@ function formatCurrency(value) {
   .hero-copy h1 {
     font-size: 28px;
   }
+}
+</style>
+<style scoped>
+.maintenance-page {
+  --theme-main: #87a9d8;
+  --theme-deep: #5f84b6;
+  --theme-soft: rgba(200, 216, 240, 0.28);
+  --theme-border: rgba(135, 169, 216, 0.16);
+  --theme-shadow: rgba(41, 63, 96, 0.08);
+  min-height: 100%;
+  background:
+    radial-gradient(circle at 92% 12%, rgba(226, 236, 249, 0.72), transparent 22%),
+    linear-gradient(180deg, #f9fbff 0%, #f5f8fd 48%, #f3f7fc 100%);
+}
+
+.page-hero,
+.summary-card,
+.control-card,
+.panel-card {
+  animation: admin-maintenance-rise 0.55s ease both;
+  border-color: var(--theme-border);
+  box-shadow: 0 22px 50px var(--theme-shadow);
+}
+
+.page-hero {
+  background: linear-gradient(145deg, rgba(245, 249, 255, 0.98) 0%, #ffffff 68%);
+}
+
+.hero-note,
+.summary-card,
+.detail-panel,
+.detail-card {
+  border-color: rgba(135, 169, 216, 0.14);
+}
+
+.primary-btn {
+  background: linear-gradient(135deg, #87a9d8 0%, #5f84b6 100%);
+  box-shadow: 0 14px 28px rgba(95, 132, 182, 0.22);
+}
+
+.secondary-btn {
+  border-color: rgba(135, 169, 216, 0.2);
+}
+
+@keyframes admin-maintenance-rise {
+  from { opacity: 0; transform: translateY(16px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 </style>

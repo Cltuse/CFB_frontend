@@ -1,197 +1,258 @@
 <template>
   <div class="welcome-page">
-    <!-- 欢迎横幅 -->
-    <div class="welcome-banner">
-      <div class="banner-content">
-        <div class="welcome-icon">
-          <svg viewBox="0 0 24 24" fill="none">
-            <path d="M12 2L13.09 8.26L19 7L15.45 11.82L18 18L12 14.74L6 18L8.55 11.82L5 7L10.91 8.26L12 2Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-          </svg>
-        </div>
-        <h1 class="welcome-title">欢迎回来！</h1>
-        <p class="welcome-subtitle">愿你的每一天都充满阳光和希望</p>
-      </div>
-      <div class="banner-decoration"></div>
-    </div>
-
-
-
-    <!-- 今日心情 -->
-    <div class="mood-weather">
-      <div class="mood-card">
-        <div class="mood-header">
-          <div class="mood-icon">
-            <svg viewBox="0 0 24 24" fill="none">
-              <circle cx="12" cy="12" r="5" stroke="currentColor" stroke-width="2"/>
-              <line x1="12" y1="1" x2="12" y2="3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-              <line x1="12" y1="21" x2="12" y2="23" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-              <line x1="4.22" y1="4.22" x2="5.64" y2="5.64" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-              <line x1="18.36" y1="18.36" x2="19.78" y2="19.78" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-              <line x1="1" y1="12" x2="3" y2="12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-              <line x1="21" y1="12" x2="23" y2="12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-              <line x1="4.22" y1="19.78" x2="5.64" y2="18.36" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-              <line x1="18.36" y1="5.64" x2="19.78" y2="4.22" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-            </svg>
-          </div>
-          <h3 class="mood-title">今日心情</h3>
-        </div>
-        <div class="mood-content">
-          <div class="weather-display">
-            <img :src="weatherInfo.weatherIcon" :alt="weatherInfo.weatherType" class="weather-icon" />
-            <div class="weather-desc">{{ weatherInfo.weatherType }} {{ weatherInfo.temperature }}</div>
-            <div class="weather-city">{{ weatherInfo.city }}</div>
-            <div class="weather-time">{{ weatherInfo.updateTime }}</div>
-          </div>
-          <p class="mood-message">{{ weatherInfo.moodQuote }}</p>
-          <div class="refresh-btn" @click="fetchWeather" :disabled="loading">
-            <el-icon v-if="loading"><Loading /></el-icon>
-            <span>{{ loading ? '更新中...' : '刷新天气' }}</span>
-          </div>
+    <section class="welcome-hero">
+      <div class="hero-copy">
+        <span class="hero-kicker">校园设施服务台</span>
+        <h1>欢迎回来，{{ displayName }}</h1>
+        <p>
+          今天也适合高效安排课程、实验和活动。这里保留用户端的轻量操作流，让你可以更快进入设施浏览、预约管理和反馈处理。
+        </p>
+        <div class="hero-actions">
+          <el-button type="primary" class="primary-btn" @click="goTo('/user/facility')">
+            浏览设施
+          </el-button>
+          <el-button class="secondary-btn" @click="goTo('/user/my-reservation')">
+            查看预约
+          </el-button>
         </div>
       </div>
-    </div>
+    </section>
 
-    <!-- 快捷功能入口 -->
-    <div class="quick-actions">
-      <h3 class="section-title">快捷功能</h3>
-      <div class="action-grid">
-        <!-- 设施浏览 -->
-        <div class="action-card" @click="$router.push('/user/facility')">
-          <div class="action-icon info">
-            <svg viewBox="0 0 24 24" fill="none">
-              <path d="M12 2L2 7L12 12L22 7L12 2Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-              <path d="M2 17L12 22L22 17" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-              <path d="M2 12L12 17L22 12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
+    <section class="content-grid">
+      <article class="feature-card weather-card">
+        <div class="card-head">
+          <div>
+            <h2>今日心情与天气</h2>
+            <p>把环境信息和一句轻松提示放在一起，首页会更自然，也更实用。</p>
           </div>
-          <div class="action-content">
-            <h4 class="action-title">设施浏览</h4>
-            <p class="action-desc">浏览和预约校园设施</p>
+          <el-button class="refresh-btn" :loading="loading" @click="fetchWeather">刷新天气</el-button>
+        </div>
+
+        <div class="weather-layout">
+          <div class="weather-visual">
+            <img
+              v-if="isRenderableWeatherImage"
+              :src="resolvedWeatherIcon"
+              :alt="weatherInfo.weatherType || '天气图标'"
+              class="weather-icon"
+              @error="handleWeatherIconError"
+            />
+            <span v-else class="weather-emoji">{{ weatherEmoji }}</span>
+            <strong>{{ weatherInfo.temperature || '--' }}</strong>
+            <span class="weather-type">{{ weatherInfo.weatherType || '晴' }}</span>
           </div>
-          <div class="action-arrow">
-            <el-icon><ArrowRight /></el-icon>
+
+          <div class="weather-content">
+            <div class="weather-row">
+              <label>城市</label>
+              <span>{{ weatherInfo.city || '校园附近' }}</span>
+            </div>
+            <div class="weather-row">
+              <label>更新时间</label>
+              <span>{{ weatherInfo.updateTime || '刚刚' }}</span>
+            </div>
+            <p class="weather-quote">
+              {{ weatherInfo.moodQuote || '愿你今天的学习和预约都顺顺利利。' }}
+            </p>
+          </div>
+        </div>
+      </article>
+
+      <article class="feature-card action-card">
+        <div class="card-head">
+          <div>
+            <h2>快捷功能</h2>
+            <p>每个入口都做成独立卡片，用户一眼就能找到要去的页面。</p>
           </div>
         </div>
 
-        <!-- 我的预约 -->
-        <div class="action-card" @click="$router.push('/user/my-reservation')">
-          <div class="action-icon success">
-            <svg viewBox="0 0 24 24" fill="none">
-              <path d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-          </div>
-          <div class="action-content">
-            <h4 class="action-title">我的预约</h4>
-            <p class="action-desc">查看和管理您的设施预约记录</p>
-          </div>
-          <div class="action-arrow">
-            <el-icon><ArrowRight /></el-icon>
-          </div>
+        <div class="action-grid">
+          <button
+            v-for="item in quickActions"
+            :key="item.path"
+            type="button"
+            class="quick-action"
+            @click="goTo(item.path)"
+          >
+            <span class="quick-action-badge" :class="item.tone">{{ item.short }}</span>
+            <div class="quick-action-copy">
+              <strong>{{ item.title }}</strong>
+              <p>{{ item.desc }}</p>
+            </div>
+            <span class="quick-action-arrow">→</span>
+          </button>
         </div>
+      </article>
+    </section>
 
-        <!-- 违规记录查看 -->
-        <div class="action-card" @click="$router.push('/user/violation-records')">
-          <div class="action-icon warning">
-            <svg viewBox="0 0 24 24" fill="none">
-              <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-              <path d="M12 9V13" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-              <path d="M12 17H12.01" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-          </div>
-          <div class="action-content">
-            <h4 class="action-title">违规记录</h4>
-            <p class="action-desc">查看您的历史违规记录和扣分情况</p>
-          </div>
-          <div class="action-arrow">
-            <el-icon><ArrowRight /></el-icon>
-          </div>
-        </div>
-
-        <!-- 反馈建议提交 -->
-        <div class="action-card" @click="$router.push('/user/feedback')">
-          <div class="action-icon primary">
-            <svg viewBox="0 0 24 24" fill="none">
-              <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-          </div>
-          <div class="action-content">
-            <h4 class="action-title">意见反馈</h4>
-            <p class="action-desc">提交建议、投诉或咨询，查看管理员回复</p>
-          </div>
-          <div class="action-arrow">
-            <el-icon><ArrowRight /></el-icon>
-          </div>
+    <section v-if="currentUser?.id" class="recommend-shell">
+      <div class="recommend-head">
+        <div>
+          <h2>个性化推荐</h2>
+          <p>沿用当前清新的卡片风格，但内容更偏向用户实际使用场景。</p>
         </div>
       </div>
-    </div>
-
-    <!-- 推荐设施 -->
-    <div class="recommend-section" v-if="currentUser && currentUser.id">
-      <h3 class="section-title">个性化推荐</h3>
       <RecommendWidget :userId="currentUser.id" />
-    </div>
-
+    </section>
   </div>
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue';
+import { computed, onMounted, ref } from 'vue';
 import { useRouter } from 'vue-router';
-import { ArrowRight, Loading } from '@element-plus/icons-vue';
 import { weatherAPI } from '../../api/weather';
 import RecommendWidget from '../../components/RecommendWidget.vue';
 
 const router = useRouter();
-
 const currentUser = ref(null);
-
-const initUserInfo = () => {
-  const userInfo = JSON.parse(localStorage.getItem('userInfo') || '{}');
-  currentUser.value = userInfo;
-};
+const loading = ref(false);
+const weatherIconBroken = ref(false);
 
 const weatherInfo = ref({
   weatherType: '晴',
   temperature: '25℃',
-  weatherIcon: '☀️',
-  moodQuote: '愿你拥有如阳光般明媚的心情，温暖而充满力量。无论遇到什么，都要保持微笑和善良。',
+  weatherIcon: '☀',
+  moodQuote: '愿你今天的学习、实验和预约安排都顺顺利利。',
   city: '北京',
   updateTime: ''
 });
 
-const loading = ref(false);
+const quickActions = [
+  {
+    path: '/user/facility',
+    title: '设施浏览',
+    desc: '查看当前可预约设施与详细信息',
+    short: '设',
+    tone: 'mint'
+  },
+  {
+    path: '/user/my-reservation',
+    title: '我的预约',
+    desc: '快速查看审批、签到和历史预约记录',
+    short: '约',
+    tone: 'sky'
+  },
+  {
+    path: '/user/violation-records',
+    title: '违规记录',
+    desc: '了解信用扣分和历史违规处理情况',
+    short: '规',
+    tone: 'peach'
+  },
+  {
+    path: '/user/feedback',
+    title: '意见反馈',
+    desc: '提交建议、投诉或咨询并查看回复',
+    short: '反',
+    tone: 'gold'
+  }
+];
+
+const displayName = computed(() => currentUser.value?.realName || currentUser.value?.username || '同学');
+
+const normalizeWeatherIcon = (value) => {
+  if (typeof value !== 'string') {
+    return '';
+  }
+
+  const normalized = value.trim().replace(/\\/g, '/');
+  if (!normalized) {
+    return '';
+  }
+
+  if (/^(https?:|data:image)/i.test(normalized)) {
+    return normalized;
+  }
+
+  const filesIndex = normalized.indexOf('/files/');
+  if (filesIndex >= 0) {
+    return normalized.slice(filesIndex);
+  }
+
+  if (normalized.startsWith('files/')) {
+    return `/${normalized}`;
+  }
+
+  if (normalized.startsWith('/')) {
+    return normalized;
+  }
+
+  return '';
+};
+
+const resolvedWeatherIcon = computed(() => normalizeWeatherIcon(weatherInfo.value.weatherIcon));
+
+const isRenderableWeatherImage = computed(() => {
+  if (weatherIconBroken.value) {
+    return false;
+  }
+  return /\.(png|jpe?g|gif|svg|webp|bmp|ico)(\?.*)?$/i.test(resolvedWeatherIcon.value);
+});
+
+const weatherEmoji = computed(() => {
+  if (typeof weatherInfo.value.weatherIcon === 'string' && !resolvedWeatherIcon.value) {
+    return weatherInfo.value.weatherIcon || '☀';
+  }
+  return '☀';
+});
+
+const initUserInfo = () => {
+  currentUser.value = JSON.parse(localStorage.getItem('userInfo') || '{}');
+};
+
+const goTo = (path) => {
+  router.push(path);
+};
+
+const applyWeatherData = (data) => {
+  weatherIconBroken.value = false;
+  weatherInfo.value = {
+    weatherType: data?.weatherType || '晴',
+    temperature: data?.temperature || '25℃',
+    weatherIcon: data?.weatherIcon || '☀',
+    moodQuote: data?.moodQuote || '愿你今天的学习和预约都顺顺利利。',
+    city: data?.city || '北京',
+    updateTime: data?.updateTime || new Date().toLocaleString('zh-CN', { hour12: false })
+  };
+};
 
 const fetchWeather = async () => {
+  loading.value = true;
   try {
-    loading.value = true;
-    // 优先使用自动定位接口
-    const response = await weatherAPI.getAutoWeather();
-    if (response.data && response.data.data) {
-      weatherInfo.value = response.data.data;
+    const autoResponse = await weatherAPI.getAutoWeather();
+    if (autoResponse.data?.data) {
+      applyWeatherData(autoResponse.data.data);
+      return;
     }
   } catch (error) {
-    console.error('自动定位获取天气信息失败，尝试使用默认城市:', error);
-    // 如果自动定位失败，回退到默认城市
-    try {
-      const response = await weatherAPI.getWeather('北京');
-      if (response.data && response.data.data) {
-        weatherInfo.value = response.data.data;
-      }
-    } catch (fallbackError) {
-      console.error('获取默认城市天气信息失败:', fallbackError);
-      // 如果都失败，使用默认的晴天信息
-      weatherInfo.value = {
-        weatherType: '晴',
-        temperature: '25℃',
-        weatherIcon: '☀️',
-        moodQuote: '网络连接失败，但愿你依然拥有阳光般的心情！',
-        city: '北京',
-        updateTime: new Date().toLocaleString()
-      };
+    console.error('自动定位获取天气失败:', error);
+  }
+
+  try {
+    const fallbackResponse = await weatherAPI.getWeather('北京');
+    if (fallbackResponse.data?.data) {
+      applyWeatherData(fallbackResponse.data.data);
+      return;
     }
+  } catch (error) {
+    console.error('默认城市天气获取失败:', error);
   } finally {
     loading.value = false;
   }
+
+  applyWeatherData({
+    weatherType: '晴',
+    temperature: '25℃',
+    weatherIcon: '☀',
+    moodQuote: '天气数据暂时未刷新成功，但愿你今天依然有明亮心情。',
+    city: '北京',
+    updateTime: new Date().toLocaleString('zh-CN', { hour12: false })
+  });
+  loading.value = false;
+};
+
+const handleWeatherIconError = () => {
+  weatherIconBroken.value = true;
 };
 
 onMounted(() => {
@@ -201,601 +262,354 @@ onMounted(() => {
 </script>
 
 <style scoped>
-/* 页面背景 */
 .welcome-page {
-  min-height: 100vh;
-  background: linear-gradient(135deg, #f8fafc 0%, #f0f9ff 25%, #e6f7ff 50%, #f8fafc 100%);
-  padding: 24px;
-  position: relative;
-}
-
-/* 欢迎横幅 */
-.welcome-banner {
-  position: relative;
-  background: linear-gradient(135deg, #409eff 0%, #1976d2 100%);
-  border-radius: 16px;
-  padding: 28px;
-  margin-bottom: 24px;
-  overflow: hidden;
-  box-shadow: 0 4px 20px rgba(64, 158, 255, 0.3);
-}
-
-.banner-content {
-  position: relative;
-  z-index: 2;
-  text-align: center;
-  color: #ffffff;
-}
-
-.welcome-icon {
-  width: 60px;
-  height: 60px;
-  background: rgba(255, 255, 255, 0.2);
-  border-radius: 16px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin: 0 auto 16px;
-  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.1);
-  backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-}
-
-.welcome-icon svg {
-  width: 30px;
-  height: 30px;
-  color: #ffffff;
-}
-
-.welcome-title {
-  font-size: 28px;
-  font-weight: 700;
-  margin: 0 0 12px 0;
-  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
-
-.welcome-subtitle {
-  font-size: 16px;
-  font-weight: 400;
-  margin: 0;
-  opacity: 0.9;
-  letter-spacing: 0.5px;
-}
-
-.banner-decoration {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
+  --page-primary: #53c2b1;
+  min-height: 100%;
+  display: grid;
+  gap: 20px;
   background:
-    radial-gradient(circle at 20% 20%, rgba(255, 255, 255, 0.1) 0%, transparent 50%),
-    radial-gradient(circle at 80% 80%, rgba(255, 255, 255, 0.1) 0%, transparent 50%);
-  animation: float 6s ease-in-out infinite;
+    radial-gradient(circle at top left, rgba(159, 233, 213, 0.32), transparent 28%),
+    radial-gradient(circle at right center, rgba(255, 215, 122, 0.18), transparent 20%),
+    linear-gradient(180deg, #f7fffc 0%, #fffef8 100%);
 }
 
-/* 快捷功能区域 */
-.quick-actions {
-  margin-bottom: 30px;
+.welcome-hero,
+.feature-card,
+.recommend-shell {
+  border-radius: 30px;
+  border: 1px solid rgba(83, 194, 177, 0.14);
+  background: rgba(255, 255, 255, 0.94);
+  box-shadow: 0 20px 44px rgba(19, 49, 44, 0.06);
 }
 
-.section-title {
-  font-size: 1.5rem;
+.welcome-hero {
+  padding: 30px;
+  background:
+    radial-gradient(circle at top right, rgba(255, 215, 122, 0.18), transparent 24%),
+    linear-gradient(145deg, rgba(159, 233, 213, 0.18) 0%, #ffffff 62%);
+}
+
+.hero-kicker {
+  display: inline-flex;
+  padding: 6px 12px;
+  border-radius: 999px;
+  background: rgba(83, 194, 177, 0.14);
+  color: #237c70;
+  font-size: 12px;
   font-weight: 600;
-  color: #2c3e50;
-  margin: 0 0 20px 0;
-  padding-bottom: 10px;
-  border-bottom: 2px solid #3498db;
+  letter-spacing: 0.08em;
+}
+
+.hero-copy h1 {
+  margin: 16px 0 12px;
+  font-size: 36px;
+  color: #17453f;
+}
+
+.hero-copy p {
+  margin: 0;
+  color: #5f7c77;
+  line-height: 1.8;
+}
+
+.hero-actions {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-top: 24px;
+}
+
+.primary-btn,
+.secondary-btn,
+.refresh-btn {
+  min-height: 44px;
+  border-radius: 14px;
+}
+
+.primary-btn {
+  border: none;
+  background: linear-gradient(135deg, #53c2b1 0%, #2f9f8d 100%);
+  box-shadow: 0 14px 28px rgba(47, 159, 141, 0.2);
+}
+
+.secondary-btn,
+.refresh-btn {
+  border: 1px solid rgba(83, 194, 177, 0.18);
+  background: rgba(255, 255, 255, 0.86);
+  color: #2f7067;
+}
+
+.content-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.08fr) minmax(0, 1fr);
+  gap: 20px;
+}
+
+.feature-card,
+.recommend-shell {
+  padding: 24px;
+}
+
+.card-head,
+.recommend-head {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  align-items: flex-start;
+  margin-bottom: 18px;
+}
+
+.card-head h2,
+.recommend-head h2 {
+  margin: 0;
+  color: #183f39;
+}
+
+.card-head p,
+.recommend-head p {
+  margin: 8px 0 0;
+  color: #6b827d;
+  line-height: 1.7;
+}
+
+.weather-card {
+  background:
+    radial-gradient(circle at top right, rgba(255, 215, 122, 0.16), transparent 22%),
+    linear-gradient(155deg, rgba(159, 233, 213, 0.14) 0%, #ffffff 64%);
+}
+
+.weather-layout {
+  display: grid;
+  grid-template-columns: 220px minmax(0, 1fr);
+  gap: 18px;
+  align-items: center;
+}
+
+.weather-visual {
+  padding: 22px;
+  border-radius: 24px;
+  background: rgba(255, 255, 255, 0.76);
+  border: 1px solid rgba(83, 194, 177, 0.16);
+  display: grid;
+  justify-items: center;
+  gap: 10px;
+  min-height: 240px;
+  align-content: center;
+}
+
+.weather-icon {
+  width: 72px;
+  height: 72px;
+  object-fit: contain;
+}
+
+.weather-emoji {
+  font-size: 56px;
+  line-height: 1;
+}
+
+.weather-visual strong {
+  font-size: 30px;
+  color: #194741;
+}
+
+.weather-type {
+  color: #6b827e;
+}
+
+.weather-content {
+  display: grid;
+  gap: 12px;
+}
+
+.weather-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 14px 16px;
+  border-radius: 18px;
+  background: #f8fffd;
+}
+
+.weather-row label {
+  color: #6d827e;
+}
+
+.weather-row span {
+  color: #214f48;
+  font-weight: 600;
+}
+
+.weather-quote {
+  margin: 0;
+  padding: 18px;
+  border-radius: 20px;
+  background: rgba(255, 247, 224, 0.62);
+  color: #6f6752;
+  line-height: 1.8;
 }
 
 .action-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: 20px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
 }
 
-.action-card {
-  background: #ffffff;
-  border-radius: 12px;
-  padding: 20px;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-  border: 1px solid #eaeaea;
+.quick-action {
+  appearance: none;
+  width: 100%;
+  padding: 18px;
+  border: 1px solid rgba(83, 194, 177, 0.14);
+  border-radius: 22px;
+  background: linear-gradient(145deg, rgba(255, 255, 255, 0.96), rgba(249, 255, 253, 0.98));
+  display: flex;
+  gap: 14px;
+  align-items: center;
+  text-align: left;
   cursor: pointer;
-  transition: all 0.3s ease;
-  display: flex;
-  align-items: center;
-  gap: 15px;
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+  font: inherit;
+  color: inherit;
 }
 
-.action-card:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
-  border-color: #3498db;
+.quick-action:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 18px 28px rgba(19, 49, 44, 0.08);
 }
 
-.action-icon {
-  width: 50px;
-  height: 50px;
-  border-radius: 12px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-}
-
-.action-icon.warning {
-  background: linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%);
-  color: white;
-}
-
-.action-icon.primary {
-  background: linear-gradient(135deg, #48dbfb 0%, #0abde3 100%);
-  color: white;
-}
-
-.action-icon.success {
-  background: linear-gradient(135deg, #1dd1a1 0%, #10ac84 100%);
-  color: white;
-}
-
-.action-icon.info {
-  background: linear-gradient(135deg, #54a0ff 0%, #2e86de 100%);
-  color: white;
-}
-
-.action-icon svg {
-  width: 24px;
-  height: 24px;
-}
-
-.action-content {
-  flex: 1;
-}
-
-.action-title {
-  font-size: 1.1rem;
-  font-weight: 600;
-  color: #2c3e50;
-  margin: 0 0 5px 0;
-}
-
-.action-desc {
-  font-size: 0.9rem;
-  color: #7f8c8d;
-  margin: 0;
-  line-height: 1.4;
-}
-
-.action-arrow {
-  color: #bdc3c7;
-  transition: color 0.3s ease;
-}
-
-.action-card:hover .action-arrow {
-  color: #3498db;
-}
-
-/* 心情天气 */
-.mood-weather {
-  margin-bottom: 0;
-}
-
-.mood-card {
-  background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+.quick-action-badge {
+  width: 46px;
+  height: 46px;
   border-radius: 16px;
-  padding: 32px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-  border: 1px solid #e4e7ed;
-  transition: all 0.3s ease;
-}
-
-.mood-card:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 30px rgba(64, 158, 255, 0.12);
-  border-color: #bae7ff;
-}
-
-.mood-header {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  margin-bottom: 20px;
-}
-
-.mood-icon {
-  width: 48px;
-  height: 48px;
-  background: linear-gradient(135deg, #e6f7ff 0%, #bae7ff 100%);
-  border-radius: 12px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  box-shadow: 0 4px 12px rgba(64, 158, 255, 0.15);
-}
-
-.mood-icon svg {
-  width: 24px;
-  height: 24px;
-  color: #409eff;
-}
-
-.mood-title {
-  font-size: 20px;
-  font-weight: 700;
-  color: #1a202c;
-  margin: 0;
-}
-
-.mood-content {
-  display: flex;
-  align-items: center;
-  gap: 24px;
-}
-
-.weather-display {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 8px;
-  flex-shrink: 0;
-}
-
-.weather-icon {
-  width: 48px;
-  height: 48px;
-  object-fit: contain;
-}
-
-.weather-desc {
-  font-size: 14px;
-  color: #4a5568;
-  font-weight: 500;
-}
-
-.weather-city {
-  font-size: 12px;
-  color: #718096;
-  margin-top: 4px;
-}
-
-.weather-time {
-  font-size: 10px;
-  color: #a0aec0;
-  margin-top: 2px;
-}
-
-.refresh-btn {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  padding: 6px 12px;
-  background: #f7fafc;
-  border: 1px solid #e2e8f0;
-  border-radius: 6px;
-  font-size: 12px;
-  color: #4a5568;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  margin-top: 12px;
-}
-
-.refresh-btn:hover:not(:disabled) {
-  background: #edf2f7;
-  border-color: #cbd5e0;
-}
-
-.refresh-btn:disabled {
-  cursor: not-allowed;
-  opacity: 0.6;
-}
-
-.mood-message {
-  font-size: 16px;
-  line-height: 1.6;
-  color: #2d3748;
-  margin: 0;
-  flex: 1;
-}
-
-/* 动画效果 */
-@keyframes float {
-  0%, 100% { transform: translateY(0px); }
-  50% { transform: translateY(-10px); }
-}
-
-@keyframes shimmer {
-  0%, 100% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
-}
-
-/* 响应式设计 */
-@media (max-width: 768px) {
-  .welcome-page {
-    padding: 16px;
-  }
-
-  .welcome-banner {
-    padding: 20px;
-  }
-
-  .welcome-title {
-    font-size: 24px;
-  }
-
-  .welcome-subtitle {
-    font-size: 14px;
-  }
-}
-
-.card-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: 20px;
-}
-
-.inspiration-card {
-  background: #ffffff;
-  border-radius: 16px;
-  padding: 24px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-  border: 1px solid #e4e7ed;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  position: relative;
-  overflow: hidden;
-}
-
-.inspiration-card::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 4px;
-  opacity: 0;
-  transition: opacity 0.3s ease;
-}
-
-.daily-quote::before {
-  background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
-}
-
-.motivation::before {
-  background: linear-gradient(90deg, #f093fb 0%, #f5576c 100%);
-}
-
-.reminder::before {
-  background: linear-gradient(90deg, #4facfe 0%, #00f2fe 100%);
-}
-
-.blessing::before {
-  background: linear-gradient(90deg, #43e97b 0%, #38f9d7 100%);
-}
-
-.inspiration-card:hover::before {
-  opacity: 1;
-}
-
-.inspiration-card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 8px 30px rgba(64, 158, 255, 0.15);
-  border-color: #bae7ff;
-}
-
-.card-header {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  margin-bottom: 16px;
-}
-
-.card-icon {
-  width: 40px;
-  height: 40px;
-  border-radius: 10px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  place-items: center;
+  font-size: 17px;
+  font-weight: 700;
   flex-shrink: 0;
 }
 
-.quote-icon {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+.quick-action-badge.mint {
+  background: rgba(159, 233, 213, 0.38);
+  color: #2d8e80;
 }
 
-.motivation-icon {
-  background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+.quick-action-badge.sky {
+  background: rgba(172, 224, 255, 0.34);
+  color: #3a78be;
 }
 
-.reminder-icon {
-  background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+.quick-action-badge.peach {
+  background: rgba(255, 202, 173, 0.34);
+  color: #c96a4d;
 }
 
-.blessing-icon {
-  background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+.quick-action-badge.gold {
+  background: rgba(255, 226, 152, 0.38);
+  color: #ab7b18;
 }
 
-.card-icon svg {
-  width: 20px;
-  height: 20px;
-  color: #ffffff;
+.quick-action-copy {
+  flex: 1;
+  min-width: 0;
 }
 
-.card-title {
+.quick-action-copy strong {
+  display: block;
+  color: #1b4640;
+  font-size: 16px;
+}
+
+.quick-action-copy p {
+  margin: 6px 0 0;
+  color: #738a84;
+  line-height: 1.6;
+}
+
+.quick-action-arrow {
+  color: #5d8f86;
   font-size: 18px;
   font-weight: 700;
-  color: #1a202c;
-  margin: 0;
 }
 
-.card-content {
-  color: #4a5568;
-}
-
-.quote-text {
-  font-size: 16px;
-  line-height: 1.6;
-  font-style: italic;
-  margin: 0 0 12px 0;
-}
-
-.quote-author {
-  text-align: right;
-  font-weight: 600;
-  color: #2d3748;
-}
-
-.motivation-list {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-}
-
-.motivation-list li {
-  padding: 8px 0;
-  position: relative;
-  padding-left: 24px;
-  line-height: 1.5;
-}
-
-.motivation-list li::before {
-  content: '✨';
-  position: absolute;
-  left: 0;
-  top: 8px;
-}
-
-.reminder-text,
-.blessing-text {
-  font-size: 15px;
-  line-height: 1.6;
-  margin: 0;
-}
-
-/* 心情天气 */
-.mood-weather {
-  margin-bottom: 0;
-}
-
-.mood-card {
-  background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
-  border-radius: 16px;
-  padding: 32px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-  border: 1px solid #e4e7ed;
-  transition: all 0.3s ease;
-}
-
-.mood-card:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 30px rgba(64, 158, 255, 0.12);
-  border-color: #bae7ff;
-}
-
-.mood-header {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  margin-bottom: 20px;
-}
-
-.mood-icon {
-  width: 48px;
-  height: 48px;
-  background: linear-gradient(135deg, #e6f7ff 0%, #bae7ff 100%);
-  border-radius: 12px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  box-shadow: 0 4px 12px rgba(64, 158, 255, 0.15);
-}
-
-.mood-icon svg {
-  width: 24px;
-  height: 24px;
-  color: #409eff;
-}
-
-.mood-title {
-  font-size: 20px;
-  font-weight: 700;
-  color: #1a202c;
-  margin: 0;
-}
-
-.mood-content {
-  display: flex;
-  align-items: center;
-  gap: 24px;
-}
-
-.weather-display {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 8px;
-  flex-shrink: 0;
-}
-
-.weather-emoji {
-  font-size: 48px;
-}
-
-.weather-desc {
-  font-size: 14px;
-  color: #4a5568;
-  font-weight: 500;
-}
-
-.mood-message {
-  font-size: 16px;
-  line-height: 1.6;
-  color: #2d3748;
-  margin: 0;
-  flex: 1;
-}
-
-/* 动画效果 */
-@keyframes float {
-  0%, 100% { transform: translateY(0px); }
-  50% { transform: translateY(-10px); }
-}
-
-@keyframes shimmer {
-  0%, 100% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
-}
-
-/* 响应式设计 */
-@media (max-width: 768px) {
-  .welcome-page {
-    padding: 16px;
-  }
-
-  .welcome-banner {
-    padding: 20px;
-  }
-
-  .welcome-title {
-    font-size: 24px;
-  }
-
-  .welcome-subtitle {
-    font-size: 14px;
-  }
-
-  .card-grid {
+@media (max-width: 1200px) {
+  .action-grid {
     grid-template-columns: 1fr;
-    gap: 16px;
+  }
+}
+
+@media (max-width: 980px) {
+  .content-grid,
+  .weather-layout {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 768px) {
+  .welcome-hero,
+  .feature-card,
+  .recommend-shell {
+    padding: 18px;
   }
 
-  .inspiration-card {
-    padding: 20px;
+  .hero-copy h1 {
+    font-size: 28px;
   }
 
-  .mood-content {
+  .card-head,
+  .recommend-head,
+  .hero-actions {
     flex-direction: column;
-    text-align: center;
-    gap: 16px;
+  }
+}
+</style>
+<style scoped>
+.welcome-page {
+  --theme-deep: #2f9f8d;
+  --theme-border: rgba(83, 194, 177, 0.16);
+  --theme-shadow: rgba(19, 49, 44, 0.08);
+  background:
+    radial-gradient(circle at top left, rgba(159, 233, 213, 0.38), transparent 28%),
+    radial-gradient(circle at right center, rgba(255, 223, 146, 0.24), transparent 20%),
+    linear-gradient(180deg, #f7fffc 0%, #fffef8 100%);
+}
+
+.welcome-hero,
+.feature-card,
+.recommend-shell,
+.quick-action {
+  animation: welcome-rise 0.55s ease both;
+  border-color: var(--theme-border);
+  box-shadow: 0 20px 46px var(--theme-shadow);
+}
+
+.welcome-hero {
+  background:
+    radial-gradient(circle at top right, rgba(255, 223, 146, 0.22), transparent 24%),
+    linear-gradient(145deg, rgba(239, 253, 248, 0.96) 0%, #ffffff 62%);
+}
+
+.weather-card {
+  background:
+    radial-gradient(circle at top right, rgba(255, 223, 146, 0.18), transparent 22%),
+    linear-gradient(155deg, rgba(239, 253, 248, 0.96) 0%, #ffffff 64%);
+}
+
+.quick-action {
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.quick-action:hover {
+  box-shadow: 0 18px 30px rgba(19, 49, 44, 0.1);
+}
+
+@keyframes welcome-rise {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
 }
 </style>

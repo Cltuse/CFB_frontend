@@ -1,15 +1,13 @@
 <template>
-  <div class="user-layout" :style="themeVars">
+  <div class="user-layout">
     <Header />
     <div class="main-container">
-      <!-- 侧边栏菜单 -->
-      <div class="sidebar-container">
+      <aside class="sidebar-container">
         <el-menu
           :default-active="activeMenu"
           class="side-menu"
-          @select="handleMenuSelect"
-          :collapse="false"
           unique-opened
+          @select="handleMenuSelect"
         >
           <el-menu-item index="/user/welcome" class="menu-item">
             <el-icon class="menu-icon-item"><Star /></el-icon>
@@ -61,52 +59,40 @@
           </el-menu-item>
         </el-menu>
 
-        <!-- 侧边栏底部装饰 -->
         <div class="sidebar-footer">
           <div class="footer-decoration"></div>
         </div>
-      </div>
+      </aside>
 
-      <!-- 主内容区域 -->
-      <div class="content-area">
-        <section class="route-hero">
-          <div class="hero-copy">
-            <span class="hero-kicker">{{ currentTheme.kicker }}</span>
-            <h1>{{ currentTheme.title }}</h1>
-            <p>{{ currentTheme.description }}</p>
-          </div>
-        </section>
-
+      <main class="content-area">
         <div :key="route.path" class="route-content-shell">
           <router-view />
         </div>
-      </div>
+      </main>
     </div>
   </div>
 </template>
 
 <script setup>
-import { computed, ref, watch } from 'vue';
+import { ref, watch } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 import { Star, Box, Calendar, Bell, User, Warning, ChatDotRound } from '@element-plus/icons-vue';
 import Header from '../components/Header.vue';
-import '../assets/maintainer-surface-theme.css';
-import { buildFeatureVars, resolveFeatureTheme } from '../utils/featureTheme';
 
 const router = useRouter();
 const route = useRoute();
 const activeMenu = ref(route.path);
 
-watch(() => route.path, (newPath) => {
-  activeMenu.value = newPath;
-});
+watch(
+  () => route.path,
+  (newPath) => {
+    activeMenu.value = newPath;
+  }
+);
 
 const handleMenuSelect = (index) => {
   router.push(index);
 };
-
-const currentTheme = computed(() => resolveFeatureTheme(route.path));
-const themeVars = computed(() => buildFeatureVars(currentTheme.value));
 </script>
 
 <style scoped>
@@ -114,7 +100,7 @@ const themeVars = computed(() => buildFeatureVars(currentTheme.value));
   height: 100vh;
   display: flex;
   flex-direction: column;
-  background: linear-gradient(180deg, #ecfffb 0%, #f8fdfa 46%, #f3fffb 100%);
+  background: linear-gradient(135deg, #fbfdff 0%, #f5f8fc 52%, #f8fbff 100%);
 }
 
 .main-container {
@@ -123,19 +109,16 @@ const themeVars = computed(() => buildFeatureVars(currentTheme.value));
   overflow: hidden;
 }
 
-/* 侧边栏容器 */
 .sidebar-container {
   width: 200px;
   background: #ffffff;
-  border-right: 1px solid #e4e7ed;
-  box-shadow: 4px 0 20px rgba(0, 0, 0, 0.08);
+  border-right: 1px solid rgba(211, 219, 231, 0.72);
+  box-shadow: 10px 0 28px rgba(15, 23, 42, 0.06);
   display: flex;
   flex-direction: column;
-  position: relative;
   overflow: hidden;
 }
 
-/* 侧边栏菜单 */
 .side-menu {
   flex: 1;
   border: none;
@@ -144,63 +127,29 @@ const themeVars = computed(() => buildFeatureVars(currentTheme.value));
 }
 
 .side-menu :deep(.el-menu-item) {
-  margin: 0 12px 8px 12px;
-  border-radius: 12px;
+  margin: 0 12px 8px;
+  border-radius: 14px;
   padding: 0 16px;
   height: 50px;
   line-height: 50px;
   font-size: 14px;
   font-weight: 500;
   color: #4a5568;
-  border: none;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  position: relative;
-  overflow: hidden;
-}
-
-.side-menu :deep(.el-menu-item):before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: linear-gradient(
-    135deg,
-    color-mix(in srgb, var(--feature-primary, #4f9b96) 8%, #ffffff) 0%,
-    color-mix(in srgb, var(--feature-secondary, #89cbc2) 14%, #ffffff) 100%
-  );
-  opacity: 0;
-  transition: opacity 0.3s ease;
-  border-radius: 12px;
-  z-index: -1;
+  transition: all 0.3s ease;
 }
 
 .side-menu :deep(.el-menu-item:hover) {
   color: #252b47;
   transform: translateX(4px);
-  background: linear-gradient(
-    135deg,
-    color-mix(in srgb, var(--feature-soft, rgba(137, 203, 194, 0.16)) 42%, #ffffff) 0%,
-    #ffffff 100%
-  );
-  box-shadow: 0 8px 18px color-mix(in srgb, var(--feature-glow, rgba(79, 155, 150, 0.15)) 35%, transparent);
-}
-
-.side-menu :deep(.el-menu-item:hover):before {
-  opacity: 1;
+  background: linear-gradient(135deg, #f5f8ff 0%, #ffffff 100%);
+  box-shadow: 0 10px 18px rgba(144, 166, 204, 0.14);
 }
 
 .side-menu :deep(.el-menu-item.is-active) {
   color: #ffffff;
-  background: linear-gradient(135deg, var(--feature-primary, #4f9b96) 0%, var(--feature-secondary, #89cbc2) 100%);
-  box-shadow: 0 10px 24px color-mix(in srgb, var(--feature-glow, rgba(79, 155, 150, 0.15)) 55%, transparent);
+  background: linear-gradient(135deg, #8fb7ff 0%, #6ba5ff 100%);
+  box-shadow: 0 12px 24px rgba(107, 165, 255, 0.26);
   font-weight: 600;
-}
-
-.side-menu :deep(.el-menu-item.is-active):before {
-  opacity: 1;
-  background: transparent;
 }
 
 .side-menu :deep(.el-menu-item .el-icon) {
@@ -211,18 +160,12 @@ const themeVars = computed(() => buildFeatureVars(currentTheme.value));
 
 .side-menu :deep(.el-menu-item:hover .el-icon) {
   transform: scale(1.1);
-  color: var(--feature-primary, #4f9b96);
+  color: #6ba5ff;
 }
 
 .side-menu :deep(.el-menu-item.is-active .el-icon) {
   color: #ffffff;
   transform: scale(1.1);
-}
-
-.menu-icon-item {
-  font-size: 18px;
-  margin-right: 12px;
-  transition: all 0.3s ease;
 }
 
 .menu-text {
@@ -231,132 +174,43 @@ const themeVars = computed(() => buildFeatureVars(currentTheme.value));
   letter-spacing: 0.2px;
 }
 
-/* 侧边栏底部装饰 */
 .sidebar-footer {
   padding: 20px 0;
-  position: relative;
 }
 
 .footer-decoration {
   height: 3px;
-  background: linear-gradient(90deg, var(--feature-primary, #0f766e) 0%, var(--feature-secondary, #14b8a6) 50%, var(--feature-primary, #0f766e) 100%);
   margin: 0 16px;
-  border-radius: 2px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #b8d2ff 0%, #8fb7ff 50%, #b8d2ff 100%);
 }
 
-/* 主内容区域 */
 .content-area {
   flex: 1;
   padding: 24px;
   overflow-y: auto;
-  background: linear-gradient(180deg, #ecfffb 0%, #f8fdfa 46%, #f3fffb 100%);
-  position: relative;
-}
-
-.route-hero {
-  position: relative;
-  overflow: hidden;
-  display: grid;
-  grid-template-columns: 1.6fr 1fr;
-  gap: 18px;
-  margin-bottom: 18px;
-  padding: 26px 28px;
-  border-radius: 28px;
-  border: 1px solid color-mix(in srgb, var(--feature-primary, #0f766e) 14%, #ffffff);
-  background:
-    linear-gradient(145deg, color-mix(in srgb, var(--feature-soft, rgba(20, 184, 166, 0.15)) 62%, #ffffff) 0%, #ffffff 58%),
-    #ffffff;
-  box-shadow: 0 16px 34px color-mix(in srgb, var(--feature-glow, rgba(15, 118, 110, 0.28)) 24%, transparent);
-}
-
-.hero-copy {
-  position: relative;
-  z-index: 2;
-}
-
-.hero-kicker {
-  display: inline-flex;
-  padding: 7px 12px;
-  border-radius: 999px;
-  font-size: 12px;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--feature-primary, #0f766e);
-  background: color-mix(in srgb, var(--feature-soft, rgba(137, 203, 194, 0.16)) 68%, #ffffff);
-}
-
-.hero-copy h1 {
-  margin: 14px 0 10px;
-  font-size: 34px;
-  line-height: 1.15;
-  color: #0f172a;
-}
-
-.hero-copy p {
-  margin: 0;
-  max-width: 72ch;
-  color: #556370;
-  line-height: 1.72;
+  background: linear-gradient(135deg, #fbfdff 0%, #f7faff 48%, #fdfcff 100%);
 }
 
 .route-content-shell {
-  min-height: calc(100% - 190px);
+  min-height: 100%;
 }
 
-/* 响应式设计 */
 @media (max-width: 768px) {
   .sidebar-container {
     width: 160px;
   }
 
-  .sidebar-header {
-    padding: 16px 16px;
-  }
-
-  .menu-title {
-    font-size: 16px;
-  }
-
-  .menu-icon {
-    width: 32px;
-    height: 32px;
-  }
-
-  .menu-icon svg {
-    width: 16px;
-    height: 16px;
-  }
-
   .side-menu :deep(.el-menu-item) {
-    margin: 0 8px 6px 8px;
+    margin: 0 8px 6px;
     padding: 0 12px;
     height: 44px;
     line-height: 44px;
     font-size: 13px;
   }
 
-  .side-menu :deep(.el-menu-item .el-icon) {
-    font-size: 16px;
-    margin-right: 10px;
-  }
-
-  .menu-icon-item {
-    font-size: 16px;
-    margin-right: 10px;
-  }
-
   .content-area {
     padding: 16px;
-  }
-
-  .route-hero {
-    grid-template-columns: 1fr;
-    padding: 20px;
-    border-radius: 22px;
-  }
-
-  .hero-copy h1 {
-    font-size: 28px;
   }
 }
 </style>

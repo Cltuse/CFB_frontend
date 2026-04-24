@@ -1,1111 +1,747 @@
 <template>
-  <div class="dashboard">
-    <!-- 页面标题区域 -->
-    <div class="page-header">
-      <div class="header-decoration"></div>
-      <div class="header-content">
-        <h1 class="page-title">
-          <div class="title-icon">
-            <svg viewBox="0 0 24 24" fill="none">
-              <path d="M3 13h2v-2H3v2zm0 4h2v-2H3v2zm0-8h2V7H3v2zm4 4h14v-2H7v2zm0 4h14v-2H7v2zM7 7v2h14V7H7z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-          </div>
-          数据统计
-        </h1>
-        <p class="page-subtitle">设施与预约数据分析</p>
+  <div class="admin-dashboard-page">
+    <section class="page-hero">
+      <div class="hero-copy">
+        <span class="hero-eyebrow">运营总览中心</span>
+        <h1>数据统计</h1>
+        <p>围绕设施、预约和用户三个核心维度重做管理员首页，让统计卡、图表和近期预约变化保持统一的层次感，不再出现一半旧布局一半新皮肤的割裂效果。</p>
+        <div class="hero-actions">
+          <el-button type="primary" class="primary-btn" @click="loadDashboard">刷新概览</el-button>
+          <el-select v-model="timeRange" class="range-select" @change="handleTimeRangeChange">
+            <el-option label="近 7 天" value="7d" />
+            <el-option label="近 30 天" value="30d" />
+            <el-option label="近半年" value="180d" />
+            <el-option label="近一年" value="365d" />
+          </el-select>
+        </div>
       </div>
-    </div>
 
-    <!-- 统计卡片 -->
-    <el-row :gutter="24" class="stats-row">
-      <el-col :span="6">
-        <el-card class="stat-card facility-card">
-          <div class="stat-content">
-            <div class="stat-icon-wrapper">
-              <el-icon class="stat-icon"><Box /></el-icon>
-            </div>
-            <div class="stat-info">
-              <div class="stat-value">{{ stats.totalFacility }}</div>
-              <div class="stat-label">设施总数</div>
-            </div>
-          </div>
-        </el-card>
-      </el-col>
-      <el-col :span="6">
-        <el-card class="stat-card available-card">
-          <div class="stat-content">
-            <div class="stat-icon-wrapper">
-              <el-icon class="stat-icon"><SuccessFilled /></el-icon>
-            </div>
-            <div class="stat-info">
-              <div class="stat-value">{{ stats.availableFacility }}</div>
-              <div class="stat-label">可用设施</div>
-            </div>
-          </div>
-        </el-card>
-      </el-col>
-      <el-col :span="6">
-        <el-card class="stat-card reservation-card">
-          <div class="stat-content">
-            <div class="stat-icon-wrapper">
-              <el-icon class="stat-icon"><Calendar /></el-icon>
-            </div>
-            <div class="stat-info">
-              <div class="stat-value">{{ stats.totalReservations }}</div>
-              <div class="stat-label">预约总数</div>
-            </div>
-          </div>
-        </el-card>
-      </el-col>
-      <el-col :span="6">
-        <el-card class="stat-card user-card">
-          <div class="stat-content">
-            <div class="stat-icon-wrapper">
-              <el-icon class="stat-icon"><User /></el-icon>
-            </div>
-            <div class="stat-info">
-              <div class="stat-value">{{ stats.totalUser }}</div>
-              <div class="stat-label">用户总数</div>
-            </div>
-          </div>
-        </el-card>
-      </el-col>
-    </el-row>
+      <div class="hero-side">
+        <article class="hero-note">
+          <span>今日新增预约</span>
+          <strong>{{ reservationSummary.todayTotal }}</strong>
+          <small>当天创建的预约记录数量</small>
+        </article>
+        <article class="hero-note">
+          <span>待审核预约</span>
+          <strong>{{ reservationSummary.pendingReservations }}</strong>
+          <small>需要管理员跟进处理的预约申请</small>
+        </article>
+      </div>
+    </section>
 
-    <!-- 图表区域 -->
-    <el-row :gutter="24" class="charts-row">
-      <el-col :span="16">
-        <el-card class="chart-card line-chart-card">
-          <template #header>
-            <div class="chart-header">
-              <div class="chart-title">
-                <div class="title-icon">
-                  <svg viewBox="0 0 24 24" fill="none">
-                    <path d="M3 17v1h6v-1H3zM3 5v1h10V5H3zm10 5v1h8v-1h-8zM3 11v1h6v-1H3zm10 0v1h8v-1h-8zM3 13v1h6v-1H3zm10 0v1h8v-1h-8z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                  </svg>
-                </div>
-                <span>设施类别分布统计</span>
-              </div>
-              <div class="chart-subtitle">各类别设施数量统计</div>
-            </div>
-          </template>
-          <div class="chart-container" ref="lineChartRef"></div>
-        </el-card>
-      </el-col>
-      <el-col :span="8">
-        <el-card class="chart-card pie-chart-card">
-          <template #header>
-            <div class="chart-header">
-              <div class="chart-title">
-                <div class="title-icon">
-                  <svg viewBox="0 0 24 24" fill="none">
-                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z" stroke="currentColor" stroke-width="2"/>
-                  </svg>
-                </div>
-                <span>设施状态分布</span>
-              </div>
-              <div class="chart-subtitle">按设施状态统计</div>
-            </div>
-          </template>
-          <div class="chart-container" ref="pieChartRef"></div>
-        </el-card>
-      </el-col>
-    </el-row>
+    <section class="stats-grid">
+      <article class="stat-card">
+        <span class="stat-label">设施总数</span>
+        <strong>{{ overview.totalFacility }}</strong>
+        <p>平台当前收录的全部设施数量</p>
+      </article>
+      <article class="stat-card success-card">
+        <span class="stat-label">可用设施</span>
+        <strong>{{ overview.availableFacility }}</strong>
+        <p>状态正常并可继续接受预约的设施</p>
+      </article>
+      <article class="stat-card warning-card">
+        <span class="stat-label">预约总数</span>
+        <strong>{{ reservationSummary.totalReservations }}</strong>
+        <p>全部历史预约记录累计数量</p>
+      </article>
+      <article class="stat-card info-card">
+        <span class="stat-label">用户总数</span>
+        <strong>{{ overview.totalUser }}</strong>
+        <p>系统中的全部用户账号数量</p>
+      </article>
+    </section>
 
-    <!-- 预约统计图表区域 -->
-    <el-row :gutter="24" class="charts-row">
-      <el-col :span="16">
-        <el-card class="chart-card reservation-line-card">
-          <template #header>
-            <div class="chart-header">
-              <div class="chart-title">
-                <div class="title-icon">
-                  <svg viewBox="0 0 24 24" fill="none">
-                    <path d="M3 3v18h18" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                    <path d="M18 9l-5 5-4-4-3 3" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                  </svg>
-                </div>
-                <span>近期预约数量统计</span>
-              </div>
-              <div class="chart-controls">
-                <el-select v-model="timeRange" placeholder="选择时间段" @change="handleTimeRangeChange" class="time-select">
-                  <el-option label="1天内" value="1d" />
-                  <el-option label="7天内" value="7d" />
-                  <el-option label="30天内" value="30d" />
-                  <el-option label="半年内" value="180d" />
-                  <el-option label="一年内" value="365d" />
-                </el-select>
-              </div>
-            </div>
-          </template>
-          <div class="chart-container" ref="reservationLineChartRef"></div>
-        </el-card>
-      </el-col>
-      <el-col :span="8">
-        <el-card class="chart-card reservation-pie-card">
-          <template #header>
-            <div class="chart-header">
-              <div class="chart-title">
-                <div class="title-icon">
-                  <svg viewBox="0 0 24 24" fill="none">
-                    <path d="M21.21 15.89A10 10 0 1 1 8 2.83" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                    <path d="M22 12A10 10 0 0 0 12 2v10z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                  </svg>
-                </div>
-                <span>预约类别分布</span>
-              </div>
-              <div class="chart-controls">
-                <el-select v-model="timeRange" placeholder="选择时间段" @change="handleTimeRangeChange" class="time-select">
-                  <el-option label="1天内" value="1d" />
-                  <el-option label="7天内" value="7d" />
-                  <el-option label="30天内" value="30d" />
-                  <el-option label="半年内" value="180d" />
-                  <el-option label="一年内" value="365d" />
-                </el-select>
-              </div>
-            </div>
-          </template>
-          <div class="chart-container" ref="reservationPieChartRef"></div>
-        </el-card>
-      </el-col>
-    </el-row>
+    <section class="summary-grid">
+      <article class="summary-card">
+        <span class="summary-label">已通过预约</span>
+        <strong>{{ reservationSummary.approvedReservations }}</strong>
+        <p>已经通过审核、等待执行的预约</p>
+      </article>
+      <article class="summary-card">
+        <span class="summary-label">已完成预约</span>
+        <strong>{{ reservationSummary.completedReservations }}</strong>
+        <p>已经结束并归档的预约记录</p>
+      </article>
+      <article class="summary-card">
+        <span class="summary-label">已签到</span>
+        <strong>{{ reservationSummary.checkedInReservations }}</strong>
+        <p>已完成签到但尚未签退的预约</p>
+      </article>
+      <article class="summary-card">
+        <span class="summary-label">失约次数</span>
+        <strong>{{ reservationSummary.missedReservations }}</strong>
+        <p>超过预约时间未签到的记录</p>
+      </article>
+    </section>
+
+    <section class="panel-card visual-grid">
+      <article class="chart-card">
+        <div class="chart-head">
+          <div>
+            <h2>设施分类分布</h2>
+            <p>展示不同设施分类的数量占比，便于查看资源结构。</p>
+          </div>
+          <span class="meta-chip">分类 {{ facilityCategoryData.length }} 项</span>
+        </div>
+        <div ref="categoryChartRef" class="chart-body"></div>
+      </article>
+
+      <article class="chart-card">
+        <div class="chart-head">
+          <div>
+            <h2>设施状态概览</h2>
+            <p>快速查看可用、维护中与损坏设施的当前分布。</p>
+          </div>
+          <span class="meta-chip muted-chip">实时同步设施状态</span>
+        </div>
+        <div ref="statusChartRef" class="chart-body"></div>
+      </article>
+
+      <article class="chart-card">
+        <div class="chart-head">
+          <div>
+            <h2>预约趋势变化</h2>
+            <p>根据所选时间范围展示预约新增趋势，便于判断近期活跃度。</p>
+          </div>
+          <span class="meta-chip">{{ timeRangeLabel }}</span>
+        </div>
+        <div ref="reservationTrendChartRef" class="chart-body"></div>
+      </article>
+
+      <article class="chart-card">
+        <div class="chart-head">
+          <div>
+            <h2>预约分类分布</h2>
+            <p>查看当前时间范围内各类设施预约的热度差异。</p>
+          </div>
+          <span class="meta-chip">{{ reservationCategoryData.length }} 类</span>
+        </div>
+        <div ref="reservationCategoryChartRef" class="chart-body"></div>
+      </article>
+    </section>
   </div>
 </template>
 
 <script setup>
-import { ref, onMounted, nextTick } from 'vue';
+import { computed, nextTick, onBeforeUnmount, onMounted, ref } from 'vue';
 import * as echarts from 'echarts';
-import { facilityAPI, reservationAPI, userAPI } from '../../api';
+import { adminAPI, facilityAPI, reservationAPI, userAPI } from '../../api';
 
-const stats = ref({
+const overview = ref({
   totalFacility: 0,
   availableFacility: 0,
-  totalReservations: 0,
   totalUser: 0
 });
 
-const lineChartRef = ref(null);
-const pieChartRef = ref(null);
-const reservationLineChartRef = ref(null);
-const reservationPieChartRef = ref(null);
-let lineChart = null;
-let pieChart = null;
-let reservationLineChart = null;
-let reservationPieChart = null;
-
-const timeRange = ref('7d');
-
-onMounted(async () => {
-  await loadStats();
-  await loadChartData();
-  await nextTick();
-  initCharts();
-  await loadReservationStats();
+const reservationSummary = ref({
+  totalReservations: 0,
+  pendingReservations: 0,
+  approvedReservations: 0,
+  completedReservations: 0,
+  rejectedReservations: 0,
+  cancelledReservations: 0,
+  checkedInReservations: 0,
+  checkedOutReservations: 0,
+  missedReservations: 0,
+  todayTotal: 0,
+  todayPending: 0,
+  todayApproved: 0
 });
 
-const loadStats = async () => {
+const facilityList = ref([]);
+const facilityCategoryData = ref([]);
+const facilityStatusData = ref([]);
+const reservationTrendData = ref([]);
+const reservationCategoryData = ref([]);
+const timeRange = ref('7d');
+
+const categoryChartRef = ref(null);
+const statusChartRef = ref(null);
+const reservationTrendChartRef = ref(null);
+const reservationCategoryChartRef = ref(null);
+
+let categoryChart = null;
+let statusChart = null;
+let reservationTrendChart = null;
+let reservationCategoryChart = null;
+
+const timeRangeLabel = computed(
+  () =>
+    ({
+      '7d': '近 7 天',
+      '30d': '近 30 天',
+      '180d': '近半年',
+      '365d': '近一年'
+    })[timeRange.value] || '近 7 天'
+);
+
+onMounted(async () => {
+  await loadDashboard();
+  window.addEventListener('resize', handleResize);
+});
+
+onBeforeUnmount(() => {
+  window.removeEventListener('resize', handleResize);
+  disposeCharts();
+});
+
+async function loadDashboard() {
+  await Promise.all([loadOverview(), loadReservationSummary(), loadReservationVisuals()]);
+  buildFacilityCharts();
+  await nextTick();
+  renderCharts();
+}
+
+async function loadOverview() {
   try {
-    const [facilityRes, availableRes, reservationRes, userRes] = await Promise.all([
+    const [facilityRes, availableRes, userRes] = await Promise.all([
       facilityAPI.list(),
       facilityAPI.available(),
-      reservationAPI.list(),
       userAPI.list()
     ]);
 
-    const resolveCount = (payload) => {
-      if (Array.isArray(payload)) {
-        return payload.length;
-      }
-
-      if (typeof payload?.totalElements === 'number') {
-        return payload.totalElements;
-      }
-
-      if (Array.isArray(payload?.content)) {
-        return payload.content.length;
-      }
-
-      return 0;
-    };
-
-    stats.value = {
+    facilityList.value = Array.isArray(facilityRes.data) ? facilityRes.data : facilityRes.data?.content || [];
+    overview.value = {
       totalFacility: resolveCount(facilityRes.data),
       availableFacility: resolveCount(availableRes.data),
-      totalReservations: resolveCount(reservationRes.data),
       totalUser: resolveCount(userRes.data)
     };
   } catch (error) {
-    console.error('加载统计数据失败:', error);
+    console.error('加载概览数据失败:', error);
   }
-};
+}
 
-const loadChartData = async () => {
+async function loadReservationSummary() {
   try {
-    const [facilityRes] = await Promise.all([
-      facilityAPI.list()
-    ]);
-
-    // 处理设施类别数据
-    const facilityCategoryData = processFacilityCategoryData(facilityRes.data);
-
-    // 处理设施状态数据
-    const facilityStatusData = processFacilityStatusData(facilityRes.data);
-
-    return {
-      facilityCategoryData,
-      facilityStatusData
+    const res = await adminAPI.getReservationStats();
+    reservationSummary.value = {
+      ...reservationSummary.value,
+      ...(res.data || {})
     };
   } catch (error) {
-    console.error('加载图表数据失败:', error);
-    return null;
+    console.error('加载预约统计失败:', error);
   }
-};
+}
 
-// 处理设施类别数据
-const processFacilityCategoryData = (facilitys) => {
-  const categoryCount = {};
-
-  // 统计各类别设施数量
-  facilitys.forEach(facility => {
-    const category = facility.category || '未分类';
-    if (categoryCount[category]) {
-      categoryCount[category]++;
-    } else {
-      categoryCount[category] = 1;
-    }
-  });
-
-  // 转换为数组格式并排序
-  const categoryData = Object.entries(categoryCount)
-    .map(([category, count]) => ({
-      category,
-      count
-    }))
-    .sort((a, b) => b.count - a.count); // 按数量降序排列
-
-  return categoryData;
-};
-
-// 处理设施状态数据
-const processFacilityStatusData = (facilitys) => {
-  const statusCount = {
-    AVAILABLE: 0,
-    MAINTENANCE: 0,
-    DISABLED: 0
-  };
-
-  facilitys.forEach(facility => {
-    const status = facility.status || 'UNKNOWN';
-    if (statusCount.hasOwnProperty(status)) {
-      statusCount[status]++;
-    }
-  });
-
-  return [
-    { name: '可用', value: statusCount.AVAILABLE, itemStyle: { color: '#67c23a' } },
-    { name: '维护中', value: statusCount.MAINTENANCE, itemStyle: { color: '#e6a23c' } },
-    { name: '停用', value: statusCount.DISABLED, itemStyle: { color: '#f56c6c' } }
-  ].filter(item => item.value > 0);
-};
-
-// 初始化图表
-const initCharts = async () => {
-  const chartData = await loadChartData();
-  if (!chartData) return;
-
-  // 初始化柱形图
-  initBarChart(chartData.facilityCategoryData);
-
-  // 初始化饼形图
-  initPieChart(chartData.facilityStatusData);
-};
-
-// 初始化柱形图
-const initBarChart = (data) => {
-  if (!lineChartRef.value) return;
-
-  lineChart = echarts.init(lineChartRef.value);
-
-  const option = {
-    tooltip: {
-      trigger: 'axis',
-      backgroundColor: 'rgba(50, 50, 50, 0.9)',
-      borderColor: 'none',
-      textStyle: {
-        color: '#fff'
-      },
-      formatter: (params) => {
-        const data = params[0];
-        return `${data.axisValue}<br/>设施数量: ${data.value} 台`;
-      }
-    },
-    grid: {
-      left: '3%',
-      right: '4%',
-      bottom: '3%',
-      top: '10%',
-      containLabel: true
-    },
-    xAxis: {
-      type: 'category',
-      data: data.map(item => item.category),
-      axisLine: {
-        lineStyle: {
-          color: '#e2e8f0'
-        }
-      },
-      axisTick: {
-        show: false
-      },
-      axisLabel: {
-        color: '#718096',
-        fontSize: 12,
-        rotate: data.length > 6 ? 45 : 0, // 如果类别较多，旋转标签
-        interval: 0
-      }
-    },
-    yAxis: {
-      type: 'value',
-      axisLine: {
-        show: false
-      },
-      axisTick: {
-        show: false
-      },
-      axisLabel: {
-        color: '#718096',
-        fontSize: 12
-      },
-      splitLine: {
-        lineStyle: {
-          color: '#f0f0f0'
-        }
-      }
-    },
-    series: [{
-      name: '设施数量',
-      type: 'bar',
-      data: data.map(item => item.count),
-      itemStyle: {
-        color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
-          { offset: 0, color: '#409eff' },
-          { offset: 1, color: '#66b1ff' }
-        ]),
-        borderRadius: [8, 8, 0, 0]
-      },
-      emphasis: {
-        itemStyle: {
-          color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
-            { offset: 0, color: '#66b1ff' },
-            { offset: 1, color: '#409eff' }
-          ]),
-          shadowBlur: 10,
-          shadowColor: 'rgba(64, 158, 255, 0.3)'
-        }
-      },
-      barWidth: '60%'
-    }]
-  };
-
-  lineChart.setOption(option);
-
-  // 响应式处理
-  window.addEventListener('resize', () => {
-    lineChart?.resize();
-  });
-};
-
-// 初始化饼形图
-const initPieChart = (data) => {
-  if (!pieChartRef.value) return;
-
-  pieChart = echarts.init(pieChartRef.value);
-
-  const option = {
-    tooltip: {
-      trigger: 'item',
-      backgroundColor: 'rgba(50, 50, 50, 0.9)',
-      borderColor: 'none',
-      textStyle: {
-        color: '#fff'
-      },
-      formatter: '{a} <br/>{b}: {c} ({d}%)'
-    },
-    series: [{
-      name: '设施状态',
-      type: 'pie',
-      radius: ['40%', '70%'],
-      center: ['50%', '50%'],
-      avoidLabelOverlap: false,
-      itemStyle: {
-        borderRadius: 8,
-        borderColor: '#fff',
-        borderWidth: 2
-      },
-      label: {
-        show: false,
-        position: 'center'
-      },
-      emphasis: {
-        label: {
-          show: true,
-          fontSize: '18',
-          fontWeight: 'bold',
-          color: '#1a202c'
-        },
-        itemStyle: {
-          shadowBlur: 10,
-          shadowOffsetX: 0,
-          shadowColor: 'rgba(0, 0, 0, 0.5)'
-        }
-      },
-      labelLine: {
-        show: false
-      },
-      data: data
-    }],
-    color: ['#67c23a', '#409eff', '#e6a23c', '#f56c6c']
-  };
-
-  pieChart.setOption(option);
-
-  // 响应式处理
-  window.addEventListener('resize', () => {
-    pieChart?.resize();
-  });
-};
-
-const loadReservationStats = async () => {
+async function loadReservationVisuals() {
   try {
-    console.log('正在加载预约统计数据, timeRange:', timeRange.value);
-    
-    const [timeRangeRes, categoryRes] = await Promise.all([
+    const [trendRes, categoryRes] = await Promise.all([
       reservationAPI.getStatsByTimeRange(timeRange.value),
       reservationAPI.getCategoryStats(timeRange.value)
     ]);
-    
-    console.log('时间段数据:', timeRangeRes);
-    console.log('类别数据:', categoryRes);
-    console.log('reservations具体数据:', timeRangeRes.data.data?.reservations);
 
-    processReservationLineData(timeRangeRes.data?.reservations || []);
-    processReservationPieData(categoryRes.data?.categoryData || []);
+    const trendSource =
+      trendRes.data?.reservations ||
+      trendRes.data?.data?.reservations ||
+      trendRes.data?.data ||
+      trendRes.data ||
+      [];
 
-    console.log('处理后的折线图数据:', window.reservationLineData);
-    console.log('处理后的饼图数据:', window.reservationPieData);
-    
-    await nextTick();
-    initReservationCharts();
+    const categorySource =
+      categoryRes.data?.categoryData ||
+      categoryRes.data?.data?.categoryData ||
+      categoryRes.data?.data ||
+      categoryRes.data ||
+      [];
+
+    reservationTrendData.value = normalizeReservationTrend(trendSource);
+    reservationCategoryData.value = normalizeReservationCategory(categorySource);
   } catch (error) {
-    console.error('加载预约统计数据失败:', error);
+    console.error('加载预约图表数据失败:', error);
+    reservationTrendData.value = [];
+    reservationCategoryData.value = [];
   }
-};
+}
 
-const handleTimeRangeChange = async () => {
-  await loadReservationStats();
-};
+function buildFacilityCharts() {
+  const categoryCount = {};
+  const statusCount = {
+    AVAILABLE: 0,
+    MAINTENANCE: 0,
+    DAMAGED: 0,
+    DISABLED: 0
+  };
 
-const processReservationLineData = (reservations) => {
-  const groupedData = {};
+  facilityList.value.forEach((facility) => {
+    const category = facility.category || '未分类';
+    categoryCount[category] = (categoryCount[category] || 0) + 1;
 
-  console.log('原始预约记录:', reservations);
-  if (reservations && reservations.length > 0) {
-    console.log('第一条记录:', reservations[0]);
-  }
-
-  reservations.forEach(r => {
-    if (r.createdAt) {
-      let date;
-      if (typeof r.createdAt === 'string') {
-        // 处理字符串格式
-        if (r.createdAt.includes('T')) {
-          date = r.createdAt.split('T')[0];
-        } else if (r.createdAt.includes(' ')) {
-          date = r.createdAt.split(' ')[0];
-        } else {
-          date = r.createdAt;
-        }
-      } else if (r.createdAt.date) {
-        date = r.createdAt.date;
-      } else if (r.createdAt.year) {
-        date = `${r.createdAt.year}-${String(r.createdAt.monthValue).padStart(2, '0')}-${String(r.createdAt.dayOfMonth).padStart(2, '0')}`;
-      }
-      if (date) {
-        groupedData[date] = (groupedData[date] || 0) + 1;
-      }
+    if (statusCount[facility.status] !== undefined) {
+      statusCount[facility.status] += 1;
     }
   });
 
-  console.log('分组后的数据:', groupedData);
-  window.reservationLineData = groupedData;
-};
+  facilityCategoryData.value = Object.entries(categoryCount)
+    .map(([name, value]) => ({ name, value }))
+    .sort((a, b) => b.value - a.value);
 
-const processReservationPieData = (categoryData) => {
-  window.reservationPieData = categoryData;
-};
+  facilityStatusData.value = [
+    { name: '可用', value: statusCount.AVAILABLE, itemStyle: { color: '#5ebd84' } },
+    { name: '维护中', value: statusCount.MAINTENANCE, itemStyle: { color: '#f0b36f' } },
+    { name: '损坏', value: statusCount.DAMAGED, itemStyle: { color: '#ef8a96' } },
+    { name: '停用', value: statusCount.DISABLED, itemStyle: { color: '#9ba9c2' } }
+  ].filter((item) => item.value > 0);
+}
 
-const initReservationCharts = () => {
-  // 销毁已存在的图表实例
-  if (reservationLineChart) {
-    reservationLineChart.dispose();
+async function handleTimeRangeChange() {
+  await loadReservationVisuals();
+  await nextTick();
+  renderCharts();
+}
+
+function resolveCount(payload) {
+  if (Array.isArray(payload)) {
+    return payload.length;
   }
-
-  if (reservationPieChart) {
-    reservationPieChart.dispose();
+  if (typeof payload?.totalElements === 'number') {
+    return payload.totalElements;
   }
+  if (Array.isArray(payload?.content)) {
+    return payload.content.length;
+  }
+  return 0;
+}
 
-  initReservationLineChart();
-  initReservationPieChart();
-};
+function normalizeReservationTrend(source) {
+  const grouped = {};
+  const list = Array.isArray(source) ? source : [];
 
-const initReservationLineChart = () => {
-  if (!reservationLineChartRef.value) return;
-  
-  reservationLineChart = echarts.init(reservationLineChartRef.value);
-  
-  const groupedData = window.reservationLineData || {};
-  const sortedDates = Object.keys(groupedData).sort();
-  const values = sortedDates.map(date => groupedData[date]);
-  
-  const option = {
-    tooltip: {
-      trigger: 'axis',
-      backgroundColor: 'rgba(50, 50, 50, 0.9)',
-      borderColor: 'none',
-      textStyle: {
-        color: '#fff'
-      },
-      formatter: (params) => {
-        const data = params[0];
-        return `${data.axisValue}<br/>预约数量: ${data.value} 次`;
-      }
-    },
-    grid: {
-      left: '3%',
-      right: '4%',
-      bottom: '3%',
-      top: '10%',
-      containLabel: true
-    },
-    xAxis: {
-      type: 'category',
-      data: sortedDates,
-      axisLine: {
-        lineStyle: {
-          color: '#e2e8f0'
-        }
-      },
-      axisTick: {
-        show: false
-      },
-      axisLabel: {
-        color: '#718096',
-        fontSize: 11,
-        rotate: sortedDates.length > 10 ? 45 : 0,
-        interval: Math.floor(sortedDates.length / 10)
-      }
-    },
-    yAxis: {
-      type: 'value',
-      axisLine: {
-        show: false
-      },
-      axisTick: {
-        show: false
-      },
-      axisLabel: {
-        color: '#718096',
-        fontSize: 12
-      },
-      splitLine: {
-        lineStyle: {
-          color: '#f0f0f0'
-        }
-      }
-    },
-    series: [{
-      name: '预约数量',
-      type: 'line',
-      data: values,
-      smooth: true,
-      symbol: 'circle',
-      symbolSize: 8,
-      itemStyle: {
-        color: '#e6a23c'
-      },
-      lineStyle: {
-        width: 3,
-        color: new echarts.graphic.LinearGradient(0, 0, 1, 0, [
-          { offset: 0, color: '#e6a23c' },
-          { offset: 1, color: '#f56c6c' }
-        ])
-      },
-      areaStyle: {
-        color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
-          { offset: 0, color: 'rgba(230, 162, 60, 0.4)' },
-          { offset: 1, color: 'rgba(230, 162, 60, 0.05)' }
-        ])
-      },
-      emphasis: {
-        itemStyle: {
-          color: '#f56c6c',
-          borderColor: '#fff',
-          borderWidth: 2,
-          shadowBlur: 10,
-          shadowColor: 'rgba(230, 162, 60, 0.5)'
-        }
-      }
-    }]
-  };
-  
-  reservationLineChart.setOption(option);
-  
-  window.addEventListener('resize', () => {
-    reservationLineChart?.resize();
+  list.forEach((item) => {
+    if (typeof item?.date === 'string' && typeof item?.count === 'number') {
+      grouped[item.date] = item.count;
+      return;
+    }
+
+    if (typeof item?.date === 'string' && typeof item?.total === 'number') {
+      grouped[item.date] = item.total;
+      return;
+    }
+
+    const rawDate = item?.createdAt || item?.date || item?.startTime;
+    if (!rawDate) {
+      return;
+    }
+
+    const date = String(rawDate).replace('T', ' ').slice(0, 10);
+    grouped[date] = (grouped[date] || 0) + (item?.count || 1);
   });
-};
 
-const initReservationPieChart = () => {
-  if (!reservationPieChartRef.value) return;
-  
-  reservationPieChart = echarts.init(reservationPieChartRef.value);
-  
-  const categoryData = window.reservationPieData || [];
-  
-  const option = {
-    tooltip: {
-      trigger: 'item',
-      backgroundColor: 'rgba(50, 50, 50, 0.9)',
-      borderColor: 'none',
-      textStyle: {
-        color: '#fff'
-      },
-      formatter: '{a} <br/>{b}: {c} ({d}%)'
-    },
-    series: [{
-      name: '预约类别',
-      type: 'pie',
-      radius: ['40%', '70%'],
-      center: ['50%', '50%'],
-      avoidLabelOverlap: false,
-      itemStyle: {
-        borderRadius: 8,
-        borderColor: '#fff',
-        borderWidth: 2
-      },
-      label: {
-        show: false,
-        position: 'center'
-      },
-      emphasis: {
-        label: {
-          show: true,
-          fontSize: '18',
-          fontWeight: 'bold',
-          color: '#1a202c'
+  return Object.keys(grouped)
+    .sort()
+    .map((date) => ({
+      date,
+      value: grouped[date]
+    }));
+}
+
+function normalizeReservationCategory(source) {
+  const list = Array.isArray(source) ? source : [];
+  return list
+    .map((item) => ({
+      name: item.name || item.category || item.categoryName || '未分类',
+      value: item.value ?? item.count ?? 0
+    }))
+    .filter((item) => item.value > 0);
+}
+
+function disposeCharts() {
+  categoryChart?.dispose();
+  statusChart?.dispose();
+  reservationTrendChart?.dispose();
+  reservationCategoryChart?.dispose();
+  categoryChart = null;
+  statusChart = null;
+  reservationTrendChart = null;
+  reservationCategoryChart = null;
+}
+
+function renderCharts() {
+  disposeCharts();
+
+  if (categoryChartRef.value) {
+    categoryChart = echarts.init(categoryChartRef.value);
+    categoryChart.setOption({
+      tooltip: { trigger: 'axis' },
+      grid: { left: '4%', right: '4%', top: '10%', bottom: '12%', containLabel: true },
+      xAxis: {
+        type: 'category',
+        data: facilityCategoryData.value.map((item) => item.name),
+        axisLabel: {
+          color: '#70839f',
+          interval: 0,
+          rotate: facilityCategoryData.value.length > 6 ? 26 : 0
         },
-        itemStyle: {
-          shadowBlur: 10,
-          shadowOffsetX: 0,
-          shadowColor: 'rgba(0, 0, 0, 0.5)'
+        axisLine: { lineStyle: { color: '#dbe5f4' } }
+      },
+      yAxis: {
+        type: 'value',
+        axisLabel: { color: '#70839f' },
+        splitLine: { lineStyle: { color: '#edf2fa' } }
+      },
+      series: [
+        {
+          type: 'bar',
+          data: facilityCategoryData.value.map((item) => item.value),
+          barWidth: '48%',
+          itemStyle: {
+            borderRadius: [10, 10, 0, 0],
+            color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+              { offset: 0, color: '#7cb5ff' },
+              { offset: 1, color: '#4f84df' }
+            ])
+          }
         }
+      ]
+    });
+  }
+
+  if (statusChartRef.value) {
+    statusChart = echarts.init(statusChartRef.value);
+    statusChart.setOption({
+      tooltip: { trigger: 'item' },
+      series: [
+        {
+          type: 'pie',
+          radius: ['42%', '72%'],
+          center: ['50%', '52%'],
+          itemStyle: {
+            borderRadius: 12,
+            borderColor: '#fff',
+            borderWidth: 3
+          },
+          label: { color: '#647893' },
+          data: facilityStatusData.value
+        }
+      ]
+    });
+  }
+
+  if (reservationTrendChartRef.value) {
+    reservationTrendChart = echarts.init(reservationTrendChartRef.value);
+    reservationTrendChart.setOption({
+      tooltip: { trigger: 'axis' },
+      grid: { left: '4%', right: '4%', top: '10%', bottom: '12%', containLabel: true },
+      xAxis: {
+        type: 'category',
+        data: reservationTrendData.value.map((item) => item.date),
+        axisLabel: { color: '#70839f', rotate: reservationTrendData.value.length > 7 ? 24 : 0 },
+        axisLine: { lineStyle: { color: '#dbe5f4' } }
       },
-      labelLine: {
-        show: false
+      yAxis: {
+        type: 'value',
+        axisLabel: { color: '#70839f' },
+        splitLine: { lineStyle: { color: '#edf2fa' } }
       },
-      data: categoryData
-    }]
-  };
-  
-  reservationPieChart.setOption(option);
-  
-  window.addEventListener('resize', () => {
-    reservationPieChart?.resize();
-  });
-};
+      series: [
+        {
+          type: 'line',
+          smooth: true,
+          data: reservationTrendData.value.map((item) => item.value),
+          symbolSize: 8,
+          itemStyle: { color: '#f0b36f' },
+          lineStyle: {
+            width: 3,
+            color: new echarts.graphic.LinearGradient(0, 0, 1, 0, [
+              { offset: 0, color: '#f0b36f' },
+              { offset: 1, color: '#ef8a96' }
+            ])
+          },
+          areaStyle: {
+            color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+              { offset: 0, color: 'rgba(240, 179, 111, 0.32)' },
+              { offset: 1, color: 'rgba(240, 179, 111, 0.04)' }
+            ])
+          }
+        }
+      ]
+    });
+  }
+
+  if (reservationCategoryChartRef.value) {
+    reservationCategoryChart = echarts.init(reservationCategoryChartRef.value);
+    reservationCategoryChart.setOption({
+      tooltip: { trigger: 'item' },
+      series: [
+        {
+          type: 'pie',
+          radius: ['38%', '68%'],
+          center: ['50%', '52%'],
+          itemStyle: {
+            borderRadius: 12,
+            borderColor: '#fff',
+            borderWidth: 3
+          },
+          label: { color: '#647893' },
+          data: reservationCategoryData.value
+        }
+      ],
+      color: ['#78adff', '#5ebd84', '#f0b36f', '#ef8a96', '#9ba9c2', '#7cc8ad']
+    });
+  }
+}
+
+function handleResize() {
+  categoryChart?.resize();
+  statusChart?.resize();
+  reservationTrendChart?.resize();
+  reservationCategoryChart?.resize();
+}
 </script>
 
 <style scoped>
-/* 页面背景 */
-.dashboard {
-  padding: 0;
-  background: linear-gradient(135deg, #f8fafc 0%, #f0f9ff 25%, #e6f7ff 50%, #f8fafc 100%);
-  min-height: calc(100vh - 88px);
+.admin-dashboard-page {
+  --theme-main: #5bb7b0;
+  --theme-deep: #338b84;
+  --theme-soft: rgba(163, 228, 222, 0.26);
+  --theme-border: rgba(91, 183, 176, 0.16);
+  --theme-shadow: rgba(27, 77, 73, 0.08);
+  min-height: 100%;
+  display: grid;
+  gap: 20px;
+  background:
+    radial-gradient(circle at top left, rgba(198, 240, 236, 0.74), transparent 26%),
+    radial-gradient(circle at right center, rgba(236, 250, 248, 0.92), transparent 24%),
+    linear-gradient(180deg, #f8fdfc 0%, #f5fbfa 48%, #f2faf7 100%);
 }
 
-/* 页面标题区域 */
-.page-header {
-  position: relative;
-  background: #ffffff;
-  margin: 0 0 24px 0;
-  border-radius: 0;
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
-  overflow: hidden;
+.page-hero,
+.stat-card,
+.summary-card,
+.panel-card,
+.hero-note,
+.chart-card {
+  animation: dashboard-rise 0.55s ease both;
 }
 
-.header-decoration {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 3px;
-  background: linear-gradient(90deg, #409eff 0%, #66b1ff 50%, #409eff 100%);
-  background-size: 200% 100%;
-  animation: gradient-shimmer 3s ease-in-out infinite;
+.page-hero,
+.stat-card,
+.summary-card,
+.panel-card,
+.hero-note,
+.chart-card {
+  border-radius: 28px;
+  border: 1px solid var(--theme-border);
+  background: rgba(255, 255, 255, 0.95);
+  box-shadow: 0 22px 50px var(--theme-shadow);
 }
 
-.header-content {
-  padding: 32px 40px 24px;
-  display: flex;
+.page-hero {
+  display: grid;
+  grid-template-columns: minmax(0, 1.6fr) 320px;
+  gap: 20px;
+  padding: 30px;
+  background:
+    radial-gradient(circle at top right, var(--theme-soft), transparent 30%),
+    linear-gradient(145deg, rgba(239, 252, 250, 0.96) 0%, #ffffff 62%);
+}
+
+.hero-eyebrow {
+  display: inline-flex;
   align-items: center;
-  justify-content: space-between;
+  padding: 6px 12px;
+  border-radius: 999px;
+  background: rgba(163, 228, 222, 0.24);
+  color: #458a84;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
 }
 
-.page-title {
-  display: flex;
-  align-items: center;
-  font-size: 28px;
-  font-weight: 700;
-  color: #1a202c;
+.hero-copy h1,
+.chart-head h2 {
+  margin: 14px 0 10px;
+  color: #1b4a45;
+}
+
+.hero-copy h1 {
+  font-size: 34px;
+}
+
+.hero-copy p,
+.chart-head p,
+.stat-card p,
+.summary-card p {
   margin: 0;
+  color: #718d88;
+  line-height: 1.8;
 }
 
-.title-icon {
-  width: 48px;
-  height: 48px;
-  background: linear-gradient(135deg, #e6f7ff 0%, #bae7ff 100%);
-  border-radius: 12px;
+.hero-actions,
+.panel-meta {
   display: flex;
   align-items: center;
-  justify-content: center;
-  margin-right: 16px;
-  box-shadow: 0 4px 12px rgba(64, 158, 255, 0.15);
+  gap: 12px;
+  flex-wrap: wrap;
 }
 
-.title-icon svg {
-  width: 24px;
-  height: 24px;
-  color: #409eff;
+.hero-actions {
+  margin-top: 24px;
 }
 
-.page-subtitle {
-  font-size: 14px;
-  color: #718096;
-  margin: 0 0 0 64px;
-  font-weight: 400;
-}
-
-/* 统计卡片行 */
-.stats-row {
-  margin-bottom: 24px;
-}
-
-.stat-card {
-  border-radius: 16px;
+.primary-btn {
+  min-height: 44px;
+  padding: 0 18px;
   border: none;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-  transition: all 0.3s ease;
-  overflow: hidden;
-  position: relative;
+  border-radius: 14px;
+  background: linear-gradient(135deg, #5bb7b0 0%, #338b84 100%);
+  box-shadow: 0 14px 28px rgba(51, 139, 132, 0.22);
 }
 
-.stat-card:hover {
-  transform: translateY(-8px);
-  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+.range-select {
+  width: 160px;
 }
 
-.stat-card::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 4px;
-  background: linear-gradient(90deg, var(--card-color) 0%, var(--card-color-light) 100%);
+.range-select :deep(.el-select__wrapper) {
+  min-height: 44px;
+  border-radius: 14px;
+  box-shadow: none;
+  border: 1px solid rgba(91, 183, 176, 0.2);
+  background: #f9fcfc;
 }
 
-.facility-card {
-  --card-color: #409eff;
-  --card-color-light: #66b1ff;
+.hero-side {
+  display: grid;
+  gap: 14px;
 }
 
-.available-card {
-  --card-color: #67c23a;
-  --card-color-light: #85ce61;
+.hero-note {
+  min-height: 132px;
+  padding: 22px;
+  background: linear-gradient(180deg, #f8fcfc 0%, #ffffff 100%);
 }
 
-.reservation-card {
-  --card-color: #e6a23c;
-  --card-color-light: #ebb563;
+.hero-note span,
+.hero-note small,
+.stat-label,
+.summary-label {
+  color: #788f8b;
 }
 
-.user-card {
-  --card-color: #f56c6c;
-  --card-color-light: #f78989;
+.hero-note strong,
+.stat-card strong,
+.summary-card strong {
+  color: #1d4a45;
 }
 
-.stat-content {
-  display: flex;
-  align-items: center;
+.hero-note strong,
+.stat-card strong,
+.summary-card strong {
+  display: block;
+  margin: 14px 0 8px;
+  font-size: 30px;
+}
+
+.stats-grid,
+.summary-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.stat-card,
+.summary-card {
+  padding: 22px;
+  background: linear-gradient(150deg, rgba(239, 252, 250, 0.96) 0%, #ffffff 84%);
+}
+
+.success-card {
+  background: linear-gradient(150deg, rgba(240, 252, 245, 0.96) 0%, #ffffff 84%);
+}
+
+.warning-card {
+  background: linear-gradient(150deg, rgba(255, 248, 238, 0.96) 0%, #ffffff 84%);
+}
+
+.info-card {
+  background: linear-gradient(150deg, rgba(244, 247, 251, 0.96) 0%, #ffffff 84%);
+}
+
+.visual-grid {
   padding: 24px;
-}
-
-.stat-icon-wrapper {
-  width: 64px;
-  height: 64px;
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.9) 0%, rgba(255, 255, 255, 0.7) 100%);
-  border-radius: 16px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-right: 20px;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
-  position: relative;
-}
-
-.stat-icon-wrapper::after {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  border-radius: 16px;
-  background: linear-gradient(135deg, var(--card-color) 0%, var(--card-color-light) 100%);
-  opacity: 0.1;
-}
-
-.stat-icon {
-  font-size: 32px;
-  color: var(--card-color);
-  z-index: 1;
-  position: relative;
-}
-
-.stat-info {
-  flex: 1;
-}
-
-.stat-value {
-  font-size: 36px;
-  font-weight: 700;
-  color: #1a202c;
-  margin-bottom: 4px;
-  line-height: 1;
-}
-
-.stat-label {
-  font-size: 14px;
-  color: #718096;
-  font-weight: 500;
-}
-
-/* 图表卡片行 */
-.charts-row {
-  margin-bottom: 24px;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
 }
 
 .chart-card {
-  border-radius: 16px;
-  border: none;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-  transition: all 0.3s ease;
-  overflow: hidden;
+  padding: 22px;
+  background: linear-gradient(180deg, #ffffff 0%, #fbfefd 100%);
 }
 
-.chart-card:hover {
-  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
-}
-
-.chart-card :deep(.el-card__header) {
-  padding: 0;
-  border-bottom: none;
-}
-
-.chart-card :deep(.el-card__body) {
-  padding: 0;
-}
-
-.chart-header {
+.chart-head {
   display: flex;
   justify-content: space-between;
+  gap: 16px;
   align-items: flex-start;
-  padding: 24px 32px 20px;
-  border-bottom: 1px solid #f0f0f0;
+  margin-bottom: 12px;
 }
 
-.chart-controls {
-  display: flex;
-  align-items: center;
-}
-
-.time-select {
-  width: 140px;
-}
-
-.time-select :deep(.el-input__wrapper) {
-  border-radius: 8px;
-}
-
-.chart-title {
-  display: flex;
-  align-items: center;
-  font-size: 18px;
+.meta-chip {
+  padding: 8px 12px;
+  border-radius: 999px;
+  background: rgba(163, 228, 222, 0.24);
+  color: #498881;
+  font-size: 12px;
   font-weight: 600;
-  color: #1a202c;
-  margin-bottom: 4px;
 }
 
-.chart-title .title-icon {
-  width: 32px;
-  height: 32px;
-  background: linear-gradient(135deg, #e6f7ff 0%, #bae7ff 100%);
-  border-radius: 8px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-right: 12px;
-  box-shadow: 0 4px 12px rgba(64, 158, 255, 0.15);
+.muted-chip {
+  background: rgba(244, 248, 247, 0.96);
+  color: #7f928e;
 }
 
-.chart-title .title-icon svg {
-  width: 16px;
-  height: 16px;
-  color: #409eff;
+.chart-body {
+  height: 320px;
 }
 
-.chart-subtitle {
-  font-size: 14px;
-  color: #718096;
-  margin-left: 44px;
+@keyframes dashboard-rise {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
-.chart-container {
-  padding: 24px;
-  height: 350px;
-}
+@media (max-width: 1180px) {
+  .page-hero,
+  .visual-grid,
+  .stats-grid,
+  .summary-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
 
-.line-chart-card .chart-container {
-  height: 350px;
-}
-
-.pie-chart-card .chart-container {
-  height: 350px;
-}
-
-.reservation-line-card .chart-container,
-.reservation-pie-card .chart-container {
-  height: 350px;
-}
-
-.chart-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  padding: 24px 32px 20px;
-  border-bottom: 1px solid #f0f0f0;
-}
-
-.chart-controls {
-  display: flex;
-  align-items: center;
-}
-
-.time-select {
-  width: 140px;
-}
-
-.time-select :deep(.el-input__wrapper) {
-  border-radius: 8px;
-}
-
-/* 动画效果 */
-@keyframes gradient-shimmer {
-  0%, 100% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
-}
-
-/* 响应式设计 */
-@media (max-width: 1200px) {
-  .charts-row .el-col:first-child {
-    margin-bottom: 24px;
+  .page-hero {
+    grid-template-columns: 1fr;
   }
 }
 
 @media (max-width: 768px) {
-  .header-content {
-    padding: 24px 20px 16px;
+  .stats-grid,
+  .summary-grid,
+  .visual-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .page-hero,
+  .panel-card {
+    padding: 18px;
+  }
+
+  .hero-copy h1 {
+    font-size: 28px;
+  }
+
+  .chart-head {
     flex-direction: column;
-    align-items: flex-start;
   }
 
-  .page-subtitle {
-    margin: 8px 0 0 0;
-  }
-
-  .page-title {
-    font-size: 24px;
-  }
-
-  .title-icon {
-    width: 40px;
-    height: 40px;
-  }
-
-  .title-icon svg {
-    width: 20px;
-    height: 20px;
-  }
-
-  .stat-content {
-    padding: 20px;
-  }
-
-  .stat-icon-wrapper {
-    width: 56px;
-    height: 56px;
-    margin-right: 16px;
-  }
-
-  .stat-icon {
-    font-size: 28px;
-  }
-
-  .stat-value {
-    font-size: 28px;
-  }
-
-  .chart-header {
-    padding: 20px;
-  }
-
-  .chart-container {
-    padding: 20px;
-    height: 300px !important;
-  }
-
-  .stats-row .el-col {
-    margin-bottom: 16px;
-  }
-}
-
-@media (max-width: 480px) {
-  .stat-value {
-    font-size: 24px;
-  }
-
-  .stat-icon-wrapper {
-    width: 48px;
-    height: 48px;
-    margin-right: 12px;
-  }
-
-  .stat-icon {
-    font-size: 24px;
-  }
-
-  .chart-container {
-    height: 260px !important;
+  .range-select {
+    width: 100%;
   }
 }
 </style>

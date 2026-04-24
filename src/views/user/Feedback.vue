@@ -1,193 +1,146 @@
 <template>
   <div class="feedback-page">
-    <!-- 页面标题区域 -->
-    <div class="page-header">
-      <div class="header-decoration"></div>
+    <section class="page-header">
       <div class="header-content">
-        <h1 class="page-title">
-          <div class="title-icon">
-            <svg viewBox="0 0 24 24" fill="none">
-              <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-              <line x1="8" y1="9" x2="16" y2="9" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-              <line x1="8" y1="13" x2="14" y2="13" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-          </div>
-          意见反馈
-        </h1>
-        <p class="page-subtitle">提交您的建议、投诉或咨询，查看管理员回复</p>
+        <div>
+          <span class="page-kicker">服务沟通中心</span>
+          <h1 class="page-title">意见反馈</h1>
+          <p class="page-subtitle">提交建议、投诉或咨询，并在同一页面查看管理员回复。</p>
+        </div>
       </div>
-    </div>
+    </section>
 
-    <!-- 反馈提交表单 -->
-    <div class="content-card">
-      <div class="card-header">
-        <h3 class="card-title">
-          <div class="card-title-icon">
-            <svg viewBox="0 0 24 24" fill="none">
-              <path d="M12 2L2 7L12 12L22 7L12 2Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-              <path d="M2 17L12 22L22 17" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
+    <section class="summary-grid">
+      <article class="summary-card">
+        <span class="summary-label">反馈总数</span>
+        <strong>{{ feedbackStats.total }}</strong>
+        <p>包含历史记录和当前仍在处理中的反馈</p>
+      </article>
+      <article class="summary-card">
+        <span class="summary-label">待处理</span>
+        <strong>{{ feedbackStats.pending }}</strong>
+        <p>管理员尚未正式处理完成的内容</p>
+      </article>
+      <article class="summary-card">
+        <span class="summary-label">已回复</span>
+        <strong>{{ feedbackStats.resolved }}</strong>
+        <p>已经得到明确处理结果或回复的反馈</p>
+      </article>
+      <article class="summary-card">
+        <span class="summary-label">当前页记录</span>
+        <strong>{{ feedbackStats.currentPage }}</strong>
+        <p>根据分页设置正在展示的记录数量</p>
+      </article>
+    </section>
+
+    <section class="content-grid">
+      <article class="panel-card form-panel">
+        <div class="panel-head">
+          <div>
+            <h2>提交反馈</h2>
+            <p>尽量描述清楚背景和诉求，管理员更容易准确处理。</p>
           </div>
-          提交反馈
-        </h3>
-      </div>
-      
-      <div class="card-body">
-        <el-form :model="feedbackForm" :rules="feedbackRules" ref="feedbackFormRef" label-width="100px" class="feedback-form">
+        </div>
+
+        <el-form
+          ref="feedbackFormRef"
+          :model="feedbackForm"
+          :rules="feedbackRules"
+          label-position="top"
+          class="feedback-form"
+        >
           <el-form-item label="反馈类型" prop="type">
-            <el-select v-model="feedbackForm.type" placeholder="请选择反馈类型" class="feedback-select">
+            <el-select v-model="feedbackForm.type" placeholder="请选择反馈类型" class="field-control">
               <el-option label="建议" value="SUGGESTION" />
               <el-option label="投诉" value="COMPLAINT" />
               <el-option label="咨询" value="QUESTION" />
             </el-select>
           </el-form-item>
-          
+
           <el-form-item label="反馈标题" prop="title">
-            <el-input v-model="feedbackForm.title" placeholder="请输入反馈标题" maxlength="200" show-word-limit class="feedback-input" />
-          </el-form-item>
-          
-          <el-form-item label="反馈内容" prop="content">
-            <el-input 
-              v-model="feedbackForm.content" 
-              type="textarea" 
-              :rows="6" 
-              placeholder="请详细描述您的反馈内容"
-              maxlength="1000"
+            <el-input
+              v-model="feedbackForm.title"
+              maxlength="200"
               show-word-limit
-              class="feedback-textarea"
+              placeholder="请输入反馈标题"
+              class="field-control"
             />
           </el-form-item>
-          
-          <el-form-item>
-            <el-button type="primary" size="large" @click="submitFeedback" :loading="submitting" class="submit-btn">
-              <el-icon><Check /></el-icon>
-              {{ submitting ? '提交中...' : '提交反馈' }}
-            </el-button>
-            <el-button size="large" @click="resetForm" class="reset-btn">
-              <el-icon><Refresh /></el-icon>
-              重置
-            </el-button>
+
+          <el-form-item label="反馈内容" prop="content">
+            <el-input
+              v-model="feedbackForm.content"
+              type="textarea"
+              :rows="7"
+              maxlength="1000"
+              show-word-limit
+              placeholder="请尽量详细描述问题、建议或咨询内容"
+              class="field-control"
+            />
           </el-form-item>
+
+          <div class="form-actions">
+            <el-button type="primary" class="primary-btn" :loading="submitting" @click="submitFeedback">
+              提交反馈
+            </el-button>
+            <el-button class="secondary-btn" @click="resetForm">重置内容</el-button>
+          </div>
         </el-form>
-      </div>
-    </div>
-    <!-- 我的反馈列表 -->
-    <div class="content-card">
-      <div class="card-header">
-        <h3 class="card-title">
-          <div class="card-title-icon">
-            <svg viewBox="0 0 24 24" fill="none">
-              <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
+      </article>
+
+      <article class="panel-card list-panel">
+        <div class="panel-head">
+          <div>
+            <h2>我的反馈记录</h2>
+            <p>列表卡片化展示状态、时间和管理员回复，方便持续跟进。</p>
           </div>
-          我的反馈
-        </h3>
-        <div class="card-actions">
-          <el-button type="primary" size="small" @click="refreshData" class="refresh-btn">
-            <el-icon><Refresh /></el-icon>
-            刷新
-          </el-button>
-        </div>
-      </div>
-
-      <div class="card-body">
-        <!-- 加载状态 -->
-        <div v-if="loading" class="loading-container">
-          <el-icon class="is-loading"><Loading /></el-icon>
-          <span>加载中...</span>
+          <el-button class="secondary-btn" @click="refreshData">刷新列表</el-button>
         </div>
 
-        <!-- 空状态 -->
+        <div v-if="loading" class="status-wrap">
+          <el-icon class="is-loading status-icon"><Loading /></el-icon>
+          <span>正在加载反馈记录...</span>
+        </div>
+
         <div v-else-if="feedbacks.length === 0" class="empty-state">
-          <div class="empty-icon">
-            <svg viewBox="0 0 24 24" fill="none">
-              <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-          </div>
-          <p class="empty-text">暂无反馈记录</p>
-          <p class="empty-description">您还没有提交过任何反馈，欢迎提出宝贵意见！</p>
+          <h3>暂无反馈记录</h3>
+          <p>你还没有提交过反馈，欢迎告诉我们你的想法。</p>
         </div>
 
-        <!-- 反馈列表 -->
         <div v-else class="feedback-list">
-          <div 
-            class="feedback-item" 
-            v-for="feedback in feedbacks" 
-            :key="feedback.id"
-          >
-            <div class="feedback-header">
-              <div class="feedback-type">
-                <el-tag 
-                  :type="getFeedbackTypeTagType(feedback.type)" 
-                  class="type-tag" 
-                  effect="light"
-                >
-                  <el-icon>
-                    <ChatDotRound v-if="feedback.type === 'SUGGESTION'" />
-                    <Warning v-else-if="feedback.type === 'COMPLAINT'" />
-                    <QuestionFilled v-else />
-                  </el-icon>
+          <article v-for="feedback in feedbacks" :key="feedback.id" class="feedback-card">
+            <div class="feedback-top">
+              <div class="feedback-tags">
+                <el-tag :type="getFeedbackTypeTagType(feedback.type)" effect="light" round>
                   {{ getFeedbackTypeText(feedback.type) }}
                 </el-tag>
-              </div>
-              <div class="feedback-status">
-                <el-tag 
-                  :type="getStatusType(feedback.status)" 
-                  class="status-tag" 
-                  effect="light"
-                >
-                  <el-icon>
-                    <Clock v-if="feedback.status === 'PENDING'" />
-                    <CircleCheck v-else-if="feedback.status === 'RESOLVED'" />
-                    <CircleClose v-else />
-                  </el-icon>
+                <el-tag :type="getStatusType(feedback.status)" effect="light" round>
                   {{ getStatusText(feedback.status) }}
                 </el-tag>
               </div>
+              <span class="feedback-time">{{ formatDateTime(feedback.createTime) }}</span>
             </div>
-            
-            <div class="feedback-body">
-              <h4 class="feedback-title">{{ feedback.title }}</h4>
-              <div class="feedback-content">
-                {{ feedback.content }}
-              </div>
-              
-              <div class="feedback-meta">
-                <div class="meta-item">
-                  <el-icon><Calendar /></el-icon>
-                  <span>提交时间：{{ formatDateTime(feedback.createTime) }}</span>
-                </div>
-                <div class="meta-item" v-if="feedback.updateTime">
-                  <el-icon><Clock /></el-icon>
-                  <span>更新时间：{{ formatDateTime(feedback.updateTime) }}</span>
-                </div>
-              </div>
-              
-              <div class="admin-reply" v-if="feedback.reply && feedback.reply.trim() !== ''">
-                <div class="reply-header">
-                  <el-icon><ChatDotRound /></el-icon>
-                  <span class="reply-title">管理员回复</span>
-                </div>
-                <div class="reply-content">
-                  {{ feedback.reply }}
-                </div>
-                <div class="feedback-meta" v-if="feedback.replyTime">
-                  <div class="meta-item">
-                    <el-icon><Calendar /></el-icon>
-                    <span>回复时间：{{ formatDateTime(feedback.replyTime) }}</span>
-                  </div>
-                  <div class="meta-item" v-if="feedback.replyByName">
-                    <el-icon><User /></el-icon>
-                    <span>回复人：{{ feedback.replyByName }}</span>
-                  </div>
-                </div>
-              </div>
+
+            <h3 class="feedback-title">{{ feedback.title }}</h3>
+            <p class="feedback-content">{{ feedback.content }}</p>
+
+            <div class="meta-list">
+              <span>提交时间：{{ formatDateTime(feedback.createTime) }}</span>
+              <span v-if="feedback.updateTime">更新时间：{{ formatDateTime(feedback.updateTime) }}</span>
             </div>
-          </div>
+
+            <div v-if="feedback.reply && feedback.reply.trim()" class="reply-box">
+              <div class="reply-head">
+                <strong>管理员回复</strong>
+                <span v-if="feedback.replyTime">{{ formatDateTime(feedback.replyTime) }}</span>
+              </div>
+              <p>{{ feedback.reply }}</p>
+              <span v-if="feedback.replyByName" class="reply-user">回复人：{{ feedback.replyByName }}</span>
+            </div>
+          </article>
         </div>
 
-        <!-- 分页 -->
-        <div v-if="feedbacks.length > 0" class="pagination-container">
+        <div v-if="feedbacks.length > 0" class="pagination-wrap">
           <el-pagination
             v-model:current-page="currentPage"
             v-model:page-size="pageSize"
@@ -198,609 +151,533 @@
             @current-change="handleCurrentChange"
           />
         </div>
-      </div>
-    </div>
+      </article>
+    </section>
   </div>
 </template>
 
-<script>
-import { ref, onMounted, reactive } from 'vue'
-import { ElMessage } from 'element-plus'
-import { userClientAPI } from '@/api'
-import { formatDateTime } from '@/utils/date'
-import { Check, Refresh, Loading, ChatDotRound, Calendar, Clock, CircleCheck, CircleClose, Warning, QuestionFilled, User } from '@element-plus/icons-vue'
+<script setup>
+import { computed, onMounted, reactive, ref } from 'vue';
+import { ElMessage } from 'element-plus';
+import { Loading } from '@element-plus/icons-vue';
+import { userClientAPI } from '@/api';
+import { formatDateTime } from '@/utils/date';
 
-export default {
-  name: 'Feedback',
-  setup() {
-    const userInfo = JSON.parse(localStorage.getItem('userInfo') || '{}')
-    const userId = userInfo.id
+const userInfo = JSON.parse(localStorage.getItem('userInfo') || '{}');
+const userId = userInfo.id;
 
-    // 表单相关
-    const feedbackFormRef = ref()
-    const feedbackForm = reactive({
-      type: 'SUGGESTION',
-      title: '',
-      content: ''
-    })
+const feedbackFormRef = ref();
+const feedbacks = ref([]);
+const loading = ref(false);
+const submitting = ref(false);
+const currentPage = ref(1);
+const pageSize = ref(10);
+const total = ref(0);
 
-    const feedbackRules = {
-      type: [
-        { required: true, message: '请选择反馈类型', trigger: 'change' }
-      ],
-      title: [
-        { required: true, message: '请输入反馈标题', trigger: 'blur' },
-        { min: 5, max: 200, message: '标题长度在 5 到 200 个字符', trigger: 'blur' }
-      ],
-      content: [
-        { required: true, message: '请输入反馈内容', trigger: 'blur' },
-        { min: 10, max: 1000, message: '内容长度在 10 到 1000 个字符', trigger: 'blur' }
-      ]
-    }
+const feedbackForm = reactive({
+  type: 'SUGGESTION',
+  title: '',
+  content: ''
+});
 
-    // 列表相关
-    const feedbacks = ref([])
-    const loading = ref(false)
-    const submitting = ref(false)
-    const currentPage = ref(1)
-    const pageSize = ref(10)
-    const total = ref(0)
+const feedbackRules = {
+  type: [{ required: true, message: '请选择反馈类型', trigger: 'change' }],
+  title: [
+    { required: true, message: '请输入反馈标题', trigger: 'blur' },
+    { min: 5, max: 200, message: '标题长度应在 5 到 200 个字符之间', trigger: 'blur' }
+  ],
+  content: [
+    { required: true, message: '请输入反馈内容', trigger: 'blur' },
+    { min: 10, max: 1000, message: '内容长度应在 10 到 1000 个字符之间', trigger: 'blur' }
+  ]
+};
 
-    // 方法
-    const loadFeedbacks = async () => {
-      if (!userId) {
-        ElMessage.error('用户信息获取失败')
-        return
-      }
+const feedbackStats = computed(() => ({
+  total: total.value,
+  pending: feedbacks.value.filter((item) => item.status === 'PENDING').length,
+  resolved: feedbacks.value.filter((item) => ['RESOLVED', 'PROCESSED'].includes(item.status)).length,
+  currentPage: feedbacks.value.length
+}));
 
-      loading.value = true
-      try {
-        const response = await userClientAPI.getMyFeedbacks(userId, currentPage.value - 1, pageSize.value)
-        if (response.code === 200) {
-          feedbacks.value = response.data.feedbacks || []
-          total.value = response.data.total || 0
-        } else {
-          ElMessage.error(response.message || '获取反馈列表失败')
-        }
-      } catch (error) {
-        console.error('获取反馈列表失败:', error)
-        ElMessage.error('网络错误，请稍后重试')
-      } finally {
-        loading.value = false
-      }
-    }
-
-    const submitFeedback = async () => {
-      if (!feedbackFormRef.value) return
-
-      try {
-        const valid = await feedbackFormRef.value.validate()
-        if (!valid) return
-
-        if (!userId) {
-          ElMessage.error('用户信息获取失败')
-          return
-        }
-
-        submitting.value = true
-        const submitData = {
-          ...feedbackForm,
-          userId: userId
-        }
-
-        const response = await userClientAPI.submitFeedback(submitData)
-        if (response.code === 200) {
-          ElMessage.success('反馈提交成功')
-          resetForm()
-          loadFeedbacks() // 刷新列表
-        } else {
-          ElMessage.error(response.message || '反馈提交失败')
-        }
-      } catch (error) {
-        console.error('提交反馈失败:', error)
-        ElMessage.error('网络错误，请稍后重试')
-      } finally {
-        submitting.value = false
-      }
-    }
-
-    const resetForm = () => {
-      if (feedbackFormRef.value) {
-        feedbackFormRef.value.resetFields()
-        feedbackForm.type = 'SUGGESTION'
-      }
-    }
-
-    const refreshData = () => {
-      currentPage.value = 1
-      loadFeedbacks()
-    }
-
-    const handleSizeChange = (size) => {
-      pageSize.value = size
-      currentPage.value = 1
-      loadFeedbacks()
-    }
-
-    const handleCurrentChange = (page) => {
-      currentPage.value = page
-      loadFeedbacks()
-    }
-
-    const getFeedbackTypeClass = (type) => {
-      const typeMap = {
-        'SUGGESTION': 'type-suggestion',
-        'COMPLAINT': 'type-complaint',
-        'QUESTION': 'type-question'
-      }
-      return typeMap[type] || 'type-suggestion'
-    }
-
-    const getFeedbackTypeText = (type) => {
-      const textMap = {
-        'SUGGESTION': '建议',
-        'COMPLAINT': '投诉',
-        'QUESTION': '咨询'
-      }
-      return textMap[type] || '建议'
-    }
-
-    const getStatusClass = (status) => {
-      const statusMap = {
-        'PENDING': 'status-pending',
-        'PROCESSED': 'status-processed'
-      }
-      return statusMap[status] || 'status-pending'
-    }
-
-    const getStatusText = (status) => {
-      const textMap = {
-        'PENDING': '待处理',
-        'PROCESSED': '已处理'
-      }
-      return textMap[status] || '待处理'
-    }
-
-    // 生命周期
-    onMounted(() => {
-      loadFeedbacks()
-    })
-
-    const getFeedbackTypeTagType = (type) => {
-      const map = {
-        'SUGGESTION': 'primary',
-        'COMPLAINT': 'danger',
-        'QUESTION': 'warning'
-      }
-      return map[type] || 'info'
-    }
-
-    const getStatusType = (status) => {
-      const map = {
-        'PENDING': 'warning',
-        'RESOLVED': 'success',
-        'REJECTED': 'danger'
-      }
-      return map[status] || 'info'
-    }
-
-    return {
-      feedbackFormRef,
-      feedbackForm,
-      feedbackRules,
-      feedbacks,
-      loading,
-      submitting,
-      currentPage,
-      pageSize,
-      total,
-      
-      submitFeedback,
-      resetForm,
-      refreshData,
-      handleSizeChange,
-      handleCurrentChange,
-      getFeedbackTypeClass,
-      getFeedbackTypeText,
-      getFeedbackTypeTagType,
-      getStatusClass,
-      getStatusText,
-      getStatusType,
-      formatDateTime
-    }
+const loadFeedbacks = async () => {
+  if (!userId) {
+    ElMessage.error('用户信息获取失败');
+    return;
   }
-}
+
+  loading.value = true;
+  try {
+    const response = await userClientAPI.getMyFeedbacks(userId, currentPage.value - 1, pageSize.value);
+    if (response.code === 200) {
+      feedbacks.value = response.data.feedbacks || [];
+      total.value = response.data.total || 0;
+      return;
+    }
+    ElMessage.error(response.message || '获取反馈列表失败');
+  } catch (error) {
+    console.error('获取反馈列表失败:', error);
+    ElMessage.error('网络异常，请稍后重试');
+  } finally {
+    loading.value = false;
+  }
+};
+
+const submitFeedback = async () => {
+  if (!feedbackFormRef.value) return;
+
+  try {
+    await feedbackFormRef.value.validate();
+
+    if (!userId) {
+      ElMessage.error('用户信息获取失败');
+      return;
+    }
+
+    submitting.value = true;
+    const response = await userClientAPI.submitFeedback({
+      ...feedbackForm,
+      userId
+    });
+
+    if (response.code === 200) {
+      ElMessage.success('反馈提交成功');
+      resetForm();
+      loadFeedbacks();
+      return;
+    }
+    ElMessage.error(response.message || '反馈提交失败');
+  } catch (error) {
+    console.error('提交反馈失败:', error);
+    ElMessage.error('网络异常，请稍后重试');
+  } finally {
+    submitting.value = false;
+  }
+};
+
+const resetForm = () => {
+  feedbackFormRef.value?.resetFields();
+  feedbackForm.type = 'SUGGESTION';
+};
+
+const refreshData = () => {
+  currentPage.value = 1;
+  loadFeedbacks();
+};
+
+const handleSizeChange = (size) => {
+  pageSize.value = size;
+  currentPage.value = 1;
+  loadFeedbacks();
+};
+
+const handleCurrentChange = (page) => {
+  currentPage.value = page;
+  loadFeedbacks();
+};
+
+const getFeedbackTypeText = (type) => {
+  const map = {
+    SUGGESTION: '建议',
+    COMPLAINT: '投诉',
+    QUESTION: '咨询'
+  };
+  return map[type] || '建议';
+};
+
+const getFeedbackTypeTagType = (type) => {
+  const map = {
+    SUGGESTION: 'primary',
+    COMPLAINT: 'danger',
+    QUESTION: 'warning'
+  };
+  return map[type] || 'info';
+};
+
+const getStatusType = (status) => {
+  const map = {
+    PENDING: 'warning',
+    RESOLVED: 'success',
+    PROCESSED: 'success',
+    REJECTED: 'danger'
+  };
+  return map[status] || 'info';
+};
+
+const getStatusText = (status) => {
+  const map = {
+    PENDING: '待处理',
+    RESOLVED: '已解决',
+    PROCESSED: '已回复',
+    REJECTED: '未通过'
+  };
+  return map[status] || status;
+};
+
+onMounted(() => {
+  loadFeedbacks();
+});
 </script>
 
 <style scoped>
-/* 页面背景 */
 .feedback-page {
-  min-height: 100vh;
-  background: linear-gradient(135deg, #f8fafc 0%, #f0f9ff 25%, #e6f7ff 50%, #f8fafc 100%);
-  padding: 24px;
-  position: relative;
+  --page-primary: #ff8f7a;
+  --page-secondary: #ffd1c4;
+  min-height: 100%;
+  display: grid;
+  gap: 20px;
+  background:
+    radial-gradient(circle at top left, rgba(255, 209, 196, 0.3), transparent 28%),
+    linear-gradient(180deg, #fffaf8 0%, #fffdfd 100%);
 }
 
-/* 页面标题区域 */
-.page-header {
-  position: relative;
-  margin-bottom: 32px;
-  overflow: hidden;
-}
-
-.header-decoration {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 4px;
-  background: linear-gradient(90deg, #409eff 0%, #66b1ff 50%, #409eff 100%);
-  background-size: 200% 100%;
-  animation: gradient-shimmer 3s ease-in-out infinite;
-}
-
-@keyframes gradient-shimmer {
-  0% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
-  100% { background-position: 0% 50%; }
+.page-header,
+.summary-card,
+.panel-card {
+  border-radius: 30px;
+  border: 1px solid rgba(255, 143, 122, 0.14);
+  background: rgba(255, 255, 255, 0.95);
+  box-shadow: 0 20px 40px rgba(63, 31, 26, 0.05);
 }
 
 .header-content {
-  background: #ffffff;
-  border-radius: 12px;
-  padding: 24px 32px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-  border: 1px solid #e4e7ed;
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  transition: all 0.3s ease;
+  padding: 30px;
+  background:
+    radial-gradient(circle at top right, rgba(255, 209, 196, 0.26), transparent 24%),
+    linear-gradient(145deg, rgba(255, 209, 196, 0.16) 0%, #ffffff 64%);
 }
 
-.header-content:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+.page-kicker {
+  display: inline-flex;
+  padding: 6px 12px;
+  border-radius: 999px;
+  background: rgba(255, 143, 122, 0.14);
+  color: #d26f58;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
 }
 
 .page-title {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  font-size: 28px;
-  font-weight: 700;
-  color: #1a202c;
-  margin: 0;
-  line-height: 1.3;
-}
-
-.title-icon {
-  width: 48px;
-  height: 48px;
-  border-radius: 12px;
-  background: linear-gradient(135deg, #409eff 0%, #66b1ff 100%);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: white;
-  box-shadow: 0 4px 12px rgba(64, 158, 255, 0.3);
-}
-
-.title-icon svg {
-  width: 24px;
-  height: 24px;
+  margin: 16px 0 10px;
+  font-size: 34px;
+  color: #5f3229;
 }
 
 .page-subtitle {
-  font-size: 16px;
-  color: #718096;
   margin: 0;
-  font-weight: 500;
+  color: #8b6c66;
+  line-height: 1.8;
 }
 
-/* 内容卡片 */
-.content-card {
-  background: #ffffff;
-  border-radius: 16px;
-  border: 1px solid #e4e7ed;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-  overflow: hidden;
-  margin-bottom: 16px;
-  transition: all 0.3s ease;
+.summary-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 16px;
 }
 
-.content-card:hover {
-  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+.summary-card {
+  padding: 22px 20px;
+  background: linear-gradient(145deg, rgba(255, 209, 196, 0.18), #ffffff 82%);
 }
 
-.card-header {
-  padding: 20px 24px;
-  border-bottom: 1px solid #f0f0f0;
-  background: linear-gradient(135deg, #f8fafc 0%, #f0f9ff 100%);
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+.summary-label {
+  display: block;
+  color: #9b7a74;
+  font-size: 13px;
 }
 
-.card-title {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  font-size: 18px;
-  font-weight: 600;
-  color: #2d3748;
+.summary-card strong {
+  display: block;
+  margin: 12px 0 8px;
+  font-size: 32px;
+  line-height: 1;
+  color: #64362d;
+}
+
+.summary-card p {
   margin: 0;
+  color: #927771;
+  line-height: 1.6;
 }
 
-.card-title-icon {
-  width: 36px;
-  height: 36px;
-  border-radius: 8px;
-  background: linear-gradient(135deg, #409eff 0%, #66b1ff 100%);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: white;
-  box-shadow: 0 2px 8px rgba(64, 158, 255, 0.2);
+.content-grid {
+  display: grid;
+  grid-template-columns: 420px minmax(0, 1fr);
+  gap: 20px;
 }
 
-.card-title-icon svg {
-  width: 18px;
-  height: 18px;
-}
-
-.card-actions {
-  display: flex;
-  gap: 8px;
-}
-
-.card-body {
+.panel-card {
   padding: 24px;
 }
 
-/* 表单样式 */
-.feedback-form {
-  max-width: 800px;
-  margin: 0 auto;
-}
-
-.feedback-select, .feedback-input, .feedback-textarea {
-  width: 100%;
-}
-
-.feedback-select :deep(.el-input__wrapper),
-.feedback-input :deep(.el-input__wrapper),
-.feedback-textarea :deep(.el-textarea__inner) {
-  border-radius: 8px;
-  border: 1px solid #e2e8f0;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
-  transition: all 0.3s ease;
-  background: #f7fafc;
-}
-
-.feedback-select :deep(.el-input__wrapper:hover),
-.feedback-input :deep(.el-input__wrapper:hover),
-.feedback-textarea :deep(.el-textarea__inner:hover) {
-  border-color: #cbd5e0;
-  background: #ffffff;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-}
-
-.feedback-select :deep(.el-input__wrapper.is-focus),
-.feedback-input :deep(.el-input__wrapper.is-focus),
-.feedback-textarea :deep(.el-textarea__inner:focus) {
-  border-color: #409eff;
-  background: #ffffff;
-  box-shadow: 0 0 0 3px rgba(64, 158, 255, 0.1);
-}
-
-.submit-btn, .reset-btn, .refresh-btn {
-  border-radius: 8px;
-  font-weight: 500;
-  padding: 10px 20px;
-  transition: all 0.3s ease;
-}
-
-.submit-btn {
-  background: linear-gradient(135deg, #409eff 0%, #66b1ff 100%);
-  border: none;
-  box-shadow: 0 4px 12px rgba(64, 158, 255, 0.3);
-}
-
-.submit-btn:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 16px rgba(64, 158, 255, 0.4);
-}
-
-.reset-btn, .refresh-btn {
-  background: #f7fafc;
-  border: 1px solid #e2e8f0;
-  color: #4a5568;
-}
-
-.reset-btn:hover, .refresh-btn:hover {
-  background: #edf2f7;
-  border-color: #cbd5e0;
-  color: #2d3748;
-}
-
-/* 加载和空状态 */
-.loading-container {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 40px;
-  color: #718096;
-  font-size: 16px;
-}
-
-.loading-container .el-icon {
-  margin-right: 8px;
-  font-size: 18px;
-}
-
-.empty-state {
-  text-align: center;
-  padding: 60px 20px;
-}
-
-.empty-icon {
-  width: 80px;
-  height: 80px;
-  margin: 0 auto 20px;
-  color: #cbd5e0;
-}
-
-.empty-icon svg {
-  width: 100%;
-  height: 100%;
-}
-
-.empty-text {
-  font-size: 18px;
-  color: #718096;
-  margin: 0 0 10px 0;
-  font-weight: 500;
-}
-
-.empty-description {
-  color: #a0aec0;
-  margin: 0;
-  font-size: 14px;
-}
-
-/* 反馈列表 */
-.feedback-list {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-}
-
-.feedback-item {
-  background: #ffffff;
-  border: 1px solid #e2e8f0;
-  border-radius: 12px;
-  padding: 20px;
-  transition: all 0.3s ease;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
-}
-
-.feedback-item:hover {
-  border-color: #409eff;
-  box-shadow: 0 4px 16px rgba(64, 158, 255, 0.1);
-  transform: translateY(-2px);
-}
-
-.feedback-header {
+.panel-head {
   display: flex;
   justify-content: space-between;
-  align-items: center;
-  margin-bottom: 16px;
+  gap: 16px;
+  align-items: flex-start;
+  margin-bottom: 18px;
 }
 
-.type-tag, .status-tag {
-  border-radius: 20px;
-  font-weight: 500;
-  padding: 6px 12px;
-  display: flex;
-  align-items: center;
+.panel-head h2 {
+  margin: 0;
+  color: #5f342a;
+}
+
+.panel-head p {
+  margin: 8px 0 0;
+  color: #8c716b;
+  line-height: 1.7;
+}
+
+.feedback-form {
+  display: grid;
   gap: 6px;
 }
 
-.feedback-body {
+.field-control {
+  width: 100%;
+}
+
+.feedback-page :deep(.el-input__wrapper),
+.feedback-page :deep(.el-select__wrapper),
+.feedback-page :deep(.el-textarea__inner) {
+  border-radius: 16px;
+  box-shadow: none;
+  background: #fffaf9;
+  border: 1px solid rgba(255, 143, 122, 0.18);
+}
+
+.form-actions {
   display: flex;
-  flex-direction: column;
   gap: 12px;
+  flex-wrap: wrap;
+}
+
+.primary-btn,
+.secondary-btn {
+  min-height: 44px;
+  border-radius: 14px;
+}
+
+.primary-btn {
+  border: none;
+  background: linear-gradient(135deg, #ff8f7a 0%, #f07258 100%);
+  box-shadow: 0 14px 28px rgba(240, 114, 88, 0.18);
+}
+
+.secondary-btn {
+  border: 1px solid rgba(255, 143, 122, 0.18);
+  background: #ffffff;
+  color: #8f6156;
+}
+
+.status-wrap,
+.empty-state {
+  min-height: 220px;
+  display: grid;
+  place-items: center;
+  text-align: center;
+  color: #91756f;
+}
+
+.status-icon {
+  font-size: 24px;
+  margin-right: 8px;
+}
+
+.feedback-list {
+  display: grid;
+  gap: 16px;
+}
+
+.feedback-card {
+  padding: 20px;
+  border-radius: 24px;
+  border: 1px solid rgba(255, 143, 122, 0.12);
+  background: linear-gradient(145deg, #ffffff 0%, #fffaf9 100%);
+}
+
+.feedback-top {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  align-items: center;
+}
+
+.feedback-tags {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.feedback-time {
+  color: #9b7d77;
+  font-size: 12px;
 }
 
 .feedback-title {
-  font-size: 16px;
-  font-weight: 600;
-  color: #2d3748;
-  margin: 0;
-  line-height: 1.5;
+  margin: 16px 0 10px;
+  color: #5f342b;
+  font-size: 18px;
 }
 
 .feedback-content {
-  color: #4a5568;
-  line-height: 1.6;
-  font-size: 14px;
+  margin: 0;
+  color: #755e59;
+  line-height: 1.8;
 }
 
-.feedback-meta {
+.meta-list {
   display: flex;
   flex-wrap: wrap;
-  gap: 16px;
-  font-size: 13px;
-  color: #718096;
-  padding-top: 8px;
-  border-top: 1px solid #f0f0f0;
+  gap: 12px 18px;
+  margin-top: 14px;
+  color: #9d7f79;
+  font-size: 12px;
 }
 
-.meta-item {
+.reply-box {
+  margin-top: 16px;
+  padding: 18px;
+  border-radius: 20px;
+  background: rgba(255, 239, 234, 0.72);
+  border-left: 4px solid #ff8f7a;
+}
+
+.reply-head {
   display: flex;
+  justify-content: space-between;
+  gap: 12px;
   align-items: center;
-  gap: 4px;
+  margin-bottom: 10px;
 }
 
-.admin-reply {
-  background: #f7fafc;
-  border-radius: 8px;
-  padding: 16px;
-  border-left: 4px solid #409eff;
-  margin-top: 8px;
+.reply-head strong {
+  color: #63352c;
 }
 
-.reply-header {
+.reply-head span,
+.reply-user {
+  color: #977971;
+  font-size: 12px;
+}
+
+.reply-box p {
+  margin: 0;
+  color: #755d57;
+  line-height: 1.8;
+}
+
+.reply-user {
+  display: inline-block;
+  margin-top: 10px;
+}
+
+.pagination-wrap {
   display: flex;
-  align-items: center;
-  gap: 8px;
-  font-weight: 600;
-  color: #2d3748;
-  margin-bottom: 8px;
+  justify-content: flex-end;
+  margin-top: 18px;
 }
 
-.reply-title {
-  font-size: 14px;
+@media (max-width: 1200px) {
+  .summary-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .content-grid {
+    grid-template-columns: 1fr;
+  }
 }
 
-.reply-content {
-  color: #4a5568;
-  line-height: 1.6;
-  font-size: 14px;
-}
-
-/* 分页 */
-.pagination-container {
-  margin-top: 24px;
-  display: flex;
-  justify-content: center;
-}
-
-/* 响应式设计 */
 @media (max-width: 768px) {
-  .feedback-page {
-    padding: 16px;
+  .summary-grid {
+    grid-template-columns: 1fr;
   }
-  
+
+  .header-content,
+  .panel-card {
+    padding: 18px;
+  }
+
   .page-title {
-    font-size: 24px;
+    font-size: 28px;
   }
-  
-  .header-content {
+
+  .panel-head,
+  .feedback-top,
+  .reply-head,
+  .form-actions {
     flex-direction: column;
-    text-align: center;
-    gap: 12px;
+    align-items: stretch;
   }
-  
-  .feedback-header {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 8px;
+
+  .pagination-wrap {
+    justify-content: center;
   }
-  
-  .feedback-meta {
-    flex-direction: column;
-    gap: 8px;
+}
+</style>
+<style scoped>
+.feedback-page {
+  --theme-deep: #e26c54;
+  --theme-border: rgba(255, 143, 122, 0.16);
+  --theme-shadow: rgba(63, 31, 26, 0.08);
+  background:
+    radial-gradient(circle at top left, rgba(255, 209, 196, 0.38), transparent 28%),
+    radial-gradient(circle at right center, rgba(255, 240, 235, 0.95), transparent 24%),
+    linear-gradient(180deg, #fffaf8 0%, #fffdfd 100%);
+}
+
+.page-header,
+.summary-card,
+.panel-card,
+.feedback-card {
+  animation: feedback-rise 0.55s ease both;
+  border-color: var(--theme-border);
+  box-shadow: 0 20px 46px var(--theme-shadow);
+}
+
+.header-content {
+  background:
+    radial-gradient(circle at top right, rgba(255, 209, 196, 0.32), transparent 24%),
+    linear-gradient(145deg, rgba(255, 241, 237, 0.96) 0%, #ffffff 64%);
+}
+
+.summary-card {
+  background: linear-gradient(150deg, rgba(255, 241, 237, 0.96), #ffffff 82%);
+}
+
+.panel-card {
+  transition: transform 0.24s ease, box-shadow 0.24s ease;
+}
+
+.panel-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 24px 50px rgba(63, 31, 26, 0.1);
+}
+
+.feedback-page :deep(.el-input__wrapper),
+.feedback-page :deep(.el-select__wrapper),
+.feedback-page :deep(.el-textarea__inner) {
+  border-color: rgba(255, 143, 122, 0.2);
+}
+
+.feedback-card {
+  transition: transform 0.24s ease, box-shadow 0.24s ease;
+}
+
+.feedback-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 20px 42px rgba(63, 31, 26, 0.08);
+}
+
+@keyframes feedback-rise {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
 }
 </style>

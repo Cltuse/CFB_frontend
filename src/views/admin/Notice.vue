@@ -1,30 +1,63 @@
 <template>
-  <div class="notice-page">
-    <!-- 页面标题区域 -->
-    <div class="page-header">
-      <div class="header-decoration"></div>
-      <div class="header-content">
-        <h1 class="page-title">
-          <div class="title-icon">
-            <svg viewBox="0 0 24 24" fill="none">
-              <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2z" stroke="currentColor" stroke-width="2"/>
-              <path d="M12 7v10M7 12h10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-              <circle cx="12" cy="12" r="8" stroke="currentColor" stroke-width="2" fill="none"/>
-            </svg>
-          </div>
-          通知管理
-        </h1>
-        <p class="page-subtitle">管理系统通知公告，支持发布、编辑和删除通知</p>
+  <div class="admin-notice-page">
+    <section class="page-hero">
+      <div class="hero-copy">
+        <span class="hero-eyebrow">公告发布中心</span>
+        <h1>通知管理</h1>
+        <p>统一整理系统公告的发布、编辑与排期状态，让公告列表、当前筛选结果和发布入口保持在同一个清爽的信息面板中。</p>
+        <div class="hero-actions">
+          <el-button type="primary" class="primary-btn" @click="handleAdd">发布通知</el-button>
+          <el-button class="secondary-btn" @click="loadNoticeList">刷新列表</el-button>
+        </div>
       </div>
-    </div>
 
-    <!-- 搜索和工具栏 -->
-    <div class="toolbar">
-      <div class="search-section">
+      <div class="hero-side">
+        <article class="hero-note">
+          <span>当前页记录</span>
+          <strong>{{ noticeList.length }}</strong>
+          <small>已加载到页面中的通知数量</small>
+        </article>
+        <article class="hero-note">
+          <span>筛选结果</span>
+          <strong>{{ filteredNoticeList.length }}</strong>
+          <small>会随搜索关键字实时变化</small>
+        </article>
+      </div>
+    </section>
+
+    <section class="summary-grid">
+      <article class="summary-card">
+        <span class="summary-label">通知总数</span>
+        <strong>{{ total }}</strong>
+        <p>接口返回的全部公告记录总量</p>
+      </article>
+      <article class="summary-card">
+        <span class="summary-label">当前页已发布</span>
+        <strong>{{ noticeStats.published }}</strong>
+        <p>已经正式对外展示的公告数量</p>
+      </article>
+      <article class="summary-card">
+        <span class="summary-label">当前页待发布</span>
+        <strong>{{ noticeStats.scheduled }}</strong>
+        <p>处于定时发布或待生效状态的公告</p>
+      </article>
+      <article class="summary-card">
+        <span class="summary-label">草稿数量</span>
+        <strong>{{ noticeStats.draft }}</strong>
+        <p>仍可继续补充内容再发布的记录</p>
+      </article>
+    </section>
+
+    <section class="control-card">
+      <div class="section-copy">
+        <h2>搜索与发布节奏</h2>
+        <p>可按标题或正文关键字快速检索当前页公告，适合在发布高峰时快速回看历史内容并继续编辑。</p>
+      </div>
+
+      <div class="control-actions">
         <el-input
           v-model="searchKeyword"
-          placeholder="搜索通知标题或内容..."
-          size="large"
+          placeholder="搜索通知标题或内容"
           class="search-input"
           clearable
           @keyup.enter="handleSearch"
@@ -34,85 +67,69 @@
             <el-icon><Search /></el-icon>
           </template>
           <template #append>
-            <el-button @click="handleSearch" type="primary" size="large">
-              搜索
-            </el-button>
+            <el-button type="primary" @click="handleSearch">搜索</el-button>
           </template>
         </el-input>
       </div>
-      <div class="button-section">
-        <el-button type="primary" size="large" class="add-button" @click="handleAdd">
-          <el-icon><Plus /></el-icon>
-          发布通知
-        </el-button>
-      </div>
-    </div>
+    </section>
 
-    <!-- 通知表格 -->
-    <div class="table-container">
+    <section class="panel-card">
+      <div class="panel-head">
+        <div class="section-copy">
+          <h2>通知列表</h2>
+          <p>列表保留核心字段展示，点击任意行即可继续编辑，减少在单独详情页之间来回切换。</p>
+        </div>
+        <div class="panel-meta">
+          <span class="meta-chip">共 {{ total }} 条</span>
+          <span class="meta-chip muted-chip">筛选后 {{ filteredNoticeList.length }} 条</span>
+        </div>
+      </div>
+
       <el-table
         :data="filteredNoticeList"
         class="notice-table"
-        :header-cell-style="headerCellStyle"
-        :cell-style="cellStyle"
-        @row-click="handleRowClick"
         v-loading="loading"
-        stripe
+        @row-click="handleRowClick"
       >
-        <el-table-column prop="title" label="通知标题" min-width="200">
+        <el-table-column prop="title" label="通知标题" min-width="220">
           <template #default="{ row }">
-            <div class="notice-title">
-              <div class="title">{{ row.title }}</div>
-              <div class="content-preview" v-if="row.content">{{ getContentPreview(row.content) }}</div>
+            <div class="title-cell">
+              <strong>{{ row.title }}</strong>
+              <span>{{ getContentPreview(row.content) }}</span>
             </div>
           </template>
         </el-table-column>
 
-        <el-table-column prop="publisherName" label="发布人" width="120">
+        <el-table-column prop="publisherName" label="发布人" min-width="130" />
+
+        <el-table-column prop="publishTime" label="发布时间" min-width="180" align="center">
           <template #default="{ row }">
-            <span class="publisher">{{ row.publisherName || '-' }}</span>
+            <span>{{ formatTime(row.publishTime) || '-' }}</span>
           </template>
         </el-table-column>
 
-        <el-table-column prop="publishTime" label="发布时间" width="200" align="center" >
+        <el-table-column prop="scheduledTime" label="定时发布" min-width="180" align="center">
           <template #default="{ row }">
-            <span class="publish-time">{{ formatTime(row.publishTime) || '-' }}</span>
+            <span>{{ formatTime(row.scheduledTime) || '-' }}</span>
           </template>
         </el-table-column>
 
-        <el-table-column prop="status" label="状态" width="150" align="center">
+        <el-table-column prop="status" label="状态" width="120" align="center">
           <template #default="{ row }">
-            <el-tag
-              :type="getStatusType(row.status)"
-              class="status-tag"
-              effect="light"
-            >
-              <el-icon><CircleCheck v-if="row.status === 'PUBLISHED'" /><EditPen v-else /></el-icon>
+            <el-tag :type="getStatusType(row.status)" effect="light" round>
               {{ getStatusText(row.status) }}
             </el-tag>
           </template>
         </el-table-column>
 
-        <el-table-column label="操作" width="280" align="center" fixed="right">
+        <el-table-column label="操作" width="200" fixed="right" align="center">
           <template #default="{ row }">
-            <div class="action-buttons">
-              <el-button
-                size="small"
-                type="primary"
-                :plain="true"
-                class="action-btn edit-btn"
-                @click.stop="handleEdit(row)"
-              >
+            <div class="row-actions">
+              <el-button class="action-btn edit-btn" @click.stop="handleEdit(row)">
                 <el-icon><Edit /></el-icon>
                 编辑
               </el-button>
-              <el-button
-                size="small"
-                type="danger"
-                :plain="true"
-                class="action-btn delete-btn"
-                @click.stop="handleDelete(row)"
-              >
+              <el-button class="action-btn delete-btn" @click.stop="handleDelete(row)">
                 <el-icon><Delete /></el-icon>
                 删除
               </el-button>
@@ -121,8 +138,9 @@
         </el-table-column>
       </el-table>
 
-      <!-- 分页 -->
-      <div class="pagination-container" v-if="total > 0">
+      <el-empty v-if="!loading && !filteredNoticeList.length" description="当前没有符合条件的通知记录" />
+
+      <div class="pagination-wrap" v-if="total > 0">
         <el-pagination
           v-model:current-page="pagination.page"
           v-model:page-size="pagination.size"
@@ -131,49 +149,64 @@
           layout="total, sizes, prev, pager, next, jumper"
           @size-change="handleSizeChange"
           @current-change="handleCurrentChange"
-          class="custom-pagination"
         />
       </div>
-    </div>
+    </section>
 
-    <!-- 添加/编辑对话框 -->
     <el-dialog
-      :title="dialogTitle"
       v-model="dialogVisible"
-      width="700px"
+      :title="dialogTitle"
+      width="760px"
       class="notice-dialog"
       :close-on-click-modal="false"
     >
-      <el-form :model="form" :rules="rules" ref="formRef" class="notice-form" label-width="100px">
-        <el-form-item label="通知标题" prop="title">
-          <el-input v-model="form.title" placeholder="请输入通知标题" clearable />
-        </el-form-item>
-        <el-form-item label="通知内容" prop="content">
-          <el-input type="textarea" v-model="form.content" :rows="8" placeholder="请输入通知内容" maxlength="1000" show-word-limit />
-        </el-form-item>
-        <el-form-item label="状态" prop="status">
-          <el-select v-model="form.status" style="width: 100%;" placeholder="请选择状态">
-            <el-option label="草稿" value="DRAFT" />
-            <el-option label="定时发布" value="SCHEDULED" />
-            <el-option label="已发布" value="PUBLISHED" />
-          </el-select>
-        </el-form-item>
-        <el-form-item label="定时发布时间" prop="scheduledTime" v-if="form.status === 'SCHEDULED'">
-          <el-date-picker
-            v-model="form.scheduledTime"
-            type="datetime"
-            placeholder="选择定时发布时间"
-            format="YYYY-MM-DD HH:mm:ss"
-            value-format="YYYY-MM-DDTHH:mm:ss"
-            style="width: 100%;"
-            :disabled-date="disabledDate"
-          />
-        </el-form-item>
+      <el-form ref="formRef" :model="form" :rules="rules" label-position="top" class="notice-form">
+        <div class="form-grid single-column">
+          <el-form-item label="通知标题" prop="title">
+            <el-input v-model="form.title" placeholder="请输入通知标题" clearable />
+          </el-form-item>
+
+          <el-form-item label="通知内容" prop="content">
+            <el-input
+              v-model="form.content"
+              type="textarea"
+              :rows="8"
+              maxlength="1000"
+              show-word-limit
+              placeholder="请输入通知内容"
+            />
+          </el-form-item>
+        </div>
+
+        <div class="form-grid">
+          <el-form-item label="状态" prop="status">
+            <el-select v-model="form.status" placeholder="请选择状态" style="width: 100%">
+              <el-option label="草稿" value="DRAFT" />
+              <el-option label="定时发布" value="SCHEDULED" />
+              <el-option label="已发布" value="PUBLISHED" />
+            </el-select>
+          </el-form-item>
+
+          <el-form-item v-if="form.status === 'SCHEDULED'" label="定时发布时间" prop="scheduledTime">
+            <el-date-picker
+              v-model="form.scheduledTime"
+              type="datetime"
+              placeholder="选择定时发布时间"
+              format="YYYY-MM-DD HH:mm:ss"
+              value-format="YYYY-MM-DDTHH:mm:ss"
+              style="width: 100%"
+              :disabled-date="disabledDate"
+            />
+          </el-form-item>
+        </div>
       </el-form>
+
       <template #footer>
         <div class="dialog-footer">
-          <el-button @click="dialogVisible = false">取消</el-button>
-          <el-button type="primary" @click="handleSubmit">{{ isEdit ? '更新' : '发布' }}</el-button>
+          <el-button class="secondary-btn" @click="dialogVisible = false">取消</el-button>
+          <el-button type="primary" class="primary-btn" @click="handleSubmit">
+            {{ isEdit ? '保存修改' : '立即发布' }}
+          </el-button>
         </div>
       </template>
     </el-dialog>
@@ -181,20 +214,20 @@
 </template>
 
 <script setup>
-import { ref, reactive, onMounted, computed } from 'vue';
+import { computed, onMounted, reactive, ref } from 'vue';
 import { ElMessage, ElMessageBox } from 'element-plus';
+import { Delete, Edit, Search } from '@element-plus/icons-vue';
 import { noticeAPI } from '../../api';
 
 const loading = ref(false);
-const noticeList = ref([]);
-const searchKeyword = ref('');
-const isSearchMode = ref(false);
 const dialogVisible = ref(false);
-const dialogTitle = ref('发布通知');
 const formRef = ref(null);
 const isEdit = ref(false);
+const dialogTitle = ref('发布通知');
+const noticeList = ref([]);
 const userInfo = ref({});
 const total = ref(0);
+const searchKeyword = ref('');
 
 const pagination = reactive({
   page: 1,
@@ -216,30 +249,23 @@ const rules = {
   content: [{ required: true, message: '请输入通知内容', trigger: 'blur' }]
 };
 
-// 过滤后的通知列表
 const filteredNoticeList = computed(() => {
-  if (!searchKeyword.value.trim()) {
+  const keyword = searchKeyword.value.trim().toLowerCase();
+  if (!keyword) {
     return noticeList.value;
   }
-  const keyword = searchKeyword.value.toLowerCase();
-  return noticeList.value.filter(notice =>
-    notice.title.toLowerCase().includes(keyword) ||
-    notice.content.toLowerCase().includes(keyword)
+  return noticeList.value.filter((notice) =>
+    [notice.title, notice.content]
+      .filter(Boolean)
+      .some((field) => String(field).toLowerCase().includes(keyword))
   );
 });
 
-// 表格样式
-const headerCellStyle = {
-  backgroundColor: '#f8fafc',
-  color: '#4a5568',
-  fontWeight: '600',
-  borderBottom: '1px solid #e2e8f0'
-};
-
-const cellStyle = {
-  borderBottom: '1px solid #e2e8f0',
-  padding: '16px 12px'
-};
+const noticeStats = computed(() => ({
+  published: noticeList.value.filter((item) => item.status === 'PUBLISHED').length,
+  scheduled: noticeList.value.filter((item) => item.status === 'SCHEDULED').length,
+  draft: noticeList.value.filter((item) => item.status === 'DRAFT').length
+}));
 
 onMounted(() => {
   const info = localStorage.getItem('userInfo');
@@ -249,7 +275,7 @@ onMounted(() => {
   loadNoticeList();
 });
 
-const loadNoticeList = async () => {
+async function loadNoticeList() {
   try {
     loading.value = true;
     const res = await noticeAPI.list({
@@ -260,48 +286,32 @@ const loadNoticeList = async () => {
     total.value = res.data?.totalElements || res.data?.length || 0;
   } catch (error) {
     console.error('加载通知列表失败:', error);
-    ElMessage.error('网络错误，请重试');
+    ElMessage.error('加载通知列表失败');
   } finally {
     loading.value = false;
   }
-};
+}
 
-const handleSearch = async () => {
-  if (searchKeyword.value.trim()) {
-    isSearchMode.value = true;
-  } else {
-    isSearchMode.value = false;
-  }
-};
+function handleSearch() {
+  pagination.page = 1;
+}
 
-// 分页大小变化
-const handleSizeChange = (size) => {
+function handleClearSearch() {
+  searchKeyword.value = '';
+}
+
+function handleSizeChange(size) {
   pagination.size = size;
   pagination.page = 1;
   loadNoticeList();
-};
+}
 
-// 页码变化
-const handleCurrentChange = (page) => {
+function handleCurrentChange(page) {
   pagination.page = page;
   loadNoticeList();
-};
+}
 
-// 禁用过去的日期
-const disabledDate = (time) => {
-  return time.getTime() < Date.now() - 8.64e7;
-};
-const handleClearSearch = () => {
-  searchKeyword.value = '';
-  isSearchMode.value = false;
-};
-
-// 处理行点击
-const handleRowClick = (row) => {
-  handleEdit(row);
-};
-
-const handleAdd = () => {
+function handleAdd() {
   isEdit.value = false;
   dialogTitle.value = '发布通知';
   form.value = {
@@ -310,78 +320,94 @@ const handleAdd = () => {
     content: '',
     publisherId: userInfo.value.id,
     publisherName: userInfo.value.realName,
-    status: 'PUBLISHED'
+    status: 'PUBLISHED',
+    scheduledTime: null
   };
   dialogVisible.value = true;
-};
+}
 
-const handleEdit = (row) => {
+function handleEdit(row) {
   isEdit.value = true;
   dialogTitle.value = '编辑通知';
-  form.value = { ...row };
+  form.value = {
+    id: row.id,
+    title: row.title,
+    content: row.content,
+    publisherId: row.publisherId,
+    publisherName: row.publisherName,
+    status: row.status,
+    scheduledTime: row.scheduledTime || null
+  };
   dialogVisible.value = true;
-};
+}
 
-const handleSubmit = async () => {
+function handleRowClick(row) {
+  handleEdit(row);
+}
+
+async function handleSubmit() {
   try {
     await formRef.value.validate();
-
     if (isEdit.value) {
       await noticeAPI.update(form.value.id, form.value);
-      ElMessage.success('更新成功');
+      ElMessage.success('通知更新成功');
     } else {
       await noticeAPI.create(form.value);
-      ElMessage.success('发布成功');
+      ElMessage.success('通知发布成功');
     }
-
     dialogVisible.value = false;
     loadNoticeList();
   } catch (error) {
-    console.error('提交失败:', error);
+    console.error('提交通知失败:', error);
+    ElMessage.error('提交通知失败');
   }
-};
+}
 
-const handleDelete = (row) => {
-  ElMessageBox.confirm('确认删除该通知？', '提示', {
-    confirmButtonText: '确定',
+function handleDelete(row) {
+  ElMessageBox.confirm(`确认删除通知“${row.title}”吗？`, '删除确认', {
+    confirmButtonText: '确认',
     cancelButtonText: '取消',
     type: 'warning'
-  }).then(async () => {
-    try {
+  })
+    .then(async () => {
       await noticeAPI.delete(row.id);
-      ElMessage.success('删除成功');
+      ElMessage.success('通知删除成功');
       loadNoticeList();
-    } catch (error) {
-      console.error('删除失败:', error);
-    }
-  }).catch(() => {});
-};
+    })
+    .catch(() => {});
+}
 
-const getStatusType = (status) => {
-  const map = {
-    'PUBLISHED': 'success',
-    'DRAFT': 'warning',
-    'SCHEDULED': 'info'
-  };
-  return map[status] || '';
-};
+function getStatusType(status) {
+  return (
+    {
+      PUBLISHED: 'success',
+      DRAFT: 'info',
+      SCHEDULED: 'warning'
+    }[status] || 'info'
+  );
+}
 
-const getStatusText = (status) => {
-  const map = {
-    'PUBLISHED': '已发布',
-    'DRAFT': '草稿',
-    'SCHEDULED': '待发布'
-  };
-  return map[status] || status;
-};
+function getStatusText(status) {
+  return (
+    {
+      PUBLISHED: '已发布',
+      DRAFT: '草稿',
+      SCHEDULED: '待发布'
+    }[status] || status
+  );
+}
 
-const getContentPreview = (content) => {
-  if (!content) return '';
-  return content.length > 50 ? content.substring(0, 50) + '...' : content;
-};
+function getContentPreview(content) {
+  if (!content) {
+    return '暂无正文摘要';
+  }
+  return content.length > 56 ? `${content.slice(0, 56)}...` : content;
+}
 
-const formatTime = (time) => {
-  if (!time) return '';
+function formatTime(time) {
+  if (!time) {
+    return '';
+  }
   try {
     return new Date(time).toLocaleString('zh-CN', {
       year: 'numeric',
@@ -393,416 +419,345 @@ const formatTime = (time) => {
   } catch (error) {
     return time;
   }
-};
+}
+
+function disabledDate(time) {
+  return time.getTime() < Date.now() - 8.64e7;
+}
 </script>
 
 <style scoped>
-.notice-page {
-  padding: 0;
-  background: linear-gradient(135deg, #f8fafc 0%, #f0f9ff 25%, #e6f7ff 50%, #f8fafc 100%);
-  min-height: calc(100vh - 88px);
+.admin-notice-page {
+  --theme-main: #73c8cf;
+  --theme-deep: #40979f;
+  --theme-soft: rgba(191, 238, 242, 0.28);
+  --theme-border: rgba(115, 200, 207, 0.16);
+  --theme-shadow: rgba(32, 84, 88, 0.08);
+  min-height: 100%;
+  display: grid;
+  gap: 20px;
+  background:
+    radial-gradient(circle at top left, rgba(216, 245, 247, 0.76), transparent 26%),
+    radial-gradient(circle at right center, rgba(240, 252, 253, 0.92), transparent 24%),
+    linear-gradient(180deg, #f8fcfd 0%, #f4fafb 48%, #f1f8fa 100%);
 }
 
-/* 页面标题区域 */
-.page-header {
-  position: relative;
-  background: #ffffff;
-  margin: 0 0 24px 0;
-  border-radius: 0;
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
-  overflow: hidden;
+.page-hero,
+.summary-card,
+.control-card,
+.panel-card {
+  animation: notice-rise 0.55s ease both;
 }
 
-.header-decoration {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 3px;
-  background: linear-gradient(90deg, #409eff 0%, #66b1ff 50%, #409eff 100%);
-  background-size: 200% 100%;
-  animation: gradient-shimmer 3s ease-in-out infinite;
+.page-hero,
+.control-card,
+.panel-card,
+.hero-note {
+  border-radius: 28px;
+  border: 1px solid var(--theme-border);
+  background: rgba(255, 255, 255, 0.95);
+  box-shadow: 0 22px 50px var(--theme-shadow);
 }
 
-.header-content {
-  padding: 32px 40px 24px;
-  display: flex;
+.page-hero {
+  display: grid;
+  grid-template-columns: minmax(0, 1.6fr) 320px;
+  gap: 20px;
+  padding: 30px;
+  background:
+    radial-gradient(circle at top right, var(--theme-soft), transparent 30%),
+    linear-gradient(145deg, rgba(241, 252, 253, 0.96) 0%, #ffffff 62%);
+}
+
+.hero-eyebrow {
+  display: inline-flex;
   align-items: center;
-  justify-content: space-between;
+  padding: 6px 12px;
+  border-radius: 999px;
+  background: rgba(191, 238, 242, 0.24);
+  color: #3e8b93;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
 }
 
-.page-title {
-  display: flex;
-  align-items: center;
-  font-size: 28px;
-  font-weight: 700;
-  color: #1a202c;
+.hero-copy h1,
+.section-copy h2 {
+  margin: 14px 0 10px;
+  color: #1e4d53;
+}
+
+.hero-copy h1 {
+  font-size: 34px;
+}
+
+.hero-copy p,
+.section-copy p {
   margin: 0;
+  color: #728d91;
+  line-height: 1.8;
 }
 
-.title-icon {
-  width: 48px;
-  height: 48px;
-  background: linear-gradient(135deg, #e6f7ff 0%, #bae7ff 100%);
-  border-radius: 12px;
+.hero-actions,
+.control-actions,
+.panel-meta,
+.row-actions,
+.dialog-footer {
   display: flex;
   align-items: center;
-  justify-content: center;
-  margin-right: 16px;
-  box-shadow: 0 4px 12px rgba(64, 158, 255, 0.15);
-}
-
-.title-icon svg {
-  width: 24px;
-  height: 24px;
-  color: #409eff;
-}
-
-.page-subtitle {
-  font-size: 14px;
-  color: #718096;
-  margin: 0 0 0 64px;
-  font-weight: 400;
-}
-
-/* 工具栏 */
-.toolbar {
-  margin-bottom: 24px;
-  padding: 0;
-  display: flex;
-  gap: 16px;
-  align-items: center;
+  gap: 12px;
   flex-wrap: wrap;
 }
 
-.search-section {
-  flex: 1;
-  min-width: 300px;
+.hero-actions {
+  margin-top: 24px;
 }
 
-.search-input {
-  border-radius: 12px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  transition: all 0.3s ease;
+.primary-btn,
+.secondary-btn {
+  min-height: 44px;
+  padding: 0 18px;
+  border-radius: 14px;
 }
 
-.search-input :deep(.el-input__wrapper) {
-  border-radius: 12px;
-  border: 1px solid #e2e8f0;
-  background: #ffffff;
-  height: 48px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-}
-
-.search-input :deep(.el-input__wrapper:hover) {
-  border-color: #cbd5e0;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-}
-
-.search-input :deep(.el-input__wrapper.is-focus) {
-  border-color: #409eff;
-  box-shadow: 0 0 0 3px rgba(64, 158, 255, 0.1), 0 4px 6px rgba(0, 0, 0, 0.1);
-}
-
-.search-input :deep(.el-input__inner) {
-  font-size: 15px;
-  height: 46px;
-  font-weight: 500;
-}
-
-.button-section {
-  flex-shrink: 0;
-}
-
-.add-button {
-  border-radius: 12px;
-  font-weight: 600;
-  height: 48px;
-  padding: 0 24px;
-  background: linear-gradient(135deg, #409eff 0%, #1976d2 100%);
+.primary-btn {
   border: none;
-  box-shadow: 0 4px 14px rgba(64, 158, 255, 0.3);
-  transition: all 0.3s ease;
+  background: linear-gradient(135deg, #73c8cf 0%, #40979f 100%);
+  box-shadow: 0 14px 28px rgba(64, 151, 159, 0.22);
 }
 
-.add-button:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 20px rgba(64, 158, 255, 0.4);
-  background: linear-gradient(135deg, #66b1ff 0%, #409eff 100%);
+.secondary-btn {
+  border: 1px solid rgba(115, 200, 207, 0.22);
+  background: rgba(255, 255, 255, 0.9);
+  color: #6c888d;
 }
 
-/* 表格容器 */
-.table-container {
-  background: #ffffff;
-  border-radius: 0;
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
-  overflow: hidden;
-  width: 100%;
+.hero-side {
+  display: grid;
+  gap: 14px;
 }
 
-.notice-table {
-  width: 100%;
+.hero-note {
+  min-height: 132px;
+  padding: 22px;
+  background: linear-gradient(180deg, #f8fdfe 0%, #ffffff 100%);
 }
 
-.notice-table :deep(.el-table) {
-  width: 100% !important;
+.hero-note span,
+.hero-note small,
+.summary-label,
+.summary-card p {
+  color: #7a9195;
 }
 
-.notice-table :deep(.el-table__header-wrapper) {
-  width: 100% !important;
+.hero-note strong,
+.summary-card strong {
+  color: #1f555b;
 }
 
-.notice-table :deep(.el-table__body-wrapper) {
-  width: 100% !important;
+.hero-note strong {
+  display: block;
+  margin: 14px 0 8px;
+  font-size: 30px;
 }
 
-.notice-table :deep(.el-table__header) {
-  width: 100% !important;
+.summary-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 16px;
 }
 
-.notice-table :deep(.el-table__body) {
-  width: 100% !important;
+.summary-card {
+  padding: 22px;
+  border-radius: 24px;
+  border: 1px solid rgba(115, 200, 207, 0.14);
+  background: linear-gradient(150deg, rgba(241, 252, 253, 0.96) 0%, #ffffff 84%);
+  box-shadow: 0 18px 40px rgba(32, 84, 88, 0.06);
 }
 
-.notice-title .title {
-  font-weight: 600;
-  color: #2d3748;
-  font-size: 14px;
+.summary-card strong {
+  display: block;
+  margin: 14px 0 8px;
+  font-size: 30px;
 }
 
-.notice-title .content-preview {
-  font-size: 12px;
-  color: #718096;
-  margin-top: 2px;
+.summary-card p {
+  margin: 0;
+  line-height: 1.7;
 }
 
-.publisher {
-  color: #4a5568;
-  font-size: 14px;
-}
-
-.publish-time {
-  color: #718096;
-  font-size: 13px;
-}
-
-/* 状态标签 */
-.status-tag {
-  border-radius: 6px;
-  font-weight: 500;
-  padding: 4px 8px;
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-}
-
-/* 操作按钮 */
-.action-buttons {
-  display: flex;
-  gap: 8px;
-  justify-content: center;
-}
-
-.action-btn {
-  border-radius: 8px;
-  font-weight: 500;
-  padding: 6px 12px;
-  transition: all 0.3s ease;
-}
-
-.edit-btn {
-  border-color: #409eff;
-  color: #409eff;
-}
-
-.edit-btn:hover {
-  background: linear-gradient(135deg, #409eff 0%, #1976d2 100%);
-  border-color: transparent;
-  color: white;
-  transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(64, 158, 255, 0.3);
-}
-
-.delete-btn {
-  border-color: #f56565;
-  color: #f56565;
-}
-
-.delete-btn:hover {
-  background: linear-gradient(135deg, #f56565 0%, #e53e3e 100%);
-  border-color: transparent;
-  color: white;
-  transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(245, 101, 101, 0.3);
-}
-
-/* 对话框样式 */
-.notice-dialog :deep(.el-dialog) {
-  border-radius: 16px;
-  overflow: hidden;
-  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
-}
-
-.notice-dialog :deep(.el-dialog__header) {
-  background: linear-gradient(135deg, #f8fafc 0%, #e6f7ff 100%);
-  padding: 24px 24px 16px;
-  border-bottom: 1px solid #e2e8f0;
-}
-
-.notice-dialog :deep(.el-dialog__title) {
-  color: #1a202c;
-  font-weight: 600;
-  font-size: 18px;
-}
-
-.notice-dialog :deep(.el-dialog__body) {
+.control-card,
+.panel-card {
   padding: 24px;
 }
 
-.notice-form :deep(.el-form-item__label) {
-  color: #4a5568;
+.control-actions {
+  justify-content: flex-end;
+  margin-top: 18px;
+}
+
+.search-input {
+  width: 420px;
+}
+
+.search-input :deep(.el-input__wrapper) {
+  min-height: 46px;
+  border-radius: 16px;
+  box-shadow: none;
+  border: 1px solid rgba(115, 200, 207, 0.2);
+  background: #f9fcfd;
+}
+
+.panel-head {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 18px;
+}
+
+.meta-chip {
+  padding: 8px 12px;
+  border-radius: 999px;
+  background: rgba(191, 238, 242, 0.24);
+  color: #3d8d95;
+  font-size: 12px;
   font-weight: 600;
 }
 
-.notice-form :deep(.el-input__wrapper) {
-  border-radius: 8px;
-  border: 1px solid #e2e8f0;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-  transition: all 0.3s ease;
+.muted-chip {
+  background: rgba(244, 249, 250, 0.96);
+  color: #7a8e92;
 }
 
-.notice-form :deep(.el-input__wrapper:hover) {
-  border-color: #cbd5e0;
+.notice-table :deep(.el-table) {
+  --el-table-border-color: rgba(115, 200, 207, 0.12);
+  --el-table-row-hover-bg-color: rgba(243, 250, 251, 0.95);
+  border-radius: 20px;
 }
 
-.notice-form :deep(.el-input__wrapper.is-focus) {
-  border-color: #409eff;
-  box-shadow: 0 0 0 3px rgba(64, 158, 255, 0.1);
+.notice-table :deep(.el-table::before),
+.notice-table :deep(.el-table__inner-wrapper::before) {
+  display: none;
 }
 
-.notice-form :deep(.el-textarea__inner) {
-  border-radius: 8px;
-  border: 1px solid #e2e8f0;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-  transition: all 0.3s ease;
+.notice-table :deep(.el-table__header-wrapper th.el-table__cell) {
+  background: linear-gradient(180deg, #f6fbfc 0%, #eef8f9 100%) !important;
+  color: #225359;
 }
 
-.notice-form :deep(.el-textarea__inner:hover) {
-  border-color: #cbd5e0;
+.title-cell {
+  display: grid;
+  gap: 6px;
 }
 
-.notice-form :deep(.el-textarea__inner:focus) {
-  border-color: #409eff;
-  box-shadow: 0 0 0 3px rgba(64, 158, 255, 0.1);
+.title-cell strong {
+  color: #214f56;
+  font-size: 15px;
 }
 
-.notice-form :deep(.el-select .el-input__wrapper) {
-  cursor: pointer;
+.title-cell span {
+  color: #7a8f93;
+  line-height: 1.6;
+}
+
+.action-btn {
+  min-height: 34px;
+  padding: 0 14px;
+  border-radius: 999px;
+}
+
+.edit-btn {
+  color: #3f9098;
+  border-color: rgba(115, 200, 207, 0.24);
+  background: rgba(242, 251, 252, 0.96);
+}
+
+.delete-btn {
+  color: #d46a74;
+  border-color: rgba(241, 154, 164, 0.24);
+  background: rgba(255, 245, 246, 0.96);
+}
+
+.pagination-wrap {
+  display: flex;
+  justify-content: center;
+  margin-top: 20px;
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.single-column {
+  grid-template-columns: 1fr;
+}
+
+.notice-dialog :deep(.el-dialog) {
+  border-radius: 28px;
+  overflow: hidden;
+}
+
+.notice-dialog :deep(.el-input__wrapper),
+.notice-dialog :deep(.el-select__wrapper),
+.notice-dialog :deep(.el-textarea__inner),
+.notice-dialog :deep(.el-date-editor.el-input__wrapper) {
+  border-radius: 14px;
+  box-shadow: none;
+  border: 1px solid rgba(115, 200, 207, 0.2);
+  background: #f9fcfd;
 }
 
 .dialog-footer {
-  padding: 16px 24px 24px;
-  text-align: right;
+  justify-content: flex-end;
 }
 
-.dialog-footer .el-button {
-  border-radius: 8px;
-  font-weight: 500;
-  padding: 10px 20px;
+@keyframes notice-rise {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
-.dialog-footer .el-button--primary {
-  background: linear-gradient(135deg, #409eff 0%, #1976d2 100%);
-  border: none;
+@media (max-width: 1180px) {
+  .summary-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .page-hero {
+    grid-template-columns: 1fr;
+  }
 }
 
-/* 动画效果 */
-@keyframes gradient-shimmer {
-  0%, 100% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
-}
-
-/* 响应式设计 */
 @media (max-width: 768px) {
-  .header-content {
-    padding: 24px 20px 16px;
+  .summary-grid,
+  .form-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .page-hero,
+  .control-card,
+  .panel-card {
+    padding: 18px;
+  }
+
+  .hero-copy h1 {
+    font-size: 28px;
+  }
+
+  .panel-head,
+  .row-actions {
     flex-direction: column;
-    align-items: flex-start;
+    align-items: stretch;
   }
 
-  .page-subtitle {
-    margin: 8px 0 0 0;
-  }
-
-  .page-title {
-    font-size: 24px;
-  }
-
-  .title-icon {
-    width: 40px;
-    height: 40px;
-  }
-
-  .title-icon svg {
-    width: 20px;
-    height: 20px;
-  }
-
-  .action-buttons {
-    flex-direction: column;
-    gap: 6px;
-  }
-
-  .action-btn {
+  .search-input {
     width: 100%;
   }
-}
-
-/* 分页容器 */
-.pagination-container {
-  padding: 20px 0;
-  display: flex;
-  justify-content: center;
-}
-
-.custom-pagination :deep(.el-pagination) {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.custom-pagination :deep(.el-pagination__total) {
-  color: #4a5568;
-  font-weight: 500;
-  margin-right: 16px;
-}
-
-.custom-pagination :deep(.el-pager) {
-  display: flex;
-  gap: 4px;
-}
-
-.custom-pagination :deep(.el-pager li) {
-  border-radius: 6px;
-  transition: all 0.3s ease;
-}
-
-.custom-pagination :deep(.el-pager li.is-active) {
-  background: linear-gradient(135deg, #409eff 0%, #1976d2 100%);
-  color: #ffffff;
-  font-weight: 600;
-}
-
-.custom-pagination :deep(.el-select) {
-  margin: 0 8px;
-}
-
-.custom-pagination :deep(.el-input__wrapper) {
-  border-radius: 6px;
-  border-color: #e2e8f0;
-}
-
-.custom-pagination :deep(.el-input__inner) {
-  font-size: 13px;
 }
 </style>

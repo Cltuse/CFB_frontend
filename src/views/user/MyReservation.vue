@@ -16,6 +16,29 @@
       </div>
     </div>
 
+    <section class="summary-grid">
+      <article class="summary-card">
+        <span class="summary-label">预约总数</span>
+        <strong>{{ reservationStats.total }}</strong>
+        <p>包含历史记录与当前仍有效的预约</p>
+      </article>
+      <article class="summary-card">
+        <span class="summary-label">待确认</span>
+        <strong>{{ reservationStats.pending }}</strong>
+        <p>等待管理员处理结果的预约申请</p>
+      </article>
+      <article class="summary-card">
+        <span class="summary-label">待签到</span>
+        <strong>{{ reservationStats.actionable }}</strong>
+        <p>已通过且仍可继续操作的预约</p>
+      </article>
+      <article class="summary-card">
+        <span class="summary-label">当前筛选结果</span>
+        <strong>{{ reservationStats.filtered }}</strong>
+        <p>与顶部搜索条件实时联动</p>
+      </article>
+    </section>
+
     <!-- 工具栏 -->
     <div class="toolbar">
       <div class="search-container">
@@ -337,6 +360,13 @@ const paginatedReservationList = computed(() => {
   const end = start + pageSize.value;
   return filteredReservationList.value.slice(start, end);
 });
+
+const reservationStats = computed(() => ({
+  total: reservationList.value.length,
+  pending: reservationList.value.filter((item) => item.status === 'PENDING').length,
+  actionable: reservationList.value.filter((item) => ['PENDING', 'APPROVED'].includes(item.status) && item.checkinStatus === 'NOT_CHECKED').length,
+  filtered: filteredReservationList.value.length
+}));
 
 // 处理搜索
 const handleSearch = () => {
@@ -1069,6 +1099,471 @@ const getCheckinStatusText = (checkinStatus) => {
 
   .pagination-container {
     padding: 12px;
+  }
+}
+
+.my-reservation-page {
+  --page-primary: #6ca7ff;
+  --page-secondary: #abd6ff;
+  --page-soft: rgba(171, 214, 255, 0.22);
+  min-height: auto;
+  padding: 0;
+  background:
+    radial-gradient(circle at top left, rgba(171, 214, 255, 0.18), transparent 24%),
+    linear-gradient(180deg, #f7fbff 0%, #fffdff 100%);
+  display: grid;
+  gap: 20px;
+}
+
+.my-reservation-page .page-header,
+.my-reservation-page .toolbar,
+.my-reservation-page .table-container,
+.my-reservation-page .pagination-container {
+  margin: 0;
+  border: 1px solid rgba(108, 167, 255, 0.14);
+  border-radius: 28px;
+  background: rgba(255, 255, 255, 0.95);
+  box-shadow: 0 18px 34px rgba(30, 41, 59, 0.06);
+}
+
+.my-reservation-page .header-decoration {
+  height: 0;
+}
+
+.my-reservation-page .header-content {
+  padding: 28px 30px;
+  border: none;
+  box-shadow: none;
+  background:
+    radial-gradient(circle at top right, var(--page-soft), transparent 28%),
+    linear-gradient(145deg, color-mix(in srgb, var(--page-soft) 75%, #ffffff) 0%, #ffffff 60%);
+}
+
+.my-reservation-page .page-title {
+  color: #183b66;
+}
+
+.my-reservation-page .title-icon {
+  background: linear-gradient(135deg, rgba(171, 214, 255, 0.3), rgba(255, 255, 255, 0.96));
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.74);
+}
+
+.my-reservation-page .title-icon svg {
+  color: var(--page-primary);
+}
+
+.my-reservation-page .summary-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 16px;
+}
+
+.my-reservation-page .summary-card {
+  padding: 22px 20px;
+  border-radius: 22px;
+  border: 1px solid rgba(108, 167, 255, 0.12);
+  background: linear-gradient(145deg, rgba(171, 214, 255, 0.18), #ffffff 82%);
+  box-shadow: 0 14px 26px rgba(27, 54, 93, 0.05);
+}
+
+.my-reservation-page .summary-label {
+  display: block;
+  margin-bottom: 10px;
+  font-size: 13px;
+  color: #6d82a0;
+}
+
+.my-reservation-page .summary-card strong {
+  display: block;
+  font-size: 34px;
+  line-height: 1;
+  color: #163a65;
+}
+
+.my-reservation-page .summary-card p {
+  margin: 10px 0 0;
+  color: #7a8da9;
+  line-height: 1.6;
+}
+
+.my-reservation-page .toolbar,
+.my-reservation-page .table-container,
+.my-reservation-page .pagination-container {
+  padding: 22px 24px;
+}
+
+.my-reservation-page .toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.my-reservation-page .search-input :deep(.el-input__wrapper) {
+  border-radius: 14px;
+  box-shadow: 0 0 0 1px rgba(108, 167, 255, 0.16) inset !important;
+}
+
+.my-reservation-page .reservation-table :deep(.el-table__header th) {
+  background: rgba(240, 247, 255, 0.96) !important;
+  color: #183960;
+}
+
+.my-reservation-page .reservation-table :deep(.el-table__row:hover > td.el-table__cell) {
+  background: rgba(245, 250, 255, 0.95) !important;
+}
+
+.my-reservation-page .action-btn {
+  border-radius: 999px !important;
+}
+</style>
+<style scoped>
+.my-reservation-page {
+  --theme-main: #6ca7ff;
+  --theme-deep: #4d83e6;
+  --theme-soft: rgba(174, 214, 255, 0.28);
+  --theme-border: rgba(126, 174, 255, 0.18);
+  --theme-shadow: rgba(42, 79, 148, 0.1);
+  min-height: 100%;
+  display: grid;
+  gap: 20px;
+  background:
+    radial-gradient(circle at top left, rgba(209, 229, 255, 0.74), transparent 24%),
+    radial-gradient(circle at right center, rgba(236, 245, 255, 0.92), transparent 22%),
+    linear-gradient(180deg, #f8fbff 0%, #f5faff 48%, #f1f7ff 100%);
+}
+
+.page-header,
+.summary-card,
+.toolbar,
+.table-container,
+.pagination-container {
+  animation: reservation-rise 0.55s ease both;
+}
+
+.page-header,
+.toolbar,
+.table-container,
+.pagination-container {
+  margin: 0;
+  border: 1px solid var(--theme-border);
+  border-radius: 30px;
+  background: rgba(255, 255, 255, 0.95);
+  box-shadow: 0 22px 50px var(--theme-shadow);
+}
+
+.page-header {
+  overflow: hidden;
+}
+
+.header-decoration {
+  top: 0;
+  left: 0;
+  right: auto;
+  width: 5px;
+  height: 100%;
+  background: linear-gradient(180deg, #6ca7ff 0%, #9ac8ff 100%);
+  animation: none;
+}
+
+.header-content {
+  padding: 30px 34px;
+  border: none;
+  border-radius: 30px;
+  box-shadow: none;
+  background:
+    radial-gradient(circle at top right, var(--theme-soft), transparent 28%),
+    linear-gradient(145deg, rgba(234, 244, 255, 0.96) 0%, #ffffff 64%);
+}
+
+.page-title {
+  gap: 14px;
+  font-size: 32px;
+  color: #173d69;
+}
+
+.title-icon {
+  width: 54px;
+  height: 54px;
+  border-radius: 18px;
+  background: linear-gradient(145deg, rgba(174, 214, 255, 0.42), rgba(255, 255, 255, 0.98));
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.84);
+}
+
+.title-icon svg {
+  color: var(--theme-deep);
+}
+
+.page-subtitle {
+  margin-top: 10px;
+  color: #6f84a2;
+  line-height: 1.8;
+}
+
+.summary-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.summary-card {
+  padding: 22px;
+  border-radius: 24px;
+  border: 1px solid rgba(126, 174, 255, 0.14);
+  background: linear-gradient(150deg, rgba(234, 244, 255, 0.96) 0%, #ffffff 82%);
+  box-shadow: 0 18px 38px rgba(30, 41, 59, 0.06);
+}
+
+.summary-card strong {
+  margin: 14px 0 8px;
+  font-size: 32px;
+  color: #173d69;
+}
+
+.summary-label,
+.summary-card p {
+  color: #778ba7;
+}
+
+.toolbar {
+  padding: 24px;
+}
+
+.search-input {
+  width: 320px;
+}
+
+.search-input :deep(.el-input__wrapper) {
+  min-height: 46px;
+  border-radius: 16px;
+  box-shadow: none;
+  border: 1px solid rgba(126, 174, 255, 0.2);
+  background: #f9fbff;
+}
+
+.search-input :deep(.el-input__wrapper.is-focus) {
+  box-shadow: 0 0 0 4px rgba(108, 167, 255, 0.12);
+}
+
+.table-container {
+  padding: 8px;
+  overflow: hidden;
+}
+
+.reservation-table {
+  border-radius: 22px;
+}
+
+.reservation-table :deep(.el-table) {
+  --el-table-border-color: rgba(126, 174, 255, 0.12);
+  --el-table-row-hover-bg-color: rgba(244, 249, 255, 0.95);
+}
+
+.reservation-table :deep(.el-table::before),
+.reservation-table :deep(.el-table__inner-wrapper::before) {
+  display: none;
+}
+
+.reservation-table :deep(.el-table__header-wrapper th.el-table__cell) {
+  background: linear-gradient(180deg, #f6faff 0%, #eef5ff 100%) !important;
+  color: #1b406d;
+  padding: 18px 12px;
+  border-bottom: 1px solid rgba(126, 174, 255, 0.16);
+}
+
+.reservation-table :deep(.el-table__body td.el-table__cell) {
+  padding: 18px 12px;
+  border-bottom: 1px solid rgba(126, 174, 255, 0.1);
+  background: rgba(255, 255, 255, 0.92);
+}
+
+.reservation-table :deep(.el-table__body tr:hover > td.el-table__cell) {
+  background: rgba(244, 249, 255, 0.95) !important;
+}
+
+.facility-name {
+  color: #1c3e69;
+  font-weight: 700;
+}
+
+.time-info,
+.purpose-info,
+.description-value {
+  color: #64758d;
+}
+
+.status-tag {
+  padding: 6px 12px;
+  border-radius: 999px;
+  border: none;
+  gap: 6px;
+  font-weight: 600;
+}
+
+.action-buttons {
+  flex-wrap: wrap;
+}
+
+.action-btn {
+  min-height: 34px;
+  padding: 0 14px;
+  border-radius: 999px !important;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+}
+
+.action-btn:hover:not(.is-disabled) {
+  transform: translateY(-1px);
+}
+
+.view-btn {
+  color: #4e82de;
+  border-color: rgba(108, 167, 255, 0.2);
+  background: rgba(239, 246, 255, 0.98);
+}
+
+.view-btn:hover:not(.is-disabled) {
+  background: linear-gradient(135deg, #6ca7ff 0%, #4d83e6 100%);
+  box-shadow: 0 10px 20px rgba(77, 131, 230, 0.22);
+}
+
+.cancel-btn {
+  color: #cd6d74;
+  border-color: rgba(233, 155, 164, 0.22);
+  background: rgba(255, 244, 245, 0.96);
+}
+
+.cancel-btn:hover:not(.is-disabled) {
+  background: linear-gradient(135deg, #f4979f 0%, #ea7d88 100%);
+  box-shadow: 0 10px 20px rgba(234, 125, 136, 0.22);
+}
+
+.checkin-btn:hover:not(.is-disabled) {
+  background: linear-gradient(135deg, #6ca7ff 0%, #5283dc 100%);
+  box-shadow: 0 10px 20px rgba(82, 131, 220, 0.2);
+}
+
+.checkout-btn:hover:not(.is-disabled) {
+  background: linear-gradient(135deg, #59c7a3 0%, #33a984 100%);
+  box-shadow: 0 10px 20px rgba(51, 169, 132, 0.2);
+}
+
+.pagination-container {
+  padding: 18px 24px;
+}
+
+.pagination-container :deep(.el-pagination .btn-next),
+.pagination-container :deep(.el-pagination .btn-prev),
+.pagination-container :deep(.el-pagination .el-pager li) {
+  border-radius: 12px;
+}
+
+.pagination-container :deep(.el-pagination .el-pager li.is-active) {
+  background: linear-gradient(135deg, #6ca7ff 0%, #4d83e6 100%);
+  color: #ffffff;
+}
+
+.reservation-dialog :deep(.el-dialog) {
+  border-radius: 28px;
+  overflow: hidden;
+}
+
+.dialog-header {
+  padding: 26px 30px 18px;
+  background:
+    radial-gradient(circle at top right, rgba(174, 214, 255, 0.32), transparent 26%),
+    linear-gradient(145deg, rgba(234, 244, 255, 0.96) 0%, #ffffff 62%);
+}
+
+.dialog-title-icon {
+  border-radius: 16px;
+  background: rgba(174, 214, 255, 0.36);
+}
+
+.dialog-title-text {
+  font-size: 22px;
+  color: #193f6c;
+}
+
+.dialog-content {
+  padding: 0 30px 18px;
+}
+
+.reservation-descriptions {
+  border-radius: 22px;
+}
+
+.dialog-footer {
+  padding: 0 30px 30px;
+  background: transparent;
+  border-top: none;
+}
+
+.dialog-footer .cancel-btn {
+  min-height: 44px;
+  padding: 0 18px;
+  border-radius: 14px;
+  color: #6e829d;
+  border: 1px solid rgba(126, 174, 255, 0.18);
+  background: #ffffff;
+}
+
+@keyframes reservation-rise {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (max-width: 1280px) {
+  .summary-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 900px) {
+  .toolbar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .search-input {
+    width: 100%;
+  }
+}
+
+@media (max-width: 768px) {
+  .summary-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .header-content,
+  .toolbar,
+  .pagination-container {
+    padding: 18px;
+  }
+
+  .page-title {
+    font-size: 28px;
+  }
+
+  .table-container {
+    padding: 6px;
+    border-radius: 22px;
+    overflow-x: auto;
+  }
+
+  .reservation-table {
+    min-width: 900px;
+  }
+
+  .dialog-header,
+  .dialog-content,
+  .dialog-footer {
+    padding-left: 18px;
+    padding-right: 18px;
   }
 }
 </style>
