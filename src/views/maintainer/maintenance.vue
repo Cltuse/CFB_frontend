@@ -2,21 +2,10 @@
   <div class="page-shell maintenance-theme">
     <section class="page-hero">
       <div class="hero-copy">
-        <span class="eyebrow">维护流程</span>
+        <span class="eyebrow">Maintenance Management</span>
         <h1>维护登记</h1>
-        <p>统一管理本人负责场地的维护任务，保持创建、编辑、完成和详情查看都在同一操作节奏里。</p>
-      </div>
-
-      <div class="hero-aside">
-        <div class="mini-card">
-          <span>待处理</span>
-          <strong>{{ stats.pending }}</strong>
-        </div>
-        <div class="mini-card">
-          <span>进行中</span>
-          <strong>{{ stats.inProgress }}</strong>
-        </div>
-      </div>
+        <p>管理本人负责场地的维护任务，包括创建、编辑、完成和详情查看。</p>
+      </div>      
     </section>
 
     <section class="summary-grid">
@@ -41,7 +30,7 @@
     <section class="control-card">
       <div class="control-copy">
         <h2>任务筛选</h2>
-        <p>和设施、预约、违规页保持同类布局一致，只保留高频筛选和核心动作。</p>
+        <p>根据维护完成度和任务状态筛选维护任务。</p>
       </div>
 
       <div class="control-actions">

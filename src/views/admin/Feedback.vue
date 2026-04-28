@@ -18,8 +18,8 @@
         <strong>{{ total }}</strong>
         <p>接口返回的全部反馈记录总量</p>
       </article>
-      <article class="hero-note">
-          <span>待处理</span>
+      <article class="summary-card">
+          <span class="summary-label">待处理</span>
           <strong>{{ pendingFeedbacks }}</strong>
           <p>建议优先查看尚未回复的反馈</p>
         </article>

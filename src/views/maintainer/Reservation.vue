@@ -2,41 +2,10 @@
   <div class="page-shell reservation-theme">
     <section class="page-hero">
       <div class="hero-copy">
-        <span class="eyebrow">预约运营</span>
+        <span class="eyebrow">Reservation</span>
         <h1>预约处理</h1>
-        <p>集中处理本人负责设施的预约审核、签到核销和状态追踪，保持与维护端其他页面一致的操作节奏。</p>
-
-        <div class="hero-highlights">
-          <article class="highlight-card">
-            <span>当前待处理</span>
-            <strong>{{ stats.pending }}</strong>
-            <small>条预约待审核</small>
-          </article>
-          <article class="highlight-card">
-            <span>现场核销</span>
-            <strong>{{ verifyReadyCount }}</strong>
-            <small>条记录可操作</small>
-          </article>
-        </div>
-      </div>
-
-      <div class="hero-aside">
-        <div class="mini-card">
-          <span>待审核</span>
-          <strong>{{ stats.pending }}</strong>
-          <small>优先处理新申请</small>
-        </div>
-        <div class="mini-card">
-          <span>已通过</span>
-          <strong>{{ stats.approved }}</strong>
-          <small>可继续现场核销</small>
-        </div>
-        <div class="mini-card">
-          <span>已完成</span>
-          <strong>{{ stats.completed }}</strong>
-          <small>签到签退流程已闭环</small>
-        </div>
-      </div>
+        <p>管理本人负责设施的预约审核、签到核销、签退流程。</p>        
+      </div>      
     </section>
 
     <section class="summary-grid">

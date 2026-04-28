@@ -4,19 +4,10 @@
       <div class="hero-copy">
         <span class="eyebrow">Violation Workflow</span>
         <h1>违规记录上报</h1>
-        <p>只展示和处理当前负责人场地下的预约违规，避免跨场地误操作。</p>
+        <p>上报当前负责场地下的预约违规记录，包括违规用户、违规预约、违规时间等。</p>
       </div>
 
-      <div class="hero-tips">
-        <div class="tip-card">
-          <span class="tip-label">上报范围</span>
-          <strong>仅限本人负责场地</strong>
-        </div>
-        <div class="tip-card">
-          <span class="tip-label">处理对象</span>
-          <strong>必须关联预约记录</strong>
-        </div>
-      </div>
+      
     </section>
 
     <section class="content-grid">

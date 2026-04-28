@@ -2,21 +2,11 @@
   <div class="page-shell facility-theme">
     <section class="page-hero">
       <div class="hero-copy">
-        <span class="eyebrow">设施运营</span>
+        <span class="eyebrow">Facility Management</span>
         <h1>设施管理</h1>
-        <p>统一查看本人负责场地的状态、预约安排和维护入口，详情页同步展示未来排期。</p>
+        <p>管理本人负责场地的状态、预约安排和维护入口，详情页同步展示未来排期。</p>
       </div>
 
-      <div class="hero-aside">
-        <div class="mini-card">
-          <span>负责场地</span>
-          <strong>{{ stats.total }}</strong>
-        </div>
-        <div class="mini-card">
-          <span>当前可用</span>
-          <strong>{{ stats.available }}</strong>
-        </div>
-      </div>
     </section>
 
     <section class="summary-grid">
