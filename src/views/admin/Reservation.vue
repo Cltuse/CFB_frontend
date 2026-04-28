@@ -1,5 +1,5 @@
 <template>
-  <div class="admin-reservation-page">
+  <div class="admin-reservation-page" :style="themeVars">
     <section class="page-hero">
       <div class="hero-copy">
         <span class="hero-eyebrow">Reservation</span>
@@ -216,6 +216,11 @@ import { computed, onMounted, ref } from 'vue';
 import { ElMessage } from 'element-plus';
 import { Document, Search } from '@element-plus/icons-vue';
 import { reservationAPI } from '../../api';
+import { buildFeatureVars, getRoleTheme } from '../../utils/featureTheme';
+
+const themeVars = computed(() => ({
+  ...buildFeatureVars(getRoleTheme('admin'))
+}));
 
 const loading = ref(false);
 const activeTab = ref('PENDING');
@@ -361,18 +366,18 @@ const getCheckinStatusText = (status) =>
 
 <style scoped>
 .admin-reservation-page {
-  --theme-main: #78adff;
-  --theme-deep: #4f84df;
-  --theme-soft: rgba(189, 216, 255, 0.28);
-  --theme-border: rgba(120, 173, 255, 0.16);
-  --theme-shadow: rgba(36, 68, 120, 0.08);
+  --theme-main: var(--feature-primary);
+  --theme-deep: var(--feature-strong);
+  --theme-soft: var(--feature-soft);
+  --theme-border: var(--feature-border);
+  --theme-shadow: var(--feature-glow);
   min-height: 100%;
   display: grid;
   gap: 20px;
   background:
-    radial-gradient(circle at top left, rgba(214, 229, 255, 0.74), transparent 26%),
-    radial-gradient(circle at right center, rgba(241, 246, 255, 0.92), transparent 24%),
-    linear-gradient(180deg, #f8fbff 0%, #f4f8ff 48%, #f1f6ff 100%);
+    radial-gradient(circle at top left, rgba(226, 236, 249, 0.72), transparent 26%),
+    radial-gradient(circle at right center, rgba(240, 249, 252, 0.92), transparent 24%),
+    linear-gradient(180deg, #f9fbff 0%, #f5f8fd 48%, #f3f7fc 100%);
 }
 
 .page-hero,
@@ -401,7 +406,7 @@ const getCheckinStatusText = (status) =>
   padding: 30px;
   background:
     radial-gradient(circle at top right, var(--theme-soft), transparent 30%),
-    linear-gradient(145deg, rgba(243, 247, 255, 0.96) 0%, #ffffff 62%);
+    linear-gradient(145deg, rgba(240, 249, 252, 0.98) 0%, #ffffff 62%);
 }
 
 .hero-eyebrow {
@@ -409,8 +414,8 @@ const getCheckinStatusText = (status) =>
   align-items: center;
   padding: 6px 12px;
   border-radius: 999px;
-  background: rgba(189, 216, 255, 0.24);
-  color: #567ab3;
+  background: rgba(200, 216, 240, 0.24);
+  color: #4b6f99;
   font-size: 12px;
   font-weight: 600;
   letter-spacing: 0.08em;
@@ -420,7 +425,7 @@ const getCheckinStatusText = (status) =>
 .section-copy h2,
 .dialog-header h3 {
   margin: 14px 0 10px;
-  color: #1d4572;
+  color: #17314d;
 }
 
 .hero-copy h1 {
@@ -431,7 +436,7 @@ const getCheckinStatusText = (status) =>
 .section-copy p,
 .dialog-header p {
   margin: 0;
-  color: #6e809d;
+  color: #67778f;
   line-height: 1.8;
 }
 
@@ -458,14 +463,14 @@ const getCheckinStatusText = (status) =>
 
 .primary-btn {
   border: none;
-  background: linear-gradient(135deg, #78adff 0%, #4f84df 100%);
-  box-shadow: 0 14px 28px rgba(79, 132, 223, 0.22);
+  background: linear-gradient(135deg, var(--feature-primary) 0%, var(--feature-strong) 100%);
+  box-shadow: 0 14px 28px rgba(63, 134, 146, 0.22);
 }
 
 .secondary-btn {
-  border: 1px solid rgba(120, 173, 255, 0.22);
+  border: 1px solid var(--feature-border);
   background: rgba(255, 255, 255, 0.9);
-  color: #5b769b;
+  color: #5b7a96;
 }
 
 .hero-side {
@@ -484,13 +489,13 @@ const getCheckinStatusText = (status) =>
 .stat-label,
 .stat-card p,
 .detail-summary-card span {
-  color: #778aa5;
+  color: #72839b;
 }
 
 .hero-note strong,
 .stat-card strong,
 .detail-summary-card strong {
-  color: #1d4673;
+  color: #19324e;
 }
 
 .hero-note strong {
@@ -508,9 +513,9 @@ const getCheckinStatusText = (status) =>
 .stat-card {
   padding: 22px;
   border-radius: 24px;
-  border: 1px solid var(--theme-border);
-  background: linear-gradient(150deg, rgba(243, 247, 255, 0.96) 0%, #ffffff 84%);
-  box-shadow: 0 18px 40px rgba(36, 68, 120, 0.06);
+  border: 1px solid var(--feature-border);
+  background: linear-gradient(150deg, rgba(240, 249, 252, 0.96) 0%, #ffffff 84%);
+  box-shadow: 0 18px 40px rgba(30, 41, 59, 0.06);
 }
 
 .warning-card {
@@ -550,7 +555,7 @@ const getCheckinStatusText = (status) =>
 }
 
 .status-tabs :deep(.el-tabs__nav-wrap::after) {
-  background: rgba(120, 173, 255, 0.12);
+  background: rgba(200, 216, 240, 0.12);
 }
 
 .status-tabs :deep(.el-tabs__item) {
@@ -561,7 +566,7 @@ const getCheckinStatusText = (status) =>
 }
 
 .status-tabs :deep(.el-tabs__item.is-active) {
-  color: #4f84df;
+  color: #4b6f99;
 }
 
 .status-tabs :deep(.el-tabs__active-bar) {
@@ -581,7 +586,7 @@ const getCheckinStatusText = (status) =>
   min-height: 46px;
   border-radius: 16px;
   box-shadow: none;
-  border: 1px solid rgba(120, 173, 255, 0.2);
+  border: 1px solid var(--feature-border);
   background: #f9fbff;
 }
 
@@ -595,20 +600,20 @@ const getCheckinStatusText = (status) =>
 .meta-chip {
   padding: 8px 12px;
   border-radius: 999px;
-  background: rgba(189, 216, 255, 0.24);
-  color: #5579b1;
+  background: rgba(200, 216, 240, 0.24);
+  color: #5579a4;
   font-size: 12px;
   font-weight: 600;
 }
 
 .muted-chip {
-  background: rgba(244, 247, 252, 0.96);
-  color: #7a8ba5;
+  background: rgba(244, 249, 252, 0.96);
+  color: #72839b;
 }
 
 .reservation-table :deep(.el-table) {
-  --el-table-border-color: rgba(120, 173, 255, 0.12);
-  --el-table-row-hover-bg-color: rgba(244, 248, 255, 0.95);
+  --el-table-border-color: rgba(132, 165, 205, 0.12);
+  --el-table-row-hover-bg-color: rgba(243, 250, 252, 0.95);
   border-radius: 20px;
 }
 
@@ -618,12 +623,14 @@ const getCheckinStatusText = (status) =>
 }
 
 .reservation-table :deep(.el-table__header-wrapper th.el-table__cell) {
-  background: linear-gradient(180deg, #f6f9ff 0%, #eef4ff 100%) !important;
-  color: #234b78;
+  background: linear-gradient(180deg, #f6fbfe 0%, #eef5fc 100%) !important;
+  color: #225368;
 }
 
 .view-btn {
   border-radius: 999px;
+  color: #5579a4;
+  border-color: rgba(132, 165, 205, 0.24);
 }
 
 .pagination-wrap {
@@ -643,8 +650,8 @@ const getCheckinStatusText = (status) =>
   gap: 14px;
   padding: 26px 30px 18px;
   background:
-    radial-gradient(circle at top right, rgba(189, 216, 255, 0.32), transparent 26%),
-    linear-gradient(145deg, rgba(243, 247, 255, 0.96) 0%, #ffffff 62%);
+    radial-gradient(circle at top right, rgba(200, 216, 240, 0.32), transparent 26%),
+    linear-gradient(145deg, rgba(240, 249, 252, 0.96) 0%, #ffffff 62%);
 }
 
 .dialog-badge {
@@ -653,8 +660,8 @@ const getCheckinStatusText = (status) =>
   width: 50px;
   height: 50px;
   border-radius: 16px;
-  background: rgba(189, 216, 255, 0.34);
-  color: #4f84df;
+  background: rgba(200, 216, 240, 0.34);
+  color: var(--feature-strong);
 }
 
 .detail-layout {
@@ -672,7 +679,7 @@ const getCheckinStatusText = (status) =>
 .detail-summary-card {
   padding: 18px;
   box-shadow: none;
-  background: linear-gradient(150deg, rgba(243, 247, 255, 0.96) 0%, #ffffff 84%);
+  background: linear-gradient(150deg, rgba(240, 249, 252, 0.96) 0%, #ffffff 84%);
 }
 
 .detail-summary-card strong {

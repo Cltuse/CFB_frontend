@@ -1,5 +1,5 @@
 <template>
-  <div class="admin-log-page">
+  <div class="admin-log-page" :style="themeVars">
     <section class="page-hero">
       <div class="hero-copy">
         <span class="hero-eyebrow">Operation Log</span>
@@ -241,6 +241,11 @@ import { computed, onMounted, reactive, ref } from 'vue';
 import { ElMessage } from 'element-plus';
 import { Document } from '@element-plus/icons-vue';
 import { adminAPI, userAPI } from '../../api';
+import { buildFeatureVars, getRoleTheme } from '../../utils/featureTheme';
+
+const themeVars = computed(() => ({
+  ...buildFeatureVars(getRoleTheme('admin'))
+}));
 
 const loading = ref(false);
 const operatorLoading = ref(false);
@@ -445,18 +450,18 @@ function getOperationTypeText(type) {
 
 <style scoped>
 .admin-log-page {
-  --theme-main: #93a8c8;
-  --theme-deep: #627a9d;
-  --theme-soft: rgba(214, 223, 238, 0.28);
-  --theme-border: rgba(147, 168, 200, 0.16);
-  --theme-shadow: rgba(49, 62, 85, 0.08);
+  --theme-main: var(--feature-primary);
+  --theme-deep: var(--feature-strong);
+  --theme-soft: var(--feature-soft);
+  --theme-border: var(--feature-border);
+  --theme-shadow: var(--feature-glow);
   min-height: 100%;
   display: grid;
   gap: 20px;
   background:
-    radial-gradient(circle at top left, rgba(228, 233, 244, 0.76), transparent 26%),
-    radial-gradient(circle at right center, rgba(245, 247, 252, 0.92), transparent 24%),
-    linear-gradient(180deg, #fafbfe 0%, #f6f8fc 48%, #f3f6fb 100%);
+    radial-gradient(circle at top left, rgba(226, 236, 249, 0.72), transparent 26%),
+    radial-gradient(circle at right center, rgba(240, 249, 252, 0.92), transparent 24%),
+    linear-gradient(180deg, #f9fbff 0%, #f5f8fd 48%, #f3f7fc 100%);
 }
 
 .page-hero,
@@ -485,7 +490,7 @@ function getOperationTypeText(type) {
   padding: 30px;
   background:
     radial-gradient(circle at top right, var(--theme-soft), transparent 30%),
-    linear-gradient(145deg, rgba(245, 247, 252, 0.96) 0%, #ffffff 62%);
+    linear-gradient(145deg, rgba(240, 249, 252, 0.98) 0%, #ffffff 62%);
 }
 
 .hero-eyebrow {
@@ -493,8 +498,8 @@ function getOperationTypeText(type) {
   align-items: center;
   padding: 6px 12px;
   border-radius: 999px;
-  background: rgba(214, 223, 238, 0.24);
-  color: #607896;
+  background: rgba(200, 216, 240, 0.24);
+  color: #4b6f99;
   font-size: 12px;
   font-weight: 600;
   letter-spacing: 0.08em;
@@ -504,7 +509,7 @@ function getOperationTypeText(type) {
 .section-copy h2,
 .dialog-header h3 {
   margin: 14px 0 10px;
-  color: #314560;
+  color: #17314d;
 }
 
 .hero-copy h1 {
@@ -515,7 +520,7 @@ function getOperationTypeText(type) {
 .section-copy p,
 .dialog-header p {
   margin: 0;
-  color: #7a8598;
+  color: #67778f;
   line-height: 1.8;
 }
 
@@ -543,14 +548,14 @@ function getOperationTypeText(type) {
 
 .primary-btn {
   border: none;
-  background: linear-gradient(135deg, #93a8c8 0%, #627a9d 100%);
-  box-shadow: 0 14px 28px rgba(98, 122, 157, 0.22);
+  background: linear-gradient(135deg, var(--feature-primary) 0%, var(--feature-strong) 100%);
+  box-shadow: 0 14px 28px rgba(63, 134, 146, 0.22);
 }
 
 .secondary-btn {
-  border: 1px solid rgba(147, 168, 200, 0.22);
+  border: 1px solid var(--feature-border);
   background: rgba(255, 255, 255, 0.9);
-  color: #768296;
+  color: #5b7a96;
 }
 
 .small-btn {
@@ -565,7 +570,7 @@ function getOperationTypeText(type) {
 .hero-note {
   min-height: 132px;
   padding: 22px;
-  background: linear-gradient(180deg, #fafbfe 0%, #ffffff 100%);
+  background: linear-gradient(180deg, #f8fbff 0%, #ffffff 100%);
 }
 
 .hero-note span,
@@ -573,13 +578,13 @@ function getOperationTypeText(type) {
 .summary-label,
 .summary-card p,
 .detail-summary-card span {
-  color: #7f8998;
+  color: #72839b;
 }
 
 .hero-note strong,
 .summary-card strong,
 .detail-summary-card strong {
-  color: #334963;
+  color: #19324e;
 }
 
 .hero-note strong,
@@ -598,9 +603,9 @@ function getOperationTypeText(type) {
 .summary-card {
   padding: 22px;
   border-radius: 24px;
-  border: 1px solid rgba(147, 168, 200, 0.14);
-  background: linear-gradient(150deg, rgba(245, 247, 252, 0.96) 0%, #ffffff 84%);
-  box-shadow: 0 18px 40px rgba(49, 62, 85, 0.06);
+  border: 1px solid var(--feature-border);
+  background: linear-gradient(150deg, rgba(240, 249, 252, 0.96) 0%, #ffffff 84%);
+  box-shadow: 0 18px 40px rgba(30, 41, 59, 0.06);
 }
 
 .summary-card p {
@@ -634,8 +639,8 @@ function getOperationTypeText(type) {
   min-height: 46px;
   border-radius: 16px;
   box-shadow: none;
-  border: 1px solid rgba(147, 168, 200, 0.2);
-  background: #fafbfe;
+  border: 1px solid var(--feature-border);
+  background: #f9fbff;
 }
 
 .panel-head {
@@ -648,20 +653,20 @@ function getOperationTypeText(type) {
 .meta-chip {
   padding: 8px 12px;
   border-radius: 999px;
-  background: rgba(214, 223, 238, 0.24);
-  color: #647b9d;
+  background: rgba(200, 216, 240, 0.24);
+  color: #5579a4;
   font-size: 12px;
   font-weight: 600;
 }
 
 .muted-chip {
-  background: rgba(245, 248, 252, 0.96);
-  color: #808899;
+  background: rgba(244, 249, 252, 0.96);
+  color: #72839b;
 }
 
 .log-table :deep(.el-table) {
-  --el-table-border-color: rgba(147, 168, 200, 0.12);
-  --el-table-row-hover-bg-color: rgba(246, 248, 252, 0.95);
+  --el-table-border-color: rgba(132, 165, 205, 0.12);
+  --el-table-row-hover-bg-color: rgba(243, 250, 252, 0.95);
   border-radius: 20px;
 }
 
@@ -671,8 +676,8 @@ function getOperationTypeText(type) {
 }
 
 .log-table :deep(.el-table__header-wrapper th.el-table__cell) {
-  background: linear-gradient(180deg, #f8fafe 0%, #eef2f8 100%) !important;
-  color: #39506c;
+  background: linear-gradient(180deg, #f6fbfe 0%, #eef5fc 100%) !important;
+  color: #225368;
 }
 
 .action-btn {
@@ -682,8 +687,8 @@ function getOperationTypeText(type) {
 }
 
 .view-btn {
-  color: #607896;
-  border-color: rgba(147, 168, 200, 0.24);
+  color: #5579a4;
+  border-color: rgba(132, 165, 205, 0.24);
   background: rgba(247, 249, 252, 0.96);
 }
 
@@ -710,7 +715,7 @@ function getOperationTypeText(type) {
   width: 48px;
   height: 48px;
   border-radius: 16px;
-  background: rgba(214, 223, 238, 0.24);
+  background: rgba(200, 216, 240, 0.24);
   color: var(--theme-deep);
 }
 
@@ -728,7 +733,7 @@ function getOperationTypeText(type) {
 .detail-summary-card {
   padding: 18px;
   box-shadow: none;
-  background: linear-gradient(150deg, rgba(245, 247, 252, 0.96) 0%, #ffffff 84%);
+  background: linear-gradient(150deg, rgba(240, 249, 252, 0.96) 0%, #ffffff 84%);
 }
 
 .detail-summary-card strong {

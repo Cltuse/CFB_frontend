@@ -1,5 +1,5 @@
 ﻿<template>
-  <div class="blacklist-page">
+  <div class="blacklist-page" :style="themeVars">
     <section class="page-hero">
       <div class="hero-copy">
         <span class="hero-eyebrow">Blacklist Management</span>
@@ -9,7 +9,7 @@
       </div>
       <div class="hero-actions">
           <el-button type="danger" class="danger-btn" @click="handleAddBlacklist">新增黑名单</el-button>
-          <el-button class="secondary-btn" @click="loadBlacklist">刷新列表</el-button>
+          <el-button class="secondary-btn" @click="refreshAll">刷新列表</el-button>
         </div>
     </section>
 
@@ -72,46 +72,48 @@
         </div>
       </div>
 
-      <el-table :data="blacklistData" class="blacklist-table" v-loading="loading">
-        <el-table-column prop="userRealName" label="用户姓名" width="120" />
-        <el-table-column prop="userName" label="学号/工号" width="140" />
-        <el-table-column prop="reason" label="拉黑原因" min-width="220" show-overflow-tooltip />
-        <el-table-column prop="startTime" label="开始时间" width="180" align="center">
-          <template #default="{ row }">{{ formatDateTime(row.startTime) }}</template>
-        </el-table-column>
-        <el-table-column prop="endTime" label="结束时间" width="180" align="center">
-          <template #default="{ row }">
-            <span v-if="row.endTime">{{ formatDateTime(row.endTime) }}</span>
-            <el-tag v-else type="danger" size="small" round>永久</el-tag>
-          </template>
-        </el-table-column>
-        <el-table-column prop="status" label="状态" width="110" align="center">
-          <template #default="{ row }">
-            <el-tag :type="getStatusType(row.status)" effect="light" round>
-              {{ getStatusText(row.status) }}
-            </el-tag>
-          </template>
-        </el-table-column>
-        <el-table-column prop="operatorName" label="操作员" width="120" align="center" />
-        <el-table-column prop="createdAt" label="创建时间" width="180" align="center">
-          <template #default="{ row }">{{ formatDateTime(row.createdAt) }}</template>
-        </el-table-column>
-        <el-table-column label="操作" width="200" fixed="right" align="center">
-          <template #default="{ row }">
-            <div class="row-actions">
-              <el-button
-                v-if="row.status === 'ACTIVE'"
-                class="danger-action-btn"
-                @click="handleRemove(row)"
-                :icon="CircleCheck"
-              >
-                移出
-              </el-button>
-              <el-button class="neutral-action-btn" @click="handleView(row)" :icon="View">详情</el-button>
-            </div>
-          </template>
-        </el-table-column>
-      </el-table>
+      <div class="table-wrap">
+        <el-table :data="blacklistData" class="blacklist-table" v-loading="loading">
+          <el-table-column prop="userRealName" label="用户姓名" width="120" />
+          <el-table-column prop="userName" label="学号/工号" width="140" />
+          <el-table-column prop="reason" label="拉黑原因" min-width="220" show-overflow-tooltip />
+          <el-table-column prop="startTime" label="开始时间" width="180" align="center">
+            <template #default="{ row }">{{ formatDateTime(row.startTime) }}</template>
+          </el-table-column>
+          <el-table-column prop="endTime" label="结束时间" width="180" align="center">
+            <template #default="{ row }">
+              <span v-if="row.endTime">{{ formatDateTime(row.endTime) }}</span>
+              <el-tag v-else type="danger" size="small" round>永久</el-tag>
+            </template>
+          </el-table-column>
+          <el-table-column prop="status" label="状态" width="110" align="center">
+            <template #default="{ row }">
+              <el-tag :type="getStatusType(row.status)" effect="light" round>
+                {{ getStatusText(row.status) }}
+              </el-tag>
+            </template>
+          </el-table-column>
+          <el-table-column prop="operatorName" label="操作员" width="120" align="center" />
+          <el-table-column prop="createdAt" label="创建时间" width="180" align="center">
+            <template #default="{ row }">{{ formatDateTime(row.createdAt) }}</template>
+          </el-table-column>
+          <el-table-column label="操作" width="200" fixed="right" align="center">
+            <template #default="{ row }">
+              <div class="row-actions">
+                <el-button
+                  v-if="row.status === 'ACTIVE'"
+                  class="danger-action-btn"
+                  @click="handleRemove(row)"
+                  :icon="CircleCheck"
+                >
+                  移出
+                </el-button>
+                <el-button class="neutral-action-btn" @click="handleView(row)" :icon="View">详情</el-button>
+              </div>
+            </template>
+          </el-table-column>
+        </el-table>
+      </div>
 
       <el-empty v-if="!loading && !blacklistData.length" description="当前没有符合条件的黑名单记录" />
 
@@ -212,10 +214,15 @@
 </template>
 
 <script setup>
-import { onMounted, reactive, ref } from 'vue';
+import { onMounted, reactive, ref, computed } from 'vue';
 import { ElMessage, ElMessageBox } from 'element-plus';
-import { Search, Refresh, Plus, CircleCheck, View } from '@element-plus/icons-vue';
+import { Search, Refresh, CircleCheck, View } from '@element-plus/icons-vue';
 import { adminAPI, userAPI } from '../../api';
+import { buildFeatureVars, getRoleTheme } from '../../utils/featureTheme';
+
+const themeVars = computed(() => ({
+  ...buildFeatureVars(getRoleTheme('admin'))
+}));
 
 const loading = ref(false);
 const userLoading = ref(false);
@@ -290,8 +297,8 @@ const getStatusText = (status) =>
   ({
     ACTIVE: '生效中',
     EXPIRED: '已过期',
-    REMOVED: '手动移除'
-  })[status] || status;
+    REMOVED: '已移除'
+  })[status] || '未知';
 
 const loadBlacklist = async () => {
   loading.value = true;
@@ -299,19 +306,14 @@ const loadBlacklist = async () => {
     const params = {
       page: pagination.currentPage - 1,
       size: pagination.pageSize,
-      status: searchForm.status,
-      userName: searchForm.userName
+      ...(searchForm.status && { status: searchForm.status }),
+      ...(searchForm.userName && { userName: searchForm.userName })
     };
-
-    const response = await adminAPI.getBlacklist(params);
-    const data = response.data || {};
-
-    blacklistData.value = data.content || [];
-    pagination.total = data.totalElements || 0;
-
-    await loadStats();
-  } catch (error) {
-    ElMessage.error('加载黑名单失败');
+    const res = await adminAPI.getBlacklist(params);
+    blacklistData.value = res.data.content || [];
+    pagination.total = res.data.totalElements || 0;
+  } catch (err) {
+    ElMessage.error(err.message || '获取黑名单列表失败');
   } finally {
     loading.value = false;
   }
@@ -319,15 +321,10 @@ const loadBlacklist = async () => {
 
 const loadStats = async () => {
   try {
-    const response = await adminAPI.getBlacklistStats();
-    const data = response.data || {};
-
-    stats.activeCount = data.activeCount || 0;
-    stats.expiredCount = data.expiredCount || 0;
-    stats.removedCount = data.removedCount || 0;
-    stats.totalCount = data.totalCount || 0;
-  } catch (error) {
-    console.error('加载统计信息失败:', error);
+    const res = await adminAPI.getBlacklistStats();
+    Object.assign(stats, res.data || {});
+  } catch (err) {
+    console.error('获取统计数据失败', err);
   }
 };
 
@@ -339,16 +336,18 @@ const handleSearch = () => {
 const resetSearch = () => {
   searchForm.status = '';
   searchForm.userName = '';
-  handleSearch();
-};
-
-const handleSizeChange = (val) => {
-  pagination.pageSize = val;
+  pagination.currentPage = 1;
   loadBlacklist();
 };
 
-const handleCurrentChange = (val) => {
-  pagination.currentPage = val;
+const handleSizeChange = (size) => {
+  pagination.pageSize = size;
+  pagination.currentPage = 1;
+  loadBlacklist();
+};
+
+const handleCurrentChange = (page) => {
+  pagination.currentPage = page;
   loadBlacklist();
 };
 
@@ -362,44 +361,39 @@ const handleAddBlacklist = () => {
 };
 
 const searchUsers = async (query) => {
-  if (!query || query.length < 2) {
+  if (!query) {
     userOptions.value = [];
     return;
   }
-
   userLoading.value = true;
   try {
-    const response = await userAPI.searchUsers(query);
-    userOptions.value = response.data || [];
-  } catch (error) {
-    ElMessage.error('搜索用户失败');
+    const res = await userAPI.searchUsers(query);
+    userOptions.value = res.data || [];
+  } catch (err) {
+    console.error('搜索用户失败', err);
   } finally {
     userLoading.value = false;
   }
 };
 
 const handleAddSubmit = async () => {
+  if (!addFormRef.value) return;
+  const valid = await addFormRef.value.validate().catch(() => false);
+  if (!valid) return;
+  addLoading.value = true;
   try {
-    await addFormRef.value.validate();
-    addLoading.value = true;
-
-    const formData = {
+    const params = {
       userId: addForm.userId,
-      reason: addForm.reason
+      reason: addForm.reason,
+      durationType: addForm.durationType,
+      ...(addForm.durationType === 'custom' && { endTime: addForm.endTime })
     };
-
-    if (addForm.durationType === 'custom' && addForm.endTime) {
-      formData.endTime = addForm.endTime;
-    }
-
-    await adminAPI.addToBlacklist(formData);
-    ElMessage.success('添加黑名单成功');
+    await adminAPI.addToBlacklist(params);
+    ElMessage.success('添加成功');
     addDialogVisible.value = false;
-    loadBlacklist();
-  } catch (error) {
-    if (error !== false) {
-      ElMessage.error('添加黑名单失败');
-    }
+    refreshAll();
+  } catch (err) {
+    ElMessage.error(err.message || '添加失败');
   } finally {
     addLoading.value = false;
   }
@@ -407,18 +401,17 @@ const handleAddSubmit = async () => {
 
 const handleRemove = async (row) => {
   try {
-    await ElMessageBox.confirm(`确定要将 ${row.userRealName} 移出黑名单吗？`, '确认移出', {
+    await ElMessageBox.confirm('确定移出该黑名单记录？', '提示', {
       confirmButtonText: '确定',
       cancelButtonText: '取消',
       type: 'warning'
     });
-
     await adminAPI.removeFromBlacklist(row.id);
-    ElMessage.success('移出黑名单成功');
-    loadBlacklist();
-  } catch (error) {
-    if (error !== 'cancel') {
-      ElMessage.error('移出黑名单失败');
+    ElMessage.success('移出成功');
+    refreshAll();
+  } catch (err) {
+    if (err !== 'cancel') {
+      ElMessage.error(err.message || '操作失败');
     }
   }
 };
@@ -428,172 +421,155 @@ const handleView = (row) => {
   detailDialogVisible.value = true;
 };
 
-onMounted(() => {
+const refreshAll = () => {
   loadBlacklist();
+  loadStats();
+};
+
+onMounted(() => {
+  refreshAll();
 });
 </script>
 
 <style scoped>
 .blacklist-page {
-  --theme-main: #f08b95;
-  --theme-deep: #cf6670;
-  --theme-soft: rgba(255, 214, 219, 0.28);
-  --theme-border: rgba(240, 139, 149, 0.16);
-  --theme-shadow: rgba(96, 43, 55, 0.08);
+  --theme-main: var(--feature-primary);
+  --theme-deep: var(--feature-strong);
+  --theme-soft: var(--feature-soft);
+  --theme-border: var(--feature-border);
+  --theme-shadow: var(--feature-glow);
   min-height: 100%;
-  display: grid;
-  gap: 20px;
-  background:
-    radial-gradient(circle at top left, rgba(255, 230, 233, 0.76), transparent 26%),
-    radial-gradient(circle at right center, rgba(255, 246, 247, 0.92), transparent 24%),
-    linear-gradient(180deg, #fffafb 0%, #fff6f7 48%, #fff3f4 100%);
-}
-
-.page-hero,
-.summary-card,
-.control-card,
-.panel-card {
-  animation: blacklist-rise 0.55s ease both;
-}
-
-.page-hero,
-.control-card,
-.panel-card,
-.hero-note {
   border-radius: 28px;
-  border: 1px solid var(--theme-border);
-  background: rgba(255, 255, 255, 0.95);
-  box-shadow: 0 22px 50px var(--theme-shadow);
+  background:
+    radial-gradient(circle at top right, var(--theme-soft) 0%, transparent 35%),
+    linear-gradient(145deg, rgba(255, 255, 255, 0.96) 0%, #ffffff 62%);
+  animation: blacklist-rise 0.55s ease both;
+  padding: 32px;
 }
 
 .page-hero {
   display: grid;
-  grid-template-columns: minmax(0, 1.6fr) 320px;
+  grid-template-columns: 1fr 1fr;
   gap: 20px;
-  padding: 30px;
-  background:
-    radial-gradient(circle at top right, var(--theme-soft), transparent 30%),
-    linear-gradient(145deg, rgba(255, 246, 247, 0.96) 0%, #ffffff 62%);
+  margin-bottom: 28px;
 }
 
-.hero-eyebrow {
-  display: inline-flex;
-  align-items: center;
-  padding: 6px 12px;
+.hero-copy .hero-eyebrow {
+  display: inline-block;
+  padding: 6px 16px;
   border-radius: 999px;
-  background: rgba(255, 214, 219, 0.24);
-  color: #b45963;
+  background: var(--theme-soft);
+  color: var(--theme-deep);
   font-size: 12px;
   font-weight: 600;
-  letter-spacing: 0.08em;
-}
-
-.hero-copy h1,
-.section-copy h2 {
-  margin: 14px 0 10px;
-  color: #5a2f37;
+  letter-spacing: 0.5px;
+  margin-bottom: 16px;
 }
 
 .hero-copy h1 {
-  font-size: 34px;
+  font-size: 36px;
+  font-weight: 800;
+  color: #2d3748;
+  margin: 0 0 12px;
+  letter-spacing: -0.3px;
 }
 
-.hero-copy p,
-.section-copy p {
+.hero-copy p {
   margin: 0;
-  color: #8e7075;
+  color: #718096;
   line-height: 1.8;
+  font-size: 14px;
 }
 
-.hero-actions,
-.search-form,
-.panel-meta,
-.row-actions,
-.dialog-footer {
+.hero-actions {
   display: flex;
   align-items: center;
   gap: 12px;
   flex-wrap: wrap;
-}
-
-.hero-actions {
   margin-top: 24px;
 }
 
-.danger-btn,
-.secondary-btn {
+.hero-actions .danger-btn,
+.hero-actions .secondary-btn {
   min-height: 44px;
   padding: 0 18px;
   border-radius: 14px;
 }
 
-.danger-btn {
+.hero-actions .danger-btn {
   border: none;
-  background: linear-gradient(135deg, #f08b95 0%, #cf6670 100%);
-  box-shadow: 0 14px 28px rgba(207, 102, 112, 0.22);
+  background: linear-gradient(135deg, var(--theme-main) 0%, var(--theme-deep) 100%);
+  box-shadow: 0 14px 28px var(--theme-shadow);
 }
 
-.secondary-btn {
-  border: 1px solid rgba(240, 139, 149, 0.22);
+.hero-actions .secondary-btn {
+  border: 1px solid var(--theme-border);
   background: rgba(255, 255, 255, 0.9);
-  color: #8a6a70;
-}
-
-.hero-side {
-  display: grid;
-  gap: 14px;
-}
-
-.hero-note {
-  min-height: 132px;
-  padding: 22px;
-  background: linear-gradient(180deg, #fff9fa 0%, #ffffff 100%);
-}
-
-.hero-note span,
-.hero-note small,
-.summary-label,
-.summary-card p {
-  color: #98797f;
-}
-
-.hero-note strong,
-.summary-card strong {
-  color: #64353d;
-}
-
-.hero-note strong {
-  display: block;
-  margin: 14px 0 8px;
-  font-size: 30px;
+  color: #718096;
 }
 
 .summary-grid {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 16px;
+  margin-bottom: 28px;
 }
 
 .summary-card {
   padding: 22px;
   border-radius: 24px;
-  border: 1px solid rgba(240, 139, 149, 0.14);
-  background: linear-gradient(150deg, rgba(255, 246, 247, 0.96) 0%, #ffffff 84%);
-  box-shadow: 0 18px 40px rgba(96, 43, 55, 0.06);
+  border: 1px solid var(--theme-border);
+  background: linear-gradient(150deg, rgba(255, 255, 255, 0.96) 0%, #ffffff 84%);
+  box-shadow: 0 18px 40px var(--theme-shadow);
+}
+
+.summary-card .summary-label {
+  color: #718096;
+  font-size: 14px;
+  font-weight: 500;
 }
 
 .summary-card strong {
   display: block;
   margin: 14px 0 8px;
   font-size: 30px;
+  color: #2d3748;
 }
 
-.control-card,
-.panel-card {
+.summary-card p {
+  margin: 0;
+  color: #718096;
+  font-size: 13px;
+}
+
+.control-card {
   padding: 24px;
+  margin-bottom: 28px;
+  border-radius: 24px;
+  border: 1px solid var(--theme-border);
+  background: rgba(255, 255, 255, 0.94);
+  box-shadow: 0 22px 50px var(--theme-shadow);
+}
+
+.section-copy h2 {
+  font-size: 18px;
+  font-weight: 700;
+  color: #2d3748;
+  margin: 0 0 8px;
+}
+
+.section-copy p {
+  margin: 0;
+  color: #718096;
+  line-height: 1.8;
+  font-size: 14px;
 }
 
 .search-form {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
   margin-top: 18px;
 }
 
@@ -605,34 +581,60 @@ onMounted(() => {
 .search-form :deep(.el-select__wrapper) {
   border-radius: 14px;
   box-shadow: none;
-  border: 1px solid rgba(240, 139, 149, 0.2);
-  background: #fffafb;
+  border: 1px solid var(--theme-border);
+  background: #f7fafc;
+}
+
+.panel-card {
+  padding: 24px;
+  border-radius: 24px;
+  border: 1px solid var(--theme-border);
+  background: rgba(255, 255, 255, 0.94);
+  box-shadow: 0 22px 50px var(--theme-shadow);
+  overflow: hidden;
 }
 
 .panel-head {
   display: flex;
   justify-content: space-between;
+  align-items: center;
   gap: 16px;
   margin-bottom: 18px;
+}
+
+.panel-meta {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
 }
 
 .meta-chip {
   padding: 8px 12px;
   border-radius: 999px;
-  background: rgba(255, 214, 219, 0.24);
-  color: #b45963;
+  background: var(--theme-soft);
+  color: var(--theme-deep);
   font-size: 12px;
   font-weight: 600;
 }
 
 .muted-chip {
-  background: rgba(249, 242, 244, 0.96);
-  color: #93767b;
+  background: rgba(226, 232, 240, 0.6);
+  color: #718096;
+}
+
+.table-wrap {
+  overflow-x: auto;
+}
+
+.blacklist-table {
+  width: 100%;
+  min-width: 1100px;
 }
 
 .blacklist-table :deep(.el-table) {
-  --el-table-border-color: rgba(240, 139, 149, 0.12);
-  --el-table-row-hover-bg-color: rgba(255, 248, 249, 0.95);
+  --el-table-border-color: var(--theme-border);
+  --el-table-row-hover-bg-color: rgba(247, 250, 252, 0.95);
   border-radius: 20px;
 }
 
@@ -642,8 +644,15 @@ onMounted(() => {
 }
 
 .blacklist-table :deep(.el-table__header-wrapper th.el-table__cell) {
-  background: linear-gradient(180deg, #fff9fa 0%, #fff1f3 100%) !important;
-  color: #64353d;
+  background: linear-gradient(180deg, #f7fafc 0%, #edf2f7 100%) !important;
+  color: #2d3748;
+}
+
+.row-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
 }
 
 .danger-action-btn,
@@ -654,13 +663,13 @@ onMounted(() => {
 }
 
 .danger-action-btn {
-  color: #cb6670;
-  border-color: rgba(240, 139, 149, 0.22);
-  background: rgba(255, 245, 246, 0.96);
+  color: var(--theme-deep);
+  border-color: var(--theme-border);
+  background: rgba(255, 255, 255, 0.96);
 }
 
 .neutral-action-btn {
-  color: #6f7d94;
+  color: #718096;
   border-color: rgba(189, 198, 214, 0.24);
   background: rgba(247, 249, 252, 0.96);
 }
@@ -683,11 +692,15 @@ onMounted(() => {
 .blacklist-dialog :deep(.el-date-editor.el-input__wrapper) {
   border-radius: 14px;
   box-shadow: none;
-  border: 1px solid rgba(240, 139, 149, 0.2);
-  background: #fffafb;
+  border: 1px solid var(--theme-border);
+  background: #f7fafc;
 }
 
 .dialog-footer {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
   justify-content: flex-end;
 }
 
@@ -732,6 +745,10 @@ onMounted(() => {
   .row-actions {
     flex-direction: column;
     align-items: stretch;
+  }
+
+  .blacklist-table {
+    min-width: 920px;
   }
 }
 </style>

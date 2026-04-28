@@ -277,10 +277,14 @@
 </template>
 
 <script setup>
-import { computed, onMounted, reactive, ref, watch } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
+import { reactive, ref, computed, onMounted, watch } from 'vue'
+import { useRouter, useRoute } from 'vue-router'
 import { ElMessage } from 'element-plus'
 import { facilityAPI, maintenanceAPI } from '../../api'
+import { buildFeatureVars, getRoleTheme } from '../../utils/featureTheme'
+const userInfo = JSON.parse(localStorage.getItem('userInfo') || '{}')
+const theme = getRoleTheme(userInfo.role || 'maintainer')
+const featureVars = buildFeatureVars(theme)
 
 const route = useRoute()
 const router = useRouter()
@@ -607,15 +611,11 @@ const formatCurrency = (value) => {
 
 <style scoped>
 .maintenance-theme {
-  --theme-main: #2563eb;
-  --theme-soft: rgba(37, 99, 235, 0.12);
-  --theme-border: rgba(37, 99, 235, 0.12);
-  --theme-shadow: rgba(37, 99, 235, 0.16);
   padding: 24px;
   min-height: 100%;
   background:
-    radial-gradient(circle at top right, rgba(96, 165, 250, 0.18), transparent 26%),
-    linear-gradient(180deg, #eff6ff 0%, #f8fbff 48%, #eef4ff 100%);
+    radial-gradient(circle at top right, var(--feature-soft), transparent 26%),
+    linear-gradient(180deg, var(--layout-shell-top) 0%, var(--layout-shell-bottom) 100%);
 }
 
 .page-hero,
@@ -631,16 +631,16 @@ const formatCurrency = (value) => {
   padding: 28px;
   border-radius: 28px;
   background: rgba(255, 255, 255, 0.84);
-  border: 1px solid var(--theme-border);
-  box-shadow: 0 24px 60px var(--theme-shadow);
+  border: 1px solid var(--feature-soft);
+  box-shadow: 0 24px 60px var(--feature-glow);
 }
 
 .eyebrow {
   display: inline-flex;
   padding: 6px 12px;
   border-radius: 999px;
-  background: var(--theme-soft);
-  color: var(--theme-main);
+  background: var(--feature-soft);
+  color: var(--feature-primary);
   font-size: 12px;
   letter-spacing: 0.08em;
   text-transform: uppercase;
@@ -670,8 +670,8 @@ const formatCurrency = (value) => {
   min-height: 110px;
   padding: 18px 20px;
   border-radius: 22px;
-  background: linear-gradient(135deg, #edf4ff 0%, #ffffff 100%);
-  border: 1px solid var(--theme-border);
+  background: linear-gradient(135deg, var(--feature-surface) 0%, #ffffff 100%);
+  border: 1px solid var(--feature-soft);
 }
 
 .mini-card span {
@@ -783,7 +783,7 @@ const formatCurrency = (value) => {
 .detail-item {
   padding: 16px;
   border-radius: 18px;
-  background: #f5f9ff;
+  background: var(--feature-surface);
 }
 
 .detail-item.full {

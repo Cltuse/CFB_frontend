@@ -48,415 +48,511 @@
           </template>
         </el-input>
         <el-button type="primary" @click="handleSearch">搜索</el-button>
+        <el-button type="success" @click="openCreateDialog">新建场地</el-button>
       </div>
     </section>
 
     <section class="panel-card">
-      <el-table :data="facilityList" v-loading="loading" stripe>
-        <el-table-column label="场地信息" min-width="260">
+      <el-table
+        ref="tableRef"
+        :data="paginatedFacilities"
+        stripe
+        highlight-current-row
+        empty-text="暂无场地数据"
+        @sort-change="handleSortChange"
+      >
+        <el-table-column label="设施" min-width="200">
           <template #default="{ row }">
             <div class="facility-cell">
               <div class="facility-thumb">
-                <img :src="row.imageUrl || fallbackImage" :alt="row.name">
+                <img
+                  :src="getImageSrc(row.image)"
+                  :alt="row.name"
+                />
               </div>
               <div>
-                <div class="facility-name">{{ row.name }}</div>
-                <div class="facility-meta">{{ row.model || '未填写型号' }}</div>
+                <div class="facility-name">
+                  <el-link type="primary" :underline="false" @click="handleRowClick(row)">{{
+                    row.name
+                  }}</el-link>
+                </div>
+                <div class="facility-meta">
+                  {{ row.model ? row.model + ' / ' : '' }}{{ row.categoryName || '-' }}
+                </div>
               </div>
             </div>
           </template>
         </el-table-column>
-        <el-table-column prop="category" label="分类" min-width="130" />
-        <el-table-column prop="location" label="位置" min-width="170" />
-        <el-table-column label="状态" width="120" align="center">
+        <el-table-column prop="location" label="位置" width="150" />
+        <el-table-column prop="status" label="状态" width="110" align="center">
           <template #default="{ row }">
-            <el-tag :type="getStatusType(row.status)" effect="light">
-              {{ getStatusText(row.status) }}
+            <el-tag :type="statusType(row.status)" size="small">
+              {{ statusLabel(row.status) }}
             </el-tag>
           </template>
         </el-table-column>
-        <el-table-column label="价格" width="120" align="center">
-          <template #default="{ row }">
-            {{ formatCurrency(row.price) }}
-          </template>
-        </el-table-column>
-        <el-table-column label="操作" width="240" fixed="right" align="center">
+        <el-table-column label="操作" width="260" align="center">
           <template #default="{ row }">
             <div class="row-actions">
-              <el-button link type="primary" @click.stop="openDetail(row)">查看详情</el-button>
-              <el-button
-                link
-                type="success"
-                :disabled="row.status === 'MAINTENANCE'"
-                @click.stop="openMaintenanceDialog(row)"
-              >
-                发起维护
-              </el-button>
+              <el-button size="small" type="primary" @click="handleRowClick(row)">详情/排期</el-button>
+              <el-button size="small" :type="row.status === 'MAINTENANCE' ? 'warning' : 'default'" @click="handleEditStatus(row)">{{ row.status === 'MAINTENANCE' ? '恢复可用' : '标记维护' }}</el-button>
+              <el-button size="small" type="danger" plain @click="handleDelete(row)">删除</el-button>
             </div>
           </template>
         </el-table-column>
       </el-table>
-
-      <div class="pagination-wrap" v-if="total > 0">
+      <div class="pagination-wrap">
         <el-pagination
-          v-model:current-page="pagination.page"
-          v-model:page-size="pagination.size"
-          :page-sizes="[10, 20, 50, 100]"
-          :total="total"
-          layout="total, sizes, prev, pager, next, jumper"
-          @size-change="handleSizeChange"
-          @current-change="handleCurrentChange"
+          v-model:current-page="pagination.current"
+          :page-size="pagination.pageSize"
+          :total="pagination.total"
+          layout="prev, pager, next, total"
+          @current-change="handlePageChange"
         />
       </div>
     </section>
 
-    <el-drawer
-      v-model="detailDrawerVisible"
-      title="场地详情"
-      size="760px"
-      class="detail-drawer"
-    >
-      <div v-loading="detailLoading" class="detail-layout">
-        <template v-if="detailFacility">
-          <section class="detail-hero">
-            <img :src="detailFacility.imageUrl || fallbackImage" :alt="detailFacility.name">
-            <div class="detail-hero-copy">
-              <span class="eyebrow">设施详情</span>
-              <h2>{{ detailFacility.name }}</h2>
-              <p>{{ detailFacility.description || '暂无场地介绍。' }}</p>
-              <div class="detail-tags">
-                <el-tag :type="getStatusType(detailFacility.status)" effect="light">
-                  {{ getStatusText(detailFacility.status) }}
-                </el-tag>
-                <el-tag effect="light">{{ detailFacility.category || '未分类' }}</el-tag>
-                <el-tag effect="light">{{ detailFacility.location || '位置未填写' }}</el-tag>
-              </div>
-            </div>
-          </section>
-
-          <section class="detail-grid">
-            <article class="detail-info-card">
-              <span class="detail-label">型号</span>
-              <strong>{{ detailFacility.model || '-' }}</strong>
-            </article>
-            <article class="detail-info-card">
-              <span class="detail-label">购买日期</span>
-              <strong>{{ detailFacility.purchaseDate || '-' }}</strong>
-            </article>
-            <article class="detail-info-card">
-              <span class="detail-label">价格</span>
-              <strong>{{ formatCurrency(detailFacility.price) }}</strong>
-            </article>
-            <article class="detail-info-card">
-              <span class="detail-label">未来 {{ detailQueryDays }} 天预约</span>
-              <strong>{{ upcomingReservations.length }}</strong>
-            </article>
-          </section>
-
-          <section class="timeline-panel">
-            <div class="section-title">
-              <h3>近期预约时间线</h3>
-              <span>按开始时间排序</span>
-            </div>
-
-            <div v-if="upcomingReservations.length" class="timeline-list">
-              <article v-for="item in upcomingReservations" :key="item.id" class="timeline-item">
-                <div class="timeline-dot"></div>
-                <div class="timeline-content">
-                  <div class="timeline-top">
-                    <strong>{{ formatDateTime(item.startTime) }}</strong>
-                    <el-tag size="small" :type="getReservationStatusType(item.status)" effect="light">
-                      {{ getReservationStatusText(item.status) }}
-                    </el-tag>
-                  </div>
-                  <p>{{ item.userName || '未知用户' }} · {{ item.purpose || '未填写用途' }}</p>
-                  <span>{{ formatDateTime(item.endTime) }} 结束</span>
-                </div>
-              </article>
-            </div>
-            <el-empty v-else description="未来几天暂无预约安排" />
-          </section>
-        </template>
+    <section v-if="selectedFacility" class="detail-layout">
+      <div class="detail-hero">
+        <img
+          :src="getImageSrc(selectedFacility.image)"
+          :alt="selectedFacility.name"
+        />
+        <div class="detail-hero-copy">
+          <h2>{{ selectedFacility.name }}</h2>
+          <p>{{ selectedFacility.description || '暂无描述' }}</p>
+          <div class="detail-tags">
+            <el-tag size="small" effect="plain">{{ selectedFacility.categoryName }}</el-tag>
+            <el-tag size="small" effect="plain">{{ selectedFacility.location }}</el-tag>
+            <el-tag size="small" :type="statusType(selectedFacility.status)">{{ statusLabel(selectedFacility.status) }}</el-tag>
+          </div>
+        </div>
       </div>
-    </el-drawer>
 
-    <el-dialog
-      v-model="maintenanceDialogVisible"
-      title="发起维护登记"
-      width="580px"
-      destroy-on-close
-    >
-      <el-form ref="maintenanceFormRef" :model="maintenanceForm" :rules="maintenanceRules" label-position="top">
-        <el-form-item label="场地名称">
-          <el-input :model-value="currentFacility.name" disabled />
+      <div class="detail-grid">
+        <div class="detail-info-card">
+          <span class="detail-label">型号</span>
+          <strong>{{ selectedFacility.model || '-' }}</strong>
+        </div>
+        <div class="detail-info-card">
+          <span class="detail-label">采购时间</span>
+          <strong>{{ formatDate(selectedFacility.purchaseDate) }}</strong>
+        </div>
+        <div class="detail-info-card">
+          <span class="detail-label">使用年限</span>
+          <strong>{{ selectedFacility.lifespan ? selectedFacility.lifespan + ' 年' : '-' }}</strong>
+        </div>
+        <div class="detail-info-card">
+          <span class="detail-label">价格</span>
+          <strong>{{ formatPrice(selectedFacility.price) }}</strong>
+        </div>
+      </div>
+
+      <div v-if="facilityTimeline.length" class="timeline-panel">
+        <div class="section-title">
+          <h3>📋 未来排期（{{ facilityTimeline.length }} 条）</h3>
+          <span>按时间正序排列</span>
+        </div>
+        <div class="timeline-list">
+          <div v-for="event in facilityTimeline" :key="event.id" class="timeline-item">
+            <div class="timeline-dot" />
+            <div class="timeline-content">
+              <div class="timeline-top">
+                <el-tag size="small" effect="plain">{{ event.statusLabel || event.status }}</el-tag>
+                <span>{{ formatRange(event.startTime, event.endTime) }}</span>
+              </div>
+              <p>{{ event.username || '未知用户' }} · {{ event.purpose || '无备注' }}</p>
+              <span v-if="event.createdAt">预约时间: {{ formatDateTime(event.createdAt) }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <el-dialog v-model="createVisible" title="新建场地" width="560px" destroy-on-close>
+      <el-form ref="createFormRef" :model="createForm" :rules="createRules" label-width="100px">
+        <el-form-item label="名称" prop="name">
+          <el-input v-model="createForm.name" placeholder="请输入场地名称" />
         </el-form-item>
-        <el-form-item label="维护类型" prop="maintenanceType">
-          <el-select v-model="maintenanceForm.maintenanceType" style="width: 100%">
-            <el-option label="常规维护" value="ROUTINE" />
-            <el-option label="故障维修" value="REPAIR" />
-            <el-option label="设备升级" value="UPGRADE" />
-            <el-option label="其他" value="OTHER" />
+        <el-form-item label="分类" prop="categoryId">
+          <el-select v-model="createForm.categoryId" placeholder="请选择分类" style="width:100%">
+            <el-option v-for="c in categories" :key="c.id" :label="c.name" :value="c.id" />
           </el-select>
         </el-form-item>
-        <el-form-item label="计划开始时间" prop="startTime">
-          <el-date-picker
-            v-model="maintenanceForm.startTime"
-            type="datetime"
-            style="width: 100%"
-            value-format="YYYY-MM-DD HH:mm:ss"
-            placeholder="选择计划开始时间"
-          />
+        <el-form-item label="位置" prop="location">
+          <el-input v-model="createForm.location" placeholder="例如：体育馆 A 区 101" />
         </el-form-item>
-        <el-form-item label="维护描述" prop="description">
+        <el-form-item label="型号">
+          <el-input v-model="createForm.model" placeholder="选填" />
+        </el-form-item>
+        <el-form-item label="描述">
+          <el-input v-model="createForm.description" type="textarea" :rows="3" placeholder="选填" />
+        </el-form-item>
+        <el-form-item label="采购时间">
+          <el-date-picker v-model="createForm.purchaseDate" type="date" placeholder="选填" style="width:100%" />
+        </el-form-item>
+        <el-form-item label="使用年限">
+          <el-input-number v-model="createForm.lifespan" :min="0" :max="100" placeholder="年" style="width:100%" />
+        </el-form-item>
+        <el-form-item label="价格 (元)">
+          <el-input-number v-model="createForm.price" :min="0" :step="100" placeholder="选填" style="width:100%" />
+        </el-form-item>
+        <el-form-item label="图片">
+          <el-upload
+            :auto-upload="false"
+            :show-file-list="false"
+            accept="image/*"
+            @change="handleImageChange"
+          >
+            <el-button size="small">选择图片</el-button>
+            <template #tip>
+              <span v-if="createForm.image" class="image-name">{{ createForm.image.name }}</span>
+            </template>
+          </el-upload>
+        </el-form-item>
+      </el-form>
+      <template #footer>
+        <el-button @click="createVisible = false">取消</el-button>
+        <el-button type="primary" :loading="createLoading" @click="handleCreate">确认新建</el-button>
+      </template>
+    </el-dialog>
+
+    <el-dialog v-model="statusDialogVisible" :title="statusDialogTitle" width="420px" destroy-on-close>
+      <el-form ref="statusFormRef" :model="statusForm" label-width="100px">
+        <el-form-item label="当前状态">
+          <el-tag :type="statusType(statusTarget?.status)">{{ statusLabel(statusTarget?.status) }}</el-tag>
+        </el-form-item>
+        <el-form-item label="变更原因" prop="reason">
           <el-input
-            v-model="maintenanceForm.description"
+            v-model="statusForm.reason"
             type="textarea"
-            :rows="4"
-            maxlength="300"
-            show-word-limit
-            placeholder="填写维护原因、现场情况与计划安排"
+            :rows="3"
+            :placeholder="statusTarget?.status === 'MAINTENANCE' ? '恢复可用原因' : '标记维护原因'"
           />
         </el-form-item>
       </el-form>
       <template #footer>
-        <el-button @click="maintenanceDialogVisible = false">取消</el-button>
-        <el-button type="primary" @click="submitMaintenance">提交</el-button>
+        <el-button @click="statusDialogVisible = false">取消</el-button>
+        <el-button :type="statusTarget?.status === 'MAINTENANCE' ? 'primary' : 'warning'" :loading="statusLoading" @click="confirmStatusChange">
+          {{ statusTarget?.status === 'MAINTENANCE' ? '确认恢复' : '确认维护' }}
+        </el-button>
       </template>
     </el-dialog>
   </div>
 </template>
 
 <script setup>
-import { computed, onMounted, reactive, ref } from 'vue'
-import { ElMessage } from 'element-plus'
+import { onMounted, ref } from 'vue'
+import { useRouter } from 'vue-router'
 import { Search } from '@element-plus/icons-vue'
-import { facilityAPI, maintenanceAPI } from '../../api'
+import { facilityAPI, facilityCategoryAPI } from '../../api'
+import { ElMessage, ElMessageBox } from 'element-plus'
+import { buildFeatureVars, getRoleTheme } from '../../utils/featureTheme'
+const userInfo = JSON.parse(localStorage.getItem('userInfo') || '{}')
+const theme = getRoleTheme(userInfo.role || 'maintainer')
+const featureVars = buildFeatureVars(theme)
 
-const fallbackImage = '/files/facility/default-facility.svg'
+const router = useRouter()
 
-const loading = ref(false)
-const detailLoading = ref(false)
-const allFacilities = ref([])
-const facilityList = ref([])
-const total = ref(0)
+const tableRef = ref(null)
+const createFormRef = ref(null)
+const statusFormRef = ref(null)
+
 const searchKeyword = ref('')
-const isSearchMode = ref(false)
-const detailDrawerVisible = ref(false)
-const maintenanceDialogVisible = ref(false)
-const detailFacility = ref(null)
-const detailQueryDays = ref(7)
-const upcomingReservations = ref([])
-const currentFacility = ref({})
-const maintenanceFormRef = ref(null)
-const currentUser = ref({})
+const facilities = ref([])
+const categories = ref([])
+const selectedFacility = ref(null)
+const facilityTimeline = ref([])
+const selectedSort = ref({ prop: 'name', order: 'ascending' })
 
-const pagination = reactive({
-  page: 1,
-  size: 10,
-  sortBy: 'id',
-  sortDir: 'desc'
-})
-
-const maintenanceForm = reactive({
-  facilityId: null,
-  maintainerId: null,
-  maintenanceType: 'ROUTINE',
+const createVisible = ref(false)
+const createLoading = ref(false)
+const createForm = ref({
+  name: '',
+  categoryId: null,
+  location: '',
+  model: '',
   description: '',
-  startTime: ''
+  purchaseDate: null,
+  lifespan: null,
+  price: null,
+  image: null
 })
-
-const maintenanceRules = {
-  maintenanceType: [{ required: true, message: '请选择维护类型', trigger: 'change' }],
-  description: [{ required: true, message: '请填写维护描述', trigger: 'blur' }],
-  startTime: [{ required: true, message: '请选择计划开始时间', trigger: 'change' }]
+const createRules = {
+  categoryId: [{ required: true, message: '请选择分类', trigger: 'change' }],
+  name: [{ required: true, message: '请输入场地名称', trigger: 'blur' }],
+  location: [{ required: true, message: '请输入位置', trigger: 'blur' }]
 }
 
-const stats = computed(() => ({
-  total: allFacilities.value.length || 0,
-  available: allFacilities.value.filter((item) => item.status === 'AVAILABLE').length,
-  maintenance: allFacilities.value.filter((item) => item.status === 'MAINTENANCE').length,
-  damaged: allFacilities.value.filter((item) => item.status === 'DAMAGED').length
-}))
+const statusDialogVisible = ref(false)
+const statusLoading = ref(false)
+const statusTarget = ref(null)
+const statusForm = ref({ reason: '' })
+const statusDialogTitle = ref('')
 
-onMounted(() => {
-  const userInfo = localStorage.getItem('userInfo')
-  if (userInfo) {
-    currentUser.value = JSON.parse(userInfo)
-  }
-  loadFacilityStats()
-  loadFacilityList()
+const pagination = ref({
+  current: 1,
+  pageSize: 10,
+  total: 0
 })
 
-const loadFacilityStats = async () => {
+const stats = ref({
+  total: 0,
+  available: 0,
+  maintenance: 0,
+  damaged: 0
+})
+
+const paginatedFacilities = ref([])
+
+const normalizeFacility = (facility = {}) => ({
+  ...facility,
+  categoryName: facility.categoryName || facility.category || '-',
+  image: facility.image || facility.imageUrl || '',
+  imageUrl: facility.imageUrl || facility.image || ''
+})
+
+onMounted(async () => {
+  await Promise.all([loadFacilities(), loadCategories()])
+  applyPagination()
+})
+
+const loadFacilities = async () => {
   try {
-    const result = await facilityAPI.list()
-    allFacilities.value = result.data || []
+    const response = await facilityAPI.mine()
+    const rawList = response.data?.list || response.data?.records || response.data || []
+    const list = Array.isArray(rawList) ? rawList.map(normalizeFacility) : []
+
+    facilities.value = list
+    pagination.value.total = list.length
+    stats.value.total = list.length
+    stats.value.available = list.filter((f) => f.status === 'AVAILABLE' || f.status === 'ACTIVE').length
+    stats.value.maintenance = list.filter((f) => f.status === 'MAINTENANCE').length
+    stats.value.damaged = list.filter((f) => f.status === 'DAMAGED' || f.status === 'INACTIVE').length
   } catch (error) {
-    console.error('加载场地统计失败:', error)
-    allFacilities.value = []
+    console.error('加载设施列表失败', error)
   }
 }
 
-const loadFacilityList = async () => {
+const loadCategories = async () => {
   try {
-    loading.value = true
-    const params = {
-      page: pagination.page - 1,
-      size: pagination.size,
-      sortBy: pagination.sortBy,
-      sortDir: pagination.sortDir
-    }
-
-    const result = isSearchMode.value && searchKeyword.value.trim()
-      ? await facilityAPI.searchPage(searchKeyword.value.trim(), params)
-      : await facilityAPI.listPage(params)
-
-    if (result.code === 200) {
-      facilityList.value = result.data.content || []
-      total.value = result.data.totalElements || 0
-      return
-    }
-
-    ElMessage.error(result.message || '获取场地列表失败')
+    const response = await facilityCategoryAPI.getCategoryList()
+    const rawList = response.data?.list || response.data?.records || response.data || []
+    categories.value = Array.isArray(rawList)
+      ? rawList.map((item) => ({
+          ...item,
+          name: item.name || item.categoryName || item.category || '未命名分类'
+        }))
+      : []
   } catch (error) {
-    console.error('加载场地列表失败:', error)
-    ElMessage.error('加载场地列表失败')
-  } finally {
-    loading.value = false
+    console.error('加载分类失败', error)
   }
+}
+
+const applyPagination = () => {
+  const page = pagination.value.current
+  const size = pagination.value.pageSize
+  const start = (page - 1) * size
+  const end = start + size
+
+  let list = facilities.value
+  const keyword = searchKeyword.value.trim().toLowerCase()
+  if (keyword) {
+    list = list.filter(
+      (f) =>
+        (f.name && f.name.toLowerCase().includes(keyword)) ||
+        (f.model && f.model.toLowerCase().includes(keyword)) ||
+        (f.categoryName && f.categoryName.toLowerCase().includes(keyword))
+    )
+  }
+
+  pagination.value.total = list.length
+  paginatedFacilities.value = list.slice(start, end)
+  selectedFacility.value = null
 }
 
 const handleSearch = () => {
-  pagination.page = 1
-  isSearchMode.value = Boolean(searchKeyword.value.trim())
-  loadFacilityList()
+  pagination.value.current = 1
+  applyPagination()
 }
 
 const handleClearSearch = () => {
-  searchKeyword.value = ''
-  isSearchMode.value = false
-  pagination.page = 1
-  loadFacilityList()
+  pagination.value.current = 1
+  applyPagination()
 }
 
-const handleSizeChange = (size) => {
-  pagination.size = size
-  pagination.page = 1
-  loadFacilityList()
+const handlePageChange = () => {
+  applyPagination()
 }
 
-const handleCurrentChange = (page) => {
-  pagination.page = page
-  loadFacilityList()
+const handleSortChange = ({ prop, order }) => {
+  selectedSort.value = { prop, order }
 }
 
-const openDetail = async (row) => {
-  currentFacility.value = { ...row }
-  detailDrawerVisible.value = true
-  detailLoading.value = true
+const handleRowClick = (row) => {
+  selectedFacility.value = normalizeFacility(row)
+  loadTimeline(row.id)
+}
 
+const loadTimeline = async (facilityId) => {
   try {
-    const result = await facilityAPI.getDetail(row.id, 7)
-    const payload = result.data || {}
-    detailFacility.value = payload.facility || row
-    upcomingReservations.value = payload.reservations || []
-    detailQueryDays.value = payload.queryDays || 7
+    const response = await facilityAPI.getFacilityTimeline(facilityId)
+    const data = response.data?.reservations || response.data || []
+    facilityTimeline.value = Array.isArray(data)
+      ? data.map((item) => ({
+          ...item,
+          username: item.username || item.userName || '未知用户'
+        }))
+      : []
   } catch (error) {
-    console.error('加载场地详情失败:', error)
-    detailFacility.value = row
-    upcomingReservations.value = []
-    ElMessage.error('加载场地详情失败')
+    console.error('加载排期失败', error)
+    facilityTimeline.value = []
+  }
+}
+
+const openCreateDialog = () => {
+  createForm.value = {
+    name: '',
+    categoryId: null,
+    location: '',
+    model: '',
+    description: '',
+    purchaseDate: null,
+    lifespan: null,
+    price: null,
+    image: null
+  }
+  createVisible.value = true
+}
+
+const handleImageChange = (uploadFile) => {
+  createForm.value.image = uploadFile.raw || uploadFile
+}
+
+const handleCreate = async () => {
+  ElMessage.info('新增场地请使用管理员账号操作')
+  createVisible.value = false
+  return
+  const valid = await createFormRef.value.validate().catch(() => {})
+  if (!valid) return
+  createLoading.value = true
+  try {
+    await facilityAPI.createFacility(createForm.value)
+    ElMessage.success('场地创建成功')
+    createVisible.value = false
+    await loadFacilities()
+    applyPagination()
+  } catch (error) {
+    console.error('创建场地失败', error)
   } finally {
-    detailLoading.value = false
+    createLoading.value = false
   }
 }
 
-const openMaintenanceDialog = (row) => {
-  currentFacility.value = { ...row }
-  maintenanceForm.facilityId = row.id
-  maintenanceForm.maintainerId = currentUser.value.id || null
-  maintenanceForm.maintenanceType = 'ROUTINE'
-  maintenanceForm.description = ''
-  maintenanceForm.startTime = ''
-  maintenanceDialogVisible.value = true
+const handleEditStatus = (row) => {
+  statusTarget.value = row
+  statusForm.value = { reason: '' }
+  statusDialogTitle.value = row.status === 'MAINTENANCE' ? '恢复可用' : '标记维护'
+  statusDialogVisible.value = true
 }
 
-const submitMaintenance = async () => {
+const confirmStatusChange = async () => {
+  statusLoading.value = true
   try {
-    await maintenanceFormRef.value.validate()
-    const result = await maintenanceAPI.create({ ...maintenanceForm })
-    if (result.code === 200) {
-      ElMessage.success('维护登记已创建')
-      maintenanceDialogVisible.value = false
-      loadFacilityStats()
-      loadFacilityList()
-      return
-    }
-    ElMessage.error(result.message || '维护登记创建失败')
+    const targetStatus = statusTarget.value.status === 'MAINTENANCE' ? 'AVAILABLE' : 'MAINTENANCE'
+    await facilityAPI.updateFacilityStatus(statusTarget.value.id, targetStatus, statusForm.value.reason)
+    ElMessage.success('状态更新成功')
+    statusDialogVisible.value = false
+    await loadFacilities()
+    applyPagination()
   } catch (error) {
-    console.error('提交维护登记失败:', error)
-    ElMessage.error('提交维护登记失败')
+    console.error('状态更新失败', error)
+  } finally {
+    statusLoading.value = false
   }
 }
 
-const getStatusType = (status) => ({
-  AVAILABLE: 'success',
-  MAINTENANCE: 'warning',
-  DAMAGED: 'danger'
-}[status] || 'info')
-
-const getStatusText = (status) => ({
-  AVAILABLE: '可用',
-  MAINTENANCE: '维护中',
-  DAMAGED: '损坏'
-}[status] || status || '-')
-
-const getReservationStatusType = (status) => ({
-  PENDING: 'warning',
-  APPROVED: 'success',
-  REJECTED: 'danger',
-  COMPLETED: 'info',
-  CANCELLED: 'info'
-}[status] || '')
-
-const getReservationStatusText = (status) => ({
-  PENDING: '待审核',
-  APPROVED: '已通过',
-  REJECTED: '已驳回',
-  COMPLETED: '已完成',
-  CANCELLED: '已取消'
-}[status] || status || '-')
-
-const formatCurrency = (value) => {
-  if (value === null || value === undefined || value === '') {
-    return '-'
+const handleDelete = async (row) => {
+  ElMessageBox.alert(`当前账号只能维护状态，场地“${row.name}”的删除需要管理员操作。`, '无法删除', {
+    confirmButtonText: '我知道了'
+  }).catch(() => {})
+  return
+  try {
+    await ElMessageBox.confirm(`确定删除场地「${row.name}」吗？此操作不可撤销。`, '删除确认', {
+      type: 'warning',
+      confirmButtonText: '确认删除',
+      cancelButtonText: '取消'
+    })
+    await facilityAPI.deleteFacility(row.id)
+    ElMessage.success('删除成功')
+    await loadFacilities()
+    applyPagination()
+  } catch (error) {
+    console.error('删除场地失败', error)
   }
-  const numberValue = Number(value)
-  if (Number.isNaN(numberValue)) {
-    return value
+}
+
+const statusType = (status) => {
+  const map = {
+    AVAILABLE: 'success',
+    ACTIVE: 'success',
+    MAINTENANCE: 'warning',
+    DAMAGED: 'danger',
+    INACTIVE: 'danger'
   }
+  return map[status] || 'info'
+}
+
+const statusLabel = (status) => {
+  const map = {
+    AVAILABLE: '可用',
+    ACTIVE: '可用',
+    MAINTENANCE: '维护中',
+    DAMAGED: '损坏',
+    INACTIVE: '停用'
+  }
+  return map[status] || status || '-'
+}
+
+const getImageSrc = (image) => {
+  if (!image) return '/files/facility/default-facility.svg'
+  if (image.startsWith('http') || image.startsWith('/')) return image
+  return `http://localhost:8081/api/files/${image}`
+}
+
+const formatDate = (value) => {
+  if (!value) return '-'
+  return new Date(value).toLocaleDateString('zh-CN')
+}
+
+const formatRange = (start, end) => {
+  if (!start || !end) return '-'
+  const s = new Date(start)
+  const e = new Date(end)
+  return `${s.toLocaleDateString('zh-CN')} ${s.toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' })} ~ ${e.toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' })}`
+}
+
+const formatPrice = (value) => {
+  if (!value && value !== 0) return '-'
+  const numberValue = typeof value === 'string' ? parseFloat(value) : value
+  if (isNaN(numberValue)) return '-'
+  return `¥${numberValue.toLocaleString('zh-CN', { minimumFractionDigits: 0, maximumFractionDigits: 2 })}`
   return `¥${numberValue.toLocaleString('zh-CN', { minimumFractionDigits: 0, maximumFractionDigits: 2 })}`
 }
 
 const formatDateTime = (value) => {
-  if (!value) {
-    return '-'
-  }
+  if (!value) return '-'
   return new Date(value).toLocaleString('zh-CN', { hour12: false })
 }
 </script>
 
 <style scoped>
 .facility-theme {
-  --theme-main: #0f766e;
-  --theme-soft: rgba(15, 118, 110, 0.12);
-  --theme-border: rgba(15, 118, 110, 0.12);
-  --theme-shadow: rgba(15, 118, 110, 0.16);
   padding: 24px;
   min-height: 100%;
   background:
-    radial-gradient(circle at top left, rgba(45, 212, 191, 0.18), transparent 26%),
-    linear-gradient(180deg, #effcf9 0%, #f7fdfc 46%, #eefbf7 100%);
+    radial-gradient(circle at top left, var(--feature-soft), transparent 26%),
+    linear-gradient(180deg, var(--layout-shell-top) 0%, var(--layout-shell-bottom) 100%);
 }
 
 .page-hero,
@@ -472,16 +568,16 @@ const formatDateTime = (value) => {
   padding: 28px;
   border-radius: 28px;
   background: rgba(255, 255, 255, 0.82);
-  border: 1px solid var(--theme-border);
-  box-shadow: 0 24px 60px var(--theme-shadow);
+  border: 1px solid var(--feature-soft);
+  box-shadow: 0 24px 60px var(--feature-glow);
 }
 
 .eyebrow {
   display: inline-flex;
   padding: 6px 12px;
   border-radius: 999px;
-  background: var(--theme-soft);
-  color: var(--theme-main);
+  background: var(--feature-soft);
+  color: var(--feature-primary);
   font-size: 12px;
   letter-spacing: 0.08em;
   text-transform: uppercase;
@@ -511,8 +607,8 @@ const formatDateTime = (value) => {
   min-height: 110px;
   padding: 18px 20px;
   border-radius: 22px;
-  background: linear-gradient(135deg, #ebfffa 0%, #ffffff 100%);
-  border: 1px solid var(--theme-border);
+  background: linear-gradient(135deg, var(--feature-surface) 0%, #ffffff 100%);
+  border: 1px solid var(--feature-soft);
 }
 
 .mini-card span {
@@ -607,7 +703,7 @@ const formatDateTime = (value) => {
   height: 54px;
   overflow: hidden;
   border-radius: 16px;
-  background: #effff8;
+  background: var(--feature-surface);
   flex-shrink: 0;
 }
 
@@ -651,7 +747,7 @@ const formatDateTime = (value) => {
   gap: 18px;
   padding: 18px;
   border-radius: 24px;
-  background: linear-gradient(135deg, #effff8 0%, #ffffff 100%);
+  background: linear-gradient(135deg, var(--feature-surface) 0%, #ffffff 100%);
 }
 
 .detail-hero img {
@@ -688,8 +784,8 @@ const formatDateTime = (value) => {
 .detail-info-card {
   padding: 16px;
   border-radius: 18px;
-  background: #f8fffd;
-  border: 1px solid rgba(15, 118, 110, 0.08);
+  background: var(--feature-surface);
+  border: 1px solid var(--feature-soft);
 }
 
 .detail-label {
@@ -708,8 +804,8 @@ const formatDateTime = (value) => {
 .timeline-panel {
   padding: 18px;
   border-radius: 24px;
-  background: #fbfffe;
-  border: 1px solid rgba(15, 118, 110, 0.08);
+  background: var(--feature-surface);
+  border: 1px solid var(--feature-soft);
 }
 
 .section-title {
@@ -746,15 +842,15 @@ const formatDateTime = (value) => {
   height: 12px;
   margin-top: 8px;
   border-radius: 999px;
-  background: linear-gradient(135deg, #14b8a6, #0f766e);
-  box-shadow: 0 0 0 6px rgba(20, 184, 166, 0.12);
+  background: linear-gradient(135deg, var(--feature-primary), var(--feature-secondary));
+  box-shadow: 0 0 0 6px var(--feature-glow);
 }
 
 .timeline-content {
   padding: 16px;
   border-radius: 18px;
   background: #ffffff;
-  border: 1px solid rgba(15, 118, 110, 0.08);
+  border: 1px solid var(--feature-soft);
 }
 
 .timeline-top {

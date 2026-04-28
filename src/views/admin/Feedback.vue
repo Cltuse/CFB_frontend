@@ -1,5 +1,5 @@
 <template>
-  <div class="admin-feedback-page">
+  <div class="admin-feedback-page" :style="themeVars">
     <section class="page-hero">
       <div class="hero-copy">
         <span class="hero-eyebrow">Feedback Management</span>
@@ -8,6 +8,7 @@
       </div>
       <div class="hero-actions">
           <el-button type="primary" class="primary-btn" @click="refreshData">刷新反馈</el-button>
+          
           <el-button class="secondary-btn" @click="handleClearSearch">清空筛选</el-button>
         </div>
     </section>
@@ -260,6 +261,11 @@
 import { computed, onMounted, ref } from 'vue';
 import { ElMessage } from 'element-plus';
 import { ChatDotRound, Search } from '@element-plus/icons-vue';
+import { buildFeatureVars, getRoleTheme } from '../../utils/featureTheme';
+
+const themeVars = computed(() => ({
+  ...buildFeatureVars(getRoleTheme('admin'))
+}));
 import { feedbackAPI } from '../../api';
 
 const feedbacks = ref([]);
@@ -447,18 +453,18 @@ function formatTime(time) {
 
 <style scoped>
 .admin-feedback-page {
-  --theme-main: #f5a08a;
-  --theme-deep: #d7745d;
-  --theme-soft: rgba(255, 218, 208, 0.28);
-  --theme-border: rgba(245, 160, 138, 0.16);
-  --theme-shadow: rgba(96, 48, 38, 0.08);
+  --theme-main: var(--feature-primary);
+  --theme-deep: var(--feature-strong);
+  --theme-soft: var(--feature-soft);
+  --theme-border: var(--feature-border);
+  --theme-shadow: var(--feature-glow);
   min-height: 100%;
   display: grid;
   gap: 20px;
   background:
-    radial-gradient(circle at top left, rgba(255, 232, 225, 0.76), transparent 26%),
-    radial-gradient(circle at right center, rgba(255, 247, 244, 0.92), transparent 24%),
-    linear-gradient(180deg, #fffaf8 0%, #fff7f4 48%, #fff4f1 100%);
+    radial-gradient(circle at top left, var(--feature-soft), transparent 26%),
+    radial-gradient(circle at right center, rgba(232, 247, 250, 0.92), transparent 24%),
+    linear-gradient(180deg, #f2fafc 0%, #eef8fa 48%, #eaf6f8 100%);
 }
 
 .page-hero,
@@ -487,7 +493,7 @@ function formatTime(time) {
   padding: 30px;
   background:
     radial-gradient(circle at top right, var(--theme-soft), transparent 30%),
-    linear-gradient(145deg, rgba(255, 247, 244, 0.96) 0%, #ffffff 62%);
+    linear-gradient(145deg, rgba(232, 247, 250, 0.96) 0%, #ffffff 62%);
 }
 
 .hero-eyebrow {
@@ -495,8 +501,8 @@ function formatTime(time) {
   align-items: center;
   padding: 6px 12px;
   border-radius: 999px;
-  background: rgba(255, 218, 208, 0.24);
-  color: #b7604c;
+  background: var(--feature-soft);
+  color: #4f7a82;
   font-size: 12px;
   font-weight: 600;
   letter-spacing: 0.08em;
@@ -507,7 +513,7 @@ function formatTime(time) {
 .dialog-header h3,
 .section-title h4 {
   margin: 14px 0 10px;
-  color: #5d362e;
+  color: #29555f;
 }
 
 .hero-copy h1 {
@@ -519,7 +525,7 @@ function formatTime(time) {
 .dialog-header p,
 .section-title span {
   margin: 0;
-  color: #8f776f;
+  color: #587e86;
   line-height: 1.8;
 }
 
@@ -547,14 +553,14 @@ function formatTime(time) {
 
 .primary-btn {
   border: none;
-  background: linear-gradient(135deg, #f5a08a 0%, #d7745d 100%);
-  box-shadow: 0 14px 28px rgba(215, 116, 93, 0.22);
+  background: linear-gradient(135deg, var(--feature-primary) 0%, var(--feature-strong) 100%);
+  box-shadow: 0 14px 28px rgba(63, 134, 146, 0.22);
 }
 
 .secondary-btn {
-  border: 1px solid rgba(245, 160, 138, 0.22);
+  border: 1px solid var(--feature-border);
   background: rgba(255, 255, 255, 0.9);
-  color: #927871;
+  color: #4f737a;
 }
 
 .small-btn {
@@ -569,7 +575,7 @@ function formatTime(time) {
 .hero-note {
   min-height: 132px;
   padding: 22px;
-  background: linear-gradient(180deg, #fff9f7 0%, #ffffff 100%);
+  background: linear-gradient(180deg, #f2fafc 0%, #ffffff 100%);
 }
 
 .hero-note span,
@@ -577,13 +583,13 @@ function formatTime(time) {
 .summary-label,
 .summary-card p,
 .detail-summary-card span {
-  color: #927972;
+  color: #587e86;
 }
 
 .hero-note strong,
 .summary-card strong,
 .detail-summary-card strong {
-  color: #613a31;
+  color: #26515b;
 }
 
 .hero-note strong,
@@ -602,9 +608,9 @@ function formatTime(time) {
 .summary-card {
   padding: 22px;
   border-radius: 24px;
-  border: 1px solid rgba(245, 160, 138, 0.14);
-  background: linear-gradient(150deg, rgba(255, 247, 244, 0.96) 0%, #ffffff 84%);
-  box-shadow: 0 18px 40px rgba(96, 48, 38, 0.06);
+  border: 1px solid var(--feature-border);
+  background: linear-gradient(150deg, rgba(232, 247, 250, 0.96) 0%, #ffffff 84%);
+  box-shadow: 0 18px 40px rgba(36, 88, 96, 0.06);
 }
 
 .summary-card p {
@@ -635,8 +641,8 @@ function formatTime(time) {
   min-height: 46px;
   border-radius: 16px;
   box-shadow: none;
-  border: 1px solid rgba(245, 160, 138, 0.2);
-  background: #fffaf9;
+  border: 1px solid var(--feature-border);
+  background: #fbfdfb;
 }
 
 .panel-head {
@@ -649,20 +655,20 @@ function formatTime(time) {
 .meta-chip {
   padding: 8px 12px;
   border-radius: 999px;
-  background: rgba(255, 218, 208, 0.24);
-  color: #b6604d;
+  background: var(--feature-soft);
+  color: #4f7a82;
   font-size: 12px;
   font-weight: 600;
 }
 
 .muted-chip {
-  background: rgba(248, 242, 240, 0.96);
-  color: #8f7972;
+  background: rgba(237, 247, 250, 0.94);
+  color: #587e86;
 }
 
 .feedback-table :deep(.el-table) {
-  --el-table-border-color: rgba(245, 160, 138, 0.12);
-  --el-table-row-hover-bg-color: rgba(255, 248, 246, 0.95);
+  --el-table-border-color: var(--feature-border);
+  --el-table-row-hover-bg-color: #f4fafc;
   border-radius: 20px;
 }
 
@@ -672,8 +678,8 @@ function formatTime(time) {
 }
 
 .feedback-table :deep(.el-table__header-wrapper th.el-table__cell) {
-  background: linear-gradient(180deg, #fff9f7 0%, #fff1ed 100%) !important;
-  color: #603931;
+  background: linear-gradient(180deg, #f0f8fa 0%, #dceff3 100%) !important;
+  color: #29555f;
 }
 
 .title-cell {
@@ -682,12 +688,12 @@ function formatTime(time) {
 }
 
 .title-cell strong {
-  color: #5f382f;
+  color: #26515b;
   font-size: 15px;
 }
 
 .title-cell span {
-  color: #8c7771;
+  color: #587e86;
   line-height: 1.6;
 }
 
@@ -695,7 +701,7 @@ function formatTime(time) {
   display: flex;
   align-items: center;
   gap: 10px;
-  color: #6c5550;
+  color: #4f737a;
 }
 
 .action-btn {
@@ -705,15 +711,15 @@ function formatTime(time) {
 }
 
 .view-btn {
-  color: #c16c57;
-  border-color: rgba(245, 160, 138, 0.24);
-  background: rgba(255, 247, 244, 0.96);
+  color: var(--feature-primary);
+  border-color: var(--feature-border);
+  background: rgba(232, 247, 250, 0.96);
 }
 
 .reply-btn {
-  color: #4b9d84;
-  border-color: rgba(117, 212, 184, 0.24);
-  background: rgba(242, 252, 249, 0.96);
+  color: var(--feature-strong);
+  border-color: var(--feature-border);
+  background: rgba(232, 247, 250, 0.96);
 }
 
 .pagination-wrap {
@@ -739,7 +745,7 @@ function formatTime(time) {
   width: 48px;
   height: 48px;
   border-radius: 16px;
-  background: rgba(255, 218, 208, 0.24);
+  background: var(--feature-soft);
   color: var(--theme-deep);
 }
 
@@ -757,7 +763,7 @@ function formatTime(time) {
 .detail-summary-card {
   padding: 18px;
   box-shadow: none;
-  background: linear-gradient(150deg, rgba(255, 247, 244, 0.96) 0%, #ffffff 84%);
+  background: linear-gradient(150deg, rgba(232, 247, 250, 0.96) 0%, #ffffff 84%);
 }
 
 .detail-summary-card strong {
@@ -775,20 +781,20 @@ function formatTime(time) {
   margin-top: 14px;
   padding: 16px 18px;
   border-radius: 18px;
-  background: #fffaf8;
-  color: #5f4944;
+  background: #f4fafc;
+  color: #3c6a74;
   line-height: 1.9;
 }
 
 .reply-content {
-  background: #fff6f3;
+  background: #eef6f9;
 }
 
 .feedback-dialog :deep(.el-textarea__inner) {
   border-radius: 16px;
   box-shadow: none;
-  border: 1px solid rgba(245, 160, 138, 0.2);
-  background: #fffaf9;
+  border: 1px solid var(--feature-border);
+  background: #fbfdfb;
 }
 
 .dialog-footer {

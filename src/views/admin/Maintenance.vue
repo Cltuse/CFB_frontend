@@ -1,5 +1,5 @@
 <template>
-  <div class="maintenance-page">
+  <div class="maintenance-page" :style="themeVars">
     <section class="page-hero">
       <div class="hero-copy">
         <span class="hero-eyebrow">Maintenance Management</span>
@@ -371,6 +371,11 @@ import { computed, nextTick, onMounted, reactive, ref, watch } from 'vue';
 import { ElMessage, ElMessageBox } from 'element-plus';
 import { Plus, RefreshRight, Search, Tools } from '@element-plus/icons-vue';
 import { facilityAPI, maintenanceAPI, userAPI } from '../../api';
+import { buildFeatureVars, getRoleTheme } from '../../utils/featureTheme';
+
+const themeVars = computed(() => ({
+  ...buildFeatureVars(getRoleTheme('admin'))
+}));
 
 const loading = ref(false);
 const detailLoading = ref(false);
@@ -1151,11 +1156,11 @@ function formatCurrency(value) {
 </style>
 <style scoped>
 .maintenance-page {
-  --theme-main: #87a9d8;
-  --theme-deep: #5f84b6;
-  --theme-soft: rgba(200, 216, 240, 0.28);
-  --theme-border: rgba(135, 169, 216, 0.16);
-  --theme-shadow: rgba(41, 63, 96, 0.08);
+  --theme-main: var(--feature-primary);
+  --theme-deep: var(--feature-strong);
+  --theme-soft: var(--feature-soft);
+  --theme-border: var(--feature-border);
+  --theme-shadow: var(--feature-glow);
   min-height: 100%;
   background:
     radial-gradient(circle at 92% 12%, rgba(226, 236, 249, 0.72), transparent 22%),
@@ -1172,23 +1177,23 @@ function formatCurrency(value) {
 }
 
 .page-hero {
-  background: linear-gradient(145deg, rgba(245, 249, 255, 0.98) 0%, #ffffff 68%);
+  background: linear-gradient(145deg, rgba(240, 249, 252, 0.98) 0%, #ffffff 68%);
 }
 
 .hero-note,
 .summary-card,
 .detail-panel,
 .detail-card {
-  border-color: rgba(135, 169, 216, 0.14);
+  border-color: var(--feature-border);
 }
 
 .primary-btn {
-  background: linear-gradient(135deg, #87a9d8 0%, #5f84b6 100%);
-  box-shadow: 0 14px 28px rgba(95, 132, 182, 0.22);
+  background: linear-gradient(135deg, var(--feature-primary) 0%, var(--feature-strong) 100%);
+  box-shadow: 0 14px 28px rgba(63, 134, 146, 0.22);
 }
 
 .secondary-btn {
-  border-color: rgba(135, 169, 216, 0.2);
+  border-color: var(--feature-border);
 }
 
 @keyframes admin-maintenance-rise {

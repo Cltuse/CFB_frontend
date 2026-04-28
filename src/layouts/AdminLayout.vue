@@ -119,7 +119,7 @@
 import { computed, ref, watch } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 import Header from '../components/Header.vue';
-import { buildFeatureVars, resolveFeatureTheme } from '../utils/featureTheme';
+import { buildFeatureVars, getRoleTheme } from '../utils/featureTheme';
 import {
   Setting,
   Warning,
@@ -137,9 +137,8 @@ import {
 const router = useRouter();
 const route = useRoute();
 const activeMenu = ref(route.path);
-const currentTheme = computed(() => resolveFeatureTheme(route.path));
 const layoutVars = computed(() => ({
-  ...buildFeatureVars(currentTheme.value)
+  ...buildFeatureVars(getRoleTheme('admin'))
 }));
 
 watch(

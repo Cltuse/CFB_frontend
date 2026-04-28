@@ -368,8 +368,8 @@ const renderTrendChart = () => {
         name: '总量',
         type: 'line',
         smooth: true,
-        areaStyle: { color: 'rgba(37, 99, 235, 0.14)' },
-        lineStyle: { color: '#2563eb', width: 3 },
+        areaStyle: { color: 'rgba(143, 198, 234, 0.14)' },
+        lineStyle: { color: '#8fc6ea', width: 3 },
         data: trendSeries.value.total
       },
       {
@@ -438,8 +438,8 @@ const renderDurationChart = () => {
         itemStyle: {
           borderRadius: [12, 12, 0, 0],
           color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
-            { offset: 0, color: '#34d399' },
-            { offset: 1, color: '#059669' }
+            { offset: 0, color: '#8fc6ea' },
+            { offset: 1, color: '#6daed6' }
           ])
         },
         data: durationStats.value.map((item) => item.avgDuration)
@@ -518,7 +518,7 @@ const renderHeatmapChart = () => {
         color: '#64748b'
       },
       inRange: {
-        color: ['#fff7ed', '#fdba74', '#f97316', '#9a3412']
+        color: ['#f0f9ff', '#b3ddf2', '#8fc6ea', '#5a9ecb']
       }
     },
     series: [
@@ -558,7 +558,7 @@ const renderPeakChart = () => {
         data: (heatmapStats.value.peakHours || []).map((item) => item.bookingCount),
         itemStyle: {
           borderRadius: [10, 10, 0, 0],
-          color: '#dc2626'
+          color: '#8fc6ea'
         }
       }
     ]
@@ -607,8 +607,8 @@ const goTo = (path, query) => {
   padding: 24px;
   min-height: 100%;
   background:
-    radial-gradient(circle at top right, rgba(45, 212, 191, 0.18), transparent 24%),
-    linear-gradient(180deg, #ecfffb 0%, #f9fefd 40%, #f3fffb 100%);
+    radial-gradient(circle at top right, var(--feature-soft), transparent 24%),
+    linear-gradient(180deg, var(--layout-shell-top) 0%, var(--layout-shell-bottom) 100%);
 }
 
 .dashboard-hero,
@@ -624,15 +624,16 @@ const goTo = (path, query) => {
   padding: 28px;
   border-radius: 30px;
   background: rgba(255, 255, 255, 0.86);
-  box-shadow: 0 24px 60px rgba(15, 118, 110, 0.14);
+  box-shadow: 0 24px 60px var(--feature-glow);
+  border: 1px solid var(--feature-soft);
 }
 
 .eyebrow {
   display: inline-flex;
   padding: 6px 12px;
   border-radius: 999px;
-  background: rgba(15, 118, 110, 0.12);
-  color: #0f766e;
+  background: var(--feature-soft);
+  color: var(--feature-primary);
   font-size: 12px;
   letter-spacing: 0.08em;
   text-transform: uppercase;
@@ -671,15 +672,16 @@ const goTo = (path, query) => {
   padding: 14px 16px;
   border: none;
   border-radius: 18px;
-  background: linear-gradient(135deg, #0f766e 0%, #14b8a6 100%);
-  color: #ffffff;
+  background: linear-gradient(135deg, var(--feature-primary) 0%, var(--feature-secondary) 100%);
+  color: #2c3e50;
+  font-weight: 600;
   cursor: pointer;
   transition: transform 0.25s ease, box-shadow 0.25s ease;
 }
 
 .quick-links button:hover {
   transform: translateY(-2px);
-  box-shadow: 0 16px 28px rgba(15, 118, 110, 0.22);
+  box-shadow: 0 16px 28px var(--feature-glow);
 }
 
 .stats-grid {
@@ -809,8 +811,8 @@ const goTo = (path, query) => {
   align-items: center;
   padding: 16px 18px;
   border-radius: 18px;
-  background: linear-gradient(135deg, #f7fffd 0%, #ffffff 100%);
-  border: 1px solid rgba(15, 118, 110, 0.08);
+  background: linear-gradient(135deg, var(--feature-surface) 0%, #ffffff 100%);
+  border: 1px solid var(--feature-soft);
 }
 
 .list-row strong {

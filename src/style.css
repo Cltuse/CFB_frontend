@@ -63,6 +63,7 @@ textarea {
 .admin-layout,
 .maintainer-layout,
 .user-layout {
+  --feature-strong: color-mix(in srgb, var(--feature-primary) 72%, #243241 28%);
   --feature-primary-deep: color-mix(in srgb, var(--feature-primary) 78%, #1e2d3d 22%);
   --feature-border: color-mix(in srgb, var(--feature-primary) 16%, #dce4ee 84%);
   --feature-soft-bg: color-mix(in srgb, var(--feature-primary) 8%, #ffffff 92%);
@@ -70,7 +71,7 @@ textarea {
   --feature-chip-bg: color-mix(in srgb, var(--feature-primary) 12%, #ffffff 88%);
   --layout-shell-bg:
     radial-gradient(circle at top left, color-mix(in srgb, var(--feature-secondary) 22%, transparent), transparent 23%),
-    linear-gradient(180deg, #f8fbfd 0%, #f4f7fb 100%);
+    linear-gradient(180deg, var(--layout-shell-top, #f8fbfd) 0%, var(--layout-shell-bottom, #f4f7fb) 100%);
   --layout-sidebar-border: color-mix(in srgb, var(--feature-primary) 14%, #dbe5ef 86%);
   --layout-sidebar-shadow: 0 16px 38px color-mix(in srgb, var(--feature-primary) 12%, transparent);
 }
@@ -81,10 +82,38 @@ textarea {
   min-height: 100%;
 }
 
+.admin-layout .route-content-shell,
+.maintainer-layout .route-content-shell,
+.user-layout .route-content-shell {
+  width: 100%;
+  max-width: 1480px;
+  margin: 0 auto;
+}
+
+.admin-layout .content-area,
+.maintainer-layout .content-area,
+.user-layout .content-area {
+  display: flex;
+  justify-content: center;
+}
+
+.admin-layout :is([class$='-page'], [class*='-page ']),
+.maintainer-layout :is([class$='-page'], [class*='-page ']),
+.user-layout :is([class$='-page'], [class*='-page ']) {
+  padding: 0 !important;
+  background:
+    radial-gradient(circle at top left, color-mix(in srgb, var(--feature-secondary) 26%, transparent), transparent 28%),
+    radial-gradient(circle at right center, color-mix(in srgb, var(--feature-soft) 78%, #ffffff 22%), transparent 26%),
+    linear-gradient(180deg, var(--feature-surface, #f7f9fb) 0%, #ffffff 100%) !important;
+}
+
 .admin-layout :is(.page-hero, .page-header, .summary-card, .stat-card, .control-card, .panel-card, .hero-note, .feature-card, .chart-card, .detail-panel, .detail-summary-card, .table-container, .toolbar, .pagination-container, .hero-profile-card, .mini-card, .empty-state),
 .maintainer-layout :is(.page-hero, .page-header, .summary-card, .stat-card, .control-card, .panel-card, .hero-note, .feature-card, .chart-card, .detail-panel, .detail-summary-card, .table-container, .toolbar, .pagination-container, .hero-profile-card, .mini-card, .empty-state),
 .user-layout :is(.page-hero, .page-header, .summary-card, .stat-card, .control-card, .panel-card, .hero-note, .feature-card, .chart-card, .detail-panel, .detail-summary-card, .table-container, .toolbar, .pagination-container, .hero-profile-card, .mini-card, .empty-state) {
   border-radius: var(--shell-radius-xl) !important;
+  border-width: 1px !important;
+  border-style: solid !important;
+  background: color-mix(in srgb, var(--feature-soft-bg) 40%, #ffffff 60%) !important;
   transition:
     transform var(--shell-transition),
     box-shadow var(--shell-transition),
@@ -122,6 +151,9 @@ textarea {
 .maintainer-layout :is(.page-hero, .page-header),
 .user-layout :is(.page-hero, .page-header) {
   align-items: start !important;
+  background:
+    radial-gradient(circle at top right, color-mix(in srgb, var(--feature-soft) 82%, #ffffff 18%), transparent 32%),
+    linear-gradient(145deg, color-mix(in srgb, var(--feature-soft-bg) 72%, #ffffff 28%) 0%, #ffffff 68%) !important;
 }
 
 .admin-layout :is(.panel-head, .hero-actions, .control-actions, .panel-meta, .dialog-footer, .feature-actions, .row-actions, .action-buttons),
@@ -135,6 +167,8 @@ textarea {
 .user-layout :is(.el-input__wrapper, .el-select__wrapper, .el-textarea__inner, .el-date-editor.el-input__wrapper, .el-input-number .el-input__wrapper, .el-time-editor.el-input__wrapper) {
   border-radius: var(--shell-radius-sm) !important;
   border-color: var(--feature-border) !important;
+  background: color-mix(in srgb, var(--feature-soft-bg) 66%, #ffffff 34%) !important;
+  box-shadow: none !important;
 }
 
 .admin-layout :is(.el-input__wrapper.is-focus, .el-select__wrapper.is-focused, .el-date-editor.el-input__wrapper.is-focus, .el-input-number .el-input__wrapper.is-focus, .el-time-editor.el-input__wrapper.is-focus),
@@ -149,12 +183,44 @@ textarea {
   background: linear-gradient(135deg, var(--feature-primary) 0%, var(--feature-primary-deep) 100%) !important;
   border-color: transparent !important;
   box-shadow: 0 12px 24px color-mix(in srgb, var(--feature-primary) 20%, transparent) !important;
+  color: #fff !important;
 }
 
 .admin-layout :is(.secondary-btn, .el-button--default),
 .maintainer-layout :is(.secondary-btn, .el-button--default),
 .user-layout :is(.secondary-btn, .el-button--default) {
   border-color: var(--feature-border) !important;
+  background: color-mix(in srgb, var(--feature-soft-bg) 62%, #ffffff 38%) !important;
+  color: var(--feature-strong) !important;
+}
+
+.admin-layout :is(.el-button--primary, .el-button--default, .action-btn),
+.maintainer-layout :is(.el-button--primary, .el-button--default, .action-btn),
+.user-layout :is(.el-button--primary, .el-button--default, .action-btn) {
+  min-height: 40px;
+  border-radius: 14px !important;
+}
+
+.admin-layout :is(.action-btn, .edit-btn, .view-btn, .reply-btn),
+.maintainer-layout :is(.action-btn, .edit-btn, .view-btn, .reply-btn),
+.user-layout :is(.action-btn, .edit-btn, .view-btn, .reply-btn) {
+  color: var(--feature-strong) !important;
+  border-color: var(--feature-border) !important;
+  background: color-mix(in srgb, var(--feature-soft-bg) 70%, #ffffff 30%) !important;
+}
+
+.admin-layout :is(.delete-btn, .danger-btn),
+.maintainer-layout :is(.delete-btn, .danger-btn),
+.user-layout :is(.delete-btn, .danger-btn) {
+  color: #c85f6b !important;
+  border-color: rgba(200, 95, 107, 0.2) !important;
+  background: rgba(255, 244, 246, 0.98) !important;
+}
+
+.admin-layout :is(.el-button--text, .el-button.is-link),
+.maintainer-layout :is(.el-button--text, .el-button.is-link),
+.user-layout :is(.el-button--text, .el-button.is-link) {
+  color: var(--feature-strong) !important;
 }
 
 .admin-layout :is(.el-dialog, .el-drawer, .el-drawer__body),
@@ -163,10 +229,70 @@ textarea {
   border-radius: var(--shell-radius-xl) !important;
 }
 
-.admin-layout :is(.el-table, .el-card),
-.maintainer-layout :is(.el-table, .el-card),
-.user-layout :is(.el-table, .el-card) {
+.admin-layout :is(.el-table, .el-card, .el-dialog),
+.maintainer-layout :is(.el-table, .el-card, .el-dialog),
+.user-layout :is(.el-table, .el-card, .el-dialog) {
   border-radius: var(--shell-radius-lg) !important;
+  border-color: var(--feature-border) !important;
+}
+
+.admin-layout :is(.el-card, .el-dialog),
+.maintainer-layout :is(.el-card, .el-dialog),
+.user-layout :is(.el-card, .el-dialog) {
+  background: rgba(255, 255, 255, 0.96) !important;
+  box-shadow: var(--shell-shadow) !important;
+}
+
+.admin-layout :is(.summary-card, .stat-card, .detail-summary-card),
+.maintainer-layout :is(.summary-card, .stat-card, .detail-summary-card),
+.user-layout :is(.summary-card, .stat-card, .detail-summary-card) {
+  background: linear-gradient(150deg, color-mix(in srgb, var(--feature-soft-bg) 72%, #ffffff 28%) 0%, #ffffff 84%) !important;
+}
+
+.admin-layout :is(.summary-card strong, .stat-card strong, .detail-summary-card strong, .hero-copy h1, .section-copy h2, .dialog-header h3, .section-title h4),
+.maintainer-layout :is(.summary-card strong, .stat-card strong, .detail-summary-card strong, .hero-copy h1, .section-copy h2, .dialog-header h3, .section-title h4),
+.user-layout :is(.summary-card strong, .stat-card strong, .detail-summary-card strong, .hero-copy h1, .section-copy h2, .dialog-header h3, .section-title h4) {
+  color: var(--feature-strong) !important;
+}
+
+.admin-layout :is(.hero-copy p, .section-copy p, .summary-card p, .title-cell span, .detail-content, .detail-item p, .detail-item strong, .user-cell, .dialog-header p, .section-title span),
+.maintainer-layout :is(.hero-copy p, .section-copy p, .summary-card p, .title-cell span, .detail-content, .detail-item p, .detail-item strong, .user-cell, .dialog-header p, .section-title span),
+.user-layout :is(.hero-copy p, .section-copy p, .summary-card p, .title-cell span, .detail-content, .detail-item p, .detail-item strong, .user-cell, .dialog-header p, .section-title span) {
+  color: color-mix(in srgb, var(--feature-strong) 64%, #718096 36%) !important;
+}
+
+.admin-layout :is(.feedback-table, .notice-table, .log-table, .user-table) :is(.el-table),
+.maintainer-layout :is(.feedback-table, .notice-table, .log-table, .user-table) :is(.el-table),
+.user-layout :is(.feedback-table, .notice-table, .log-table, .user-table) :is(.el-table) {
+  --el-table-border-color: color-mix(in srgb, var(--feature-primary) 14%, #dce4ee 86%) !important;
+  --el-table-row-hover-bg-color: color-mix(in srgb, var(--feature-soft-bg) 72%, #ffffff 28%) !important;
+}
+
+.admin-layout :is(.feedback-table, .notice-table, .log-table, .user-table) :is(.el-table__header-wrapper th.el-table__cell),
+.maintainer-layout :is(.feedback-table, .notice-table, .log-table, .user-table) :is(.el-table__header-wrapper th.el-table__cell),
+.user-layout :is(.feedback-table, .notice-table, .log-table, .user-table) :is(.el-table__header-wrapper th.el-table__cell) {
+  background: linear-gradient(180deg, color-mix(in srgb, var(--feature-soft-bg) 56%, #ffffff 44%) 0%, color-mix(in srgb, var(--feature-soft-bg) 78%, #ffffff 22%) 100%) !important;
+  color: var(--feature-strong) !important;
+}
+
+.admin-layout :is(.pagination-wrap, .pagination-container),
+.maintainer-layout :is(.pagination-wrap, .pagination-container),
+.user-layout :is(.pagination-wrap, .pagination-container) {
+  justify-content: center !important;
+}
+
+.admin-layout :is(.el-pagination .btn-next, .el-pagination .btn-prev, .el-pagination .el-pager li.is-active),
+.maintainer-layout :is(.el-pagination .btn-next, .el-pagination .btn-prev, .el-pagination .el-pager li.is-active),
+.user-layout :is(.el-pagination .btn-next, .el-pagination .btn-prev, .el-pagination .el-pager li.is-active) {
+  background: color-mix(in srgb, var(--feature-soft-bg) 84%, #ffffff 16%) !important;
+  color: var(--feature-strong) !important;
+  border-color: var(--feature-border) !important;
+}
+
+.admin-layout :is(.content-grid, .detail-summary-grid, .summary-grid),
+.maintainer-layout :is(.content-grid, .detail-summary-grid, .summary-grid),
+.user-layout :is(.content-grid, .detail-summary-grid, .summary-grid) {
+  align-items: stretch;
 }
 
 .admin-layout :is(.el-pagination .btn-next, .el-pagination .btn-prev, .el-pagination .el-pager li),

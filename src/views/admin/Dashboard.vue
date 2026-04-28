@@ -1,5 +1,5 @@
 <template>
-  <div class="admin-dashboard-page">
+  <div class="admin-dashboard-page" :style="themeVars">
     <section class="page-hero">
       <div class="hero-copy">
         <span class="hero-eyebrow">Data Statistics</span>
@@ -93,6 +93,11 @@
 import { computed, nextTick, onBeforeUnmount, onMounted, ref } from 'vue';
 import * as echarts from 'echarts';
 import { adminAPI, facilityAPI, reservationAPI, userAPI } from '../../api';
+import { buildFeatureVars, getRoleTheme } from '../../utils/featureTheme';
+
+const themeVars = computed(() => ({
+  ...buildFeatureVars(getRoleTheme('admin'))
+}));
 
 const overview = ref({
   totalFacility: 0,
@@ -457,11 +462,11 @@ function handleResize() {
 
 <style scoped>
 .admin-dashboard-page {
-  --theme-main: #5bb7b0;
-  --theme-deep: #338b84;
-  --theme-soft: rgba(163, 228, 222, 0.26);
-  --theme-border: rgba(91, 183, 176, 0.16);
-  --theme-shadow: rgba(27, 77, 73, 0.08);
+  --theme-main: var(--feature-primary);
+  --theme-deep: var(--feature-strong);
+  --theme-soft: var(--feature-soft);
+  --theme-border: var(--feature-border);
+  --theme-shadow: var(--feature-glow);
   min-height: 100%;
   display: grid;
   gap: 20px;

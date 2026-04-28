@@ -1,5 +1,5 @@
 <template>
-  <div class="admin-user-page">
+  <div class="admin-user-page" :style="themeVars">
     <section class="page-hero">
       <div class="hero-copy">
         <span class="hero-eyebrow">User Management</span>
@@ -74,7 +74,7 @@
       <div class="panel-head">
         <div class="section-copy">
           <h2>用户列表</h2>
-          <p>列表补充角色、联系方式和状态信息，点击任意记录即可直接进入编辑，不再出现只有表格没有内容层次的问题。</p>
+          <p>列表补充角色、联系方式和状态信息，点击任意记录即可直接进入编辑。</p>
         </div>
         <div class="panel-meta">
           <span class="meta-chip">共 {{ total }} 条</span>
@@ -223,6 +223,11 @@ import { ElMessage, ElMessageBox } from 'element-plus';
 import { Delete, Edit, Search } from '@element-plus/icons-vue';
 import { userAPI } from '../../api';
 import { getRoleDisplayName, getRoleOptions } from '../../utils/roleMapping';
+import { buildFeatureVars, getRoleTheme } from '../../utils/featureTheme';
+
+const themeVars = computed(() => ({
+  ...buildFeatureVars(getRoleTheme('admin'))
+}));
 
 const loading = ref(false);
 const userList = ref([]);
@@ -287,10 +292,6 @@ const filteredUserList = computed(() => {
     return matchKeyword && matchRole && matchStatus;
   });
 });
-
-const userStats = computed(() => ({
-  management: userList.value.filter((item) => ['ADMIN', 'MAINTAINER'].includes(item.role)).length
-}));
 
 const activeUsers = computed(() => filteredUserList.value.filter((item) => item.status === 'ACTIVE').length);
 const inactiveUsers = computed(() => filteredUserList.value.filter((item) => item.status !== 'ACTIVE').length);
@@ -376,7 +377,7 @@ async function handleSubmit() {
 }
 
 function handleDelete(row) {
-  ElMessageBox.confirm(`确认删除用户“${row.username}”吗？`, '删除确认', {
+  ElMessageBox.confirm(`确认删除用户"${row.username}"吗？`, '删除确认', {
     confirmButtonText: '确认',
     cancelButtonText: '取消',
     type: 'warning'
@@ -408,18 +409,18 @@ function getRoleTagType(role) {
 
 <style scoped>
 .admin-user-page {
-  --theme-main: #69b4e7;
-  --theme-deep: #3e8fc6;
-  --theme-soft: rgba(188, 228, 248, 0.28);
-  --theme-border: rgba(105, 180, 231, 0.16);
-  --theme-shadow: rgba(36, 80, 110, 0.08);
+  --theme-main: var(--feature-primary);
+  --theme-deep: var(--feature-strong);
+  --theme-soft: var(--feature-soft);
+  --theme-border: var(--feature-border);
+  --theme-shadow: var(--feature-glow);
   min-height: 100%;
   display: grid;
   gap: 20px;
   background:
-    radial-gradient(circle at top left, rgba(214, 239, 250, 0.74), transparent 26%),
-    radial-gradient(circle at right center, rgba(239, 249, 253, 0.92), transparent 24%),
-    linear-gradient(180deg, #f8fcfe 0%, #f4fafd 48%, #f1f8fb 100%);
+    radial-gradient(circle at top left, rgba(226, 236, 249, 0.72), transparent 26%),
+    radial-gradient(circle at right center, rgba(240, 249, 252, 0.92), transparent 24%),
+    linear-gradient(180deg, #f9fbff 0%, #f5f8fd 48%, #f3f7fc 100%);
 }
 
 .page-hero,
@@ -431,8 +432,7 @@ function getRoleTagType(role) {
 
 .page-hero,
 .control-card,
-.panel-card,
-.hero-note {
+.panel-card {
   border-radius: 28px;
   border: 1px solid var(--theme-border);
   background: rgba(255, 255, 255, 0.95);
@@ -446,7 +446,7 @@ function getRoleTagType(role) {
   padding: 30px;
   background:
     radial-gradient(circle at top right, var(--theme-soft), transparent 30%),
-    linear-gradient(145deg, rgba(240, 250, 253, 0.96) 0%, #ffffff 62%);
+    linear-gradient(145deg, rgba(240, 249, 252, 0.98) 0%, #ffffff 62%);
 }
 
 .hero-eyebrow {
@@ -454,8 +454,8 @@ function getRoleTagType(role) {
   align-items: center;
   padding: 6px 12px;
   border-radius: 999px;
-  background: rgba(188, 228, 248, 0.24);
-  color: #4f8ab8;
+  background: rgba(200, 216, 240, 0.24);
+  color: #4b6f99;
   font-size: 12px;
   font-weight: 600;
   letter-spacing: 0.08em;
@@ -464,7 +464,7 @@ function getRoleTagType(role) {
 .hero-copy h1,
 .section-copy h2 {
   margin: 14px 0 10px;
-  color: #214d65;
+  color: #17314d;
 }
 
 .hero-copy h1 {
@@ -474,7 +474,7 @@ function getRoleTagType(role) {
 .hero-copy p,
 .section-copy p {
   margin: 0;
-  color: #748d98;
+  color: #67778f;
   line-height: 1.8;
 }
 
@@ -502,44 +502,14 @@ function getRoleTagType(role) {
 
 .primary-btn {
   border: none;
-  background: linear-gradient(135deg, #69b4e7 0%, #3e8fc6 100%);
-  box-shadow: 0 14px 28px rgba(62, 143, 198, 0.22);
+  background: linear-gradient(135deg, var(--feature-primary) 0%, var(--feature-strong) 100%);
+  box-shadow: 0 14px 28px rgba(63, 134, 146, 0.22);
 }
 
 .secondary-btn {
-  border: 1px solid rgba(105, 180, 231, 0.22);
+  border: 1px solid var(--feature-border);
   background: rgba(255, 255, 255, 0.9);
-  color: #728894;
-}
-
-.hero-side {
-  display: grid;
-  gap: 14px;
-}
-
-.hero-note {
-  min-height: 132px;
-  padding: 22px;
-  background: linear-gradient(180deg, #f8fcfe 0%, #ffffff 100%);
-}
-
-.hero-note span,
-.hero-note small,
-.summary-label,
-.summary-card p {
-  color: #768a95;
-}
-
-.hero-note strong,
-.summary-card strong {
-  color: #214f68;
-}
-
-.hero-note strong,
-.summary-card strong {
-  display: block;
-  margin: 14px 0 8px;
-  font-size: 30px;
+  color: #5b7a96;
 }
 
 .summary-grid {
@@ -551,9 +521,21 @@ function getRoleTagType(role) {
 .summary-card {
   padding: 22px;
   border-radius: 24px;
-  border: 1px solid rgba(105, 180, 231, 0.14);
-  background: linear-gradient(150deg, rgba(240, 250, 253, 0.96) 0%, #ffffff 84%);
-  box-shadow: 0 18px 40px rgba(36, 80, 110, 0.06);
+  border: 1px solid var(--feature-border);
+  background: linear-gradient(150deg, rgba(240, 249, 252, 0.96) 0%, #ffffff 84%);
+  box-shadow: 0 18px 40px rgba(30, 41, 59, 0.06);
+}
+
+.summary-label,
+.summary-card p {
+  color: #72839b;
+}
+
+.summary-card strong {
+  display: block;
+  margin: 14px 0 8px;
+  font-size: 30px;
+  color: #17314d;
 }
 
 .summary-card p {
@@ -584,8 +566,8 @@ function getRoleTagType(role) {
   min-height: 46px;
   border-radius: 16px;
   box-shadow: none;
-  border: 1px solid rgba(105, 180, 231, 0.2);
-  background: #f9fcfe;
+  border: 1px solid var(--feature-border);
+  background: #f9fbff;
 }
 
 .panel-head {
@@ -598,20 +580,20 @@ function getRoleTagType(role) {
 .meta-chip {
   padding: 8px 12px;
   border-radius: 999px;
-  background: rgba(188, 228, 248, 0.24);
-  color: #4b89b7;
+  background: rgba(200, 216, 240, 0.24);
+  color: #5579a4;
   font-size: 12px;
   font-weight: 600;
 }
 
 .muted-chip {
-  background: rgba(243, 249, 252, 0.96);
-  color: #778c97;
+  background: rgba(244, 249, 252, 0.96);
+  color: #72839b;
 }
 
 .user-table :deep(.el-table) {
-  --el-table-border-color: rgba(105, 180, 231, 0.12);
-  --el-table-row-hover-bg-color: rgba(243, 249, 252, 0.95);
+  --el-table-border-color: rgba(132, 165, 205, 0.12);
+  --el-table-row-hover-bg-color: rgba(243, 250, 252, 0.95);
   border-radius: 20px;
 }
 
@@ -621,8 +603,8 @@ function getRoleTagType(role) {
 }
 
 .user-table :deep(.el-table__header-wrapper th.el-table__cell) {
-  background: linear-gradient(180deg, #f6fbfd 0%, #eef7fa 100%) !important;
-  color: #214f68;
+  background: linear-gradient(180deg, #f6fbfe 0%, #eef5fc 100%) !important;
+  color: #225368;
 }
 
 .title-cell {
@@ -631,13 +613,13 @@ function getRoleTagType(role) {
 }
 
 .title-cell strong {
-  color: #214f68;
+  color: #17314d;
   font-size: 15px;
 }
 
 .title-cell span,
 .email-text {
-  color: #778b96;
+  color: #67778f;
   line-height: 1.6;
 }
 
@@ -648,9 +630,9 @@ function getRoleTagType(role) {
 }
 
 .edit-btn {
-  color: #4a8ab6;
-  border-color: rgba(105, 180, 231, 0.24);
-  background: rgba(242, 249, 253, 0.96);
+  color: #5579a4;
+  border-color: rgba(132, 165, 205, 0.24);
+  background: rgba(243, 250, 252, 0.96);
 }
 
 .delete-btn {
@@ -680,8 +662,8 @@ function getRoleTagType(role) {
 .user-dialog :deep(.el-select__wrapper) {
   border-radius: 14px;
   box-shadow: none;
-  border: 1px solid rgba(105, 180, 231, 0.2);
-  background: #f9fcfe;
+  border: 1px solid var(--feature-border);
+  background: #f9fbff;
 }
 
 .dialog-footer {

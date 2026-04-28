@@ -76,16 +76,15 @@
 <script setup>
 import { computed, ref, watch } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
-import { buildFeatureVars, resolveFeatureTheme } from '../utils/featureTheme';
+import { buildFeatureVars, getRoleTheme } from '../utils/featureTheme';
 import { Star, Box, Calendar, Bell, User, Warning, ChatDotRound } from '@element-plus/icons-vue';
 import Header from '../components/Header.vue';
 
 const router = useRouter();
 const route = useRoute();
 const activeMenu = ref(route.path);
-const currentTheme = computed(() => resolveFeatureTheme(route.path));
 const layoutVars = computed(() => ({
-  ...buildFeatureVars(currentTheme.value)
+  ...buildFeatureVars(getRoleTheme('user'))
 }));
 
 watch(

@@ -819,26 +819,26 @@ const handleViewDetail = (notice) => {
 }
 
 .notice-page {
-  --page-primary: #f2a94f;
-  --page-secondary: #ffd78b;
-  --page-soft: rgba(255, 215, 139, 0.24);
+  --page-primary: #f5b7c0;
+  --page-secondary: #fce4e8;
+  --page-soft: rgba(252, 228, 232, 0.22);
   min-height: auto;
   padding: 0;
   display: grid;
   gap: 20px;
   background:
-    radial-gradient(circle at top right, rgba(255, 215, 139, 0.18), transparent 24%),
-    linear-gradient(180deg, #fffdf8 0%, #fffafd 100%);
+    radial-gradient(circle at top right, rgba(252, 228, 232, 0.18), transparent 24%),
+    linear-gradient(180deg, #fffafb 0%, #fffdfd 100%);
 }
 
 .notice-page .page-header,
 .notice-page .empty-state,
 .notice-page .pagination-container {
   margin: 0;
-  border: 1px solid rgba(242, 169, 79, 0.14);
+  border: 1px solid rgba(245, 183, 192, 0.14);
   border-radius: 28px;
   background: rgba(255, 255, 255, 0.95);
-  box-shadow: 0 18px 34px rgba(36, 25, 16, 0.05);
+  box-shadow: 0 18px 34px rgba(94, 52, 62, 0.05);
 }
 
 .notice-page .header-decoration {
@@ -854,7 +854,7 @@ const handleViewDetail = (notice) => {
 }
 
 .notice-page .title-icon {
-  background: linear-gradient(135deg, rgba(255, 215, 139, 0.28), rgba(255, 255, 255, 0.96));
+  background: linear-gradient(135deg, rgba(252, 228, 232, 0.28), rgba(255, 255, 255, 0.96));
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.72);
 }
 
@@ -871,15 +871,15 @@ const handleViewDetail = (notice) => {
 .notice-page .summary-card {
   padding: 22px 20px;
   border-radius: 22px;
-  border: 1px solid rgba(242, 169, 79, 0.12);
-  background: linear-gradient(145deg, rgba(255, 215, 139, 0.18), #ffffff 82%);
-  box-shadow: 0 12px 24px rgba(68, 46, 16, 0.05);
+  border: 1px solid rgba(245, 183, 192, 0.12);
+  background: linear-gradient(145deg, rgba(252, 228, 232, 0.18), #ffffff 82%);
+  box-shadow: 0 12px 24px rgba(94, 52, 62, 0.05);
 }
 
 .notice-page .summary-label {
   display: block;
   margin-bottom: 10px;
-  color: #907655;
+  color: #8e717b;
   font-size: 13px;
 }
 
@@ -887,31 +887,31 @@ const handleViewDetail = (notice) => {
   display: block;
   font-size: 34px;
   line-height: 1;
-  color: #63431f;
+  color: #7a4052;
 }
 
 .notice-page .summary-card p {
   margin: 10px 0 0;
-  color: #9a8467;
+  color: #8e717b;
   line-height: 1.6;
 }
 
 .notice-page .notice-item {
   border-radius: 24px;
-  border-color: rgba(242, 169, 79, 0.14);
-  box-shadow: 0 14px 28px rgba(55, 36, 12, 0.06);
+  border-color: rgba(245, 183, 192, 0.14);
+  box-shadow: 0 14px 28px rgba(94, 52, 62, 0.06);
 }
 
 .notice-page .notice-item::before {
-  background: linear-gradient(90deg, #f2a94f 0%, #ffd78b 50%, #f2a94f 100%);
+  background: linear-gradient(90deg, #f5b7c0 0%, #fce4e8 50%, #f5b7c0 100%);
 }
 
 .notice-page .notice-item:hover {
-  border-color: rgba(242, 169, 79, 0.24);
+  border-color: rgba(245, 183, 192, 0.24);
 }
 
 .notice-page .notice-icon {
-  background: linear-gradient(135deg, rgba(255, 215, 139, 0.28), rgba(255, 255, 255, 0.98));
+  background: linear-gradient(135deg, rgba(252, 228, 232, 0.28), rgba(255, 255, 255, 0.98));
 }
 
 .notice-page .notice-icon svg,
@@ -921,30 +921,30 @@ const handleViewDetail = (notice) => {
 }
 
 .notice-page .detail-btn {
-  color: #8d6a32;
-  border-color: rgba(242, 169, 79, 0.24);
-  background: rgba(255, 248, 230, 0.96);
+  color: #c4677a;
+  border-color: rgba(245, 183, 192, 0.24);
+  background: rgba(254, 248, 249, 0.96);
 }
 
 .notice-page .detail-btn:hover {
-  background: linear-gradient(135deg, #f2a94f 0%, #efb55f 100%);
+  background: linear-gradient(135deg, #f5b7c0 0%, #e8909d 100%);
   border-color: transparent;
 }
 </style>
 <style scoped>
 .notice-page {
-  --theme-main: #f2b15b;
-  --theme-deep: #cf8a2a;
-  --theme-soft: rgba(255, 220, 164, 0.28);
-  --theme-border: rgba(242, 177, 91, 0.18);
-  --theme-shadow: rgba(92, 63, 25, 0.08);
+  --theme-main: #f5b7c0;
+  --theme-deep: #e8909d;
+  --theme-soft: rgba(252, 228, 232, 0.28);
+  --theme-border: rgba(245, 183, 192, 0.18);
+  --theme-shadow: rgba(94, 52, 62, 0.1);
   min-height: 100%;
   display: grid;
   gap: 20px;
   background:
-    radial-gradient(circle at top right, rgba(255, 232, 189, 0.76), transparent 24%),
-    radial-gradient(circle at left center, rgba(255, 245, 226, 0.96), transparent 24%),
-    linear-gradient(180deg, #fffdf8 0%, #fffaf3 48%, #fff7ef 100%);
+    radial-gradient(circle at top right, rgba(252, 228, 232, 0.76), transparent 24%),
+    radial-gradient(circle at left center, rgba(254, 248, 249, 0.96), transparent 24%),
+    linear-gradient(180deg, #fffafb 0%, #fef8f9 48%, #fffdfd 100%);
 }
 
 .page-header,
@@ -975,7 +975,7 @@ const handleViewDetail = (notice) => {
   right: auto;
   width: 5px;
   height: 100%;
-  background: linear-gradient(180deg, #f2b15b 0%, #ffdca4 100%);
+  background: linear-gradient(180deg, #f5b7c0 0%, #fce4e8 100%);
   animation: none;
 }
 
@@ -985,20 +985,20 @@ const handleViewDetail = (notice) => {
   padding: 30px 34px;
   background:
     radial-gradient(circle at top right, var(--theme-soft), transparent 28%),
-    linear-gradient(145deg, rgba(255, 248, 228, 0.96) 0%, #ffffff 64%);
+    linear-gradient(145deg, rgba(254, 248, 249, 0.96) 0%, #ffffff 64%);
 }
 
 .page-title {
   gap: 14px;
   font-size: 32px;
-  color: #69441b;
+  color: #7a4052;
 }
 
 .title-icon {
   width: 54px;
   height: 54px;
   border-radius: 18px;
-  background: linear-gradient(145deg, rgba(255, 220, 164, 0.42), rgba(255, 255, 255, 0.98));
+  background: linear-gradient(145deg, rgba(252, 228, 232, 0.42), rgba(255, 255, 255, 0.98));
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.84);
 }
 
@@ -1008,7 +1008,7 @@ const handleViewDetail = (notice) => {
 
 .page-subtitle {
   margin-top: 10px;
-  color: #947758;
+  color: #8e717b;
   line-height: 1.8;
 }
 
@@ -1021,19 +1021,19 @@ const handleViewDetail = (notice) => {
 .summary-card {
   padding: 22px;
   border-radius: 24px;
-  border: 1px solid rgba(242, 177, 91, 0.14);
-  background: linear-gradient(150deg, rgba(255, 248, 228, 0.96) 0%, #ffffff 82%);
-  box-shadow: 0 18px 40px rgba(73, 48, 18, 0.05);
+  border: 1px solid rgba(245, 183, 192, 0.14);
+  background: linear-gradient(150deg, rgba(254, 248, 249, 0.96) 0%, #ffffff 82%);
+  box-shadow: 0 18px 40px rgba(94, 52, 62, 0.05);
 }
 
 .summary-card strong {
   font-size: 32px;
-  color: #6a451d;
+  color: #7a4052;
 }
 
 .summary-label,
 .summary-card p {
-  color: #9d7f5d;
+  color: #8e717b;
 }
 
 .notices-container {
@@ -1047,8 +1047,8 @@ const handleViewDetail = (notice) => {
   padding: 24px;
   border-radius: 28px;
   border: 1px solid var(--theme-border);
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.98) 0%, rgba(255, 252, 246, 0.98) 100%);
-  box-shadow: 0 18px 42px rgba(73, 48, 18, 0.06);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.98) 0%, rgba(254, 248, 249, 0.98) 100%);
+  box-shadow: 0 18px 42px rgba(94, 52, 62, 0.06);
   transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
 }
 
@@ -1056,22 +1056,22 @@ const handleViewDetail = (notice) => {
   inset: 0 auto 0 0;
   width: 4px;
   height: 100%;
-  background: linear-gradient(180deg, #f2b15b 0%, #ffd79d 100%);
+  background: linear-gradient(180deg, #f5b7c0 0%, #fce4e8 100%);
   opacity: 1;
   animation: none;
 }
 
 .notice-item:hover {
   transform: translateY(-4px);
-  border-color: rgba(242, 177, 91, 0.28);
-  box-shadow: 0 24px 50px rgba(73, 48, 18, 0.1);
+  border-color: rgba(245, 183, 192, 0.28);
+  box-shadow: 0 24px 50px rgba(94, 52, 62, 0.1);
 }
 
 .notice-icon {
   width: 44px;
   height: 44px;
   border-radius: 16px;
-  background: linear-gradient(145deg, rgba(255, 220, 164, 0.38), rgba(255, 255, 255, 0.98));
+  background: linear-gradient(145deg, rgba(252, 228, 232, 0.38), rgba(255, 255, 255, 0.98));
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.84);
 }
 
@@ -1083,11 +1083,11 @@ const handleViewDetail = (notice) => {
 
 .notice-title {
   font-size: 18px;
-  color: #62411b;
+  color: #7a4052;
 }
 
 .notice-meta {
-  color: #9b7f60;
+  color: #8e717b;
 }
 
 .new-badge {
@@ -1103,22 +1103,22 @@ const handleViewDetail = (notice) => {
 }
 
 .notice-actions {
-  border-top-color: rgba(242, 177, 91, 0.1);
+  border-top-color: rgba(245, 183, 192, 0.1);
 }
 
 .detail-btn {
   min-height: 38px;
   padding: 0 16px;
   border-radius: 999px;
-  color: #8d672d;
-  border-color: rgba(242, 177, 91, 0.2);
-  background: rgba(255, 249, 235, 0.96);
+  color: #c4677a;
+  border-color: rgba(245, 183, 192, 0.2);
+  background: rgba(254, 248, 249, 0.96);
 }
 
 .detail-btn:hover {
-  background: linear-gradient(135deg, #f2b15b 0%, #de972f 100%);
+  background: linear-gradient(135deg, #f5b7c0 0%, #e8909d 100%);
   border-color: transparent;
-  box-shadow: 0 12px 24px rgba(222, 151, 47, 0.2);
+  box-shadow: 0 12px 24px rgba(232, 144, 157, 0.2);
 }
 
 .empty-state {
@@ -1129,7 +1129,7 @@ const handleViewDetail = (notice) => {
   width: 82px;
   height: 82px;
   border-radius: 26px;
-  background: linear-gradient(145deg, rgba(255, 220, 164, 0.34), rgba(255, 255, 255, 0.98));
+  background: linear-gradient(145deg, rgba(252, 228, 232, 0.34), rgba(255, 255, 255, 0.98));
 }
 
 .empty-icon svg {
@@ -1138,11 +1138,11 @@ const handleViewDetail = (notice) => {
 }
 
 .empty-title {
-  color: #66431c;
+  color: #7a4052;
 }
 
 .empty-description {
-  color: #9a805f;
+  color: #8e717b;
 }
 
 .pagination-container {
@@ -1156,7 +1156,7 @@ const handleViewDetail = (notice) => {
 }
 
 .pagination-container :deep(.el-pagination .el-pager li.is-active) {
-  background: linear-gradient(135deg, #f2b15b 0%, #de972f 100%);
+  background: linear-gradient(135deg, #f5b7c0 0%, #e8909d 100%);
   color: #ffffff;
 }
 
@@ -1168,15 +1168,15 @@ const handleViewDetail = (notice) => {
 .dialog-header {
   padding: 26px 30px 18px;
   background:
-    radial-gradient(circle at top right, rgba(255, 220, 164, 0.34), transparent 26%),
-    linear-gradient(145deg, rgba(255, 248, 228, 0.96) 0%, #ffffff 62%);
+    radial-gradient(circle at top right, rgba(252, 228, 232, 0.34), transparent 26%),
+    linear-gradient(145deg, rgba(254, 248, 249, 0.96) 0%, #ffffff 62%);
 }
 
 .dialog-title-icon {
   width: 50px;
   height: 50px;
   border-radius: 16px;
-  background: rgba(255, 220, 164, 0.38);
+  background: rgba(252, 228, 232, 0.38);
 }
 
 .dialog-title-icon svg {
@@ -1185,7 +1185,7 @@ const handleViewDetail = (notice) => {
 
 .dialog-title-text {
   font-size: 22px;
-  color: #66441c;
+  color: #7a4052;
 }
 
 .dialog-body {
@@ -1195,23 +1195,23 @@ const handleViewDetail = (notice) => {
 .notice-info {
   padding: 18px;
   border-radius: 22px;
-  background: rgba(255, 249, 235, 0.72);
-  border: 1px solid rgba(242, 177, 91, 0.14);
+  background: rgba(254, 248, 249, 0.72);
+  border: 1px solid rgba(245, 183, 192, 0.14);
 }
 
 .info-label {
-  color: #9c7e5d;
+  color: #8e717b;
 }
 
 .info-value {
-  color: #6a471f;
+  color: #7a4052;
 }
 
 .content-text-full {
   border-radius: 22px;
-  border: 1px solid rgba(242, 177, 91, 0.14);
-  background: #fffdf9;
-  border-left: 1px solid rgba(242, 177, 91, 0.14);
+  border: 1px solid rgba(245, 183, 192, 0.14);
+  background: #fffdfd;
+  border-left: 1px solid rgba(245, 183, 192, 0.14);
 }
 
 .dialog-footer {
@@ -1224,8 +1224,9 @@ const handleViewDetail = (notice) => {
   min-height: 44px;
   padding: 0 18px;
   border-radius: 14px;
-  border: 1px solid rgba(242, 177, 91, 0.18);
-  color: #8d7355;
+  border: 1px solid rgba(245, 183, 192, 0.18);
+  color: #8e717b;
+  background: #ffffff;
 }
 
 @keyframes notice-rise {

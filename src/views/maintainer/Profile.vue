@@ -15,7 +15,7 @@
         <div class="hero-copy">
           <span class="eyebrow">管理员资料</span>
           <h1>个人中心</h1>
-          <p>统一管理设施管理员的基础资料、安全设置和头像信息，保持与维护端其他页面一致的视觉层次和操作方式。</p>
+          <p>查看和管理个人资料、安全设置和头像信息。</p>
 
           <div class="hero-meta">
             <article class="meta-card">
@@ -34,7 +34,7 @@
 
       <div class="hero-actions">
         <el-button type="primary" size="large" class="action-button" @click="handleEditProfile">编辑资料</el-button>
-        <el-button type="warning" size="large" class="action-button" @click="handleChangePassword">修改密码</el-button>
+        <el-button type="primary" size="large" class="action-button action-warning" @click="handleChangePassword">修改密码</el-button>
       </div>
     </section>
 
@@ -112,7 +112,7 @@
             <h2>安全设置</h2>
             <p>定期修改密码，避免维护账号被误用或泄露。</p>
           </div>
-          <el-button type="warning" @click="handleChangePassword">修改密码</el-button>
+          <el-button type="primary" class="security-action-btn" @click="handleChangePassword">修改密码</el-button>
         </div>
 
         <div class="security-list">
@@ -245,6 +245,10 @@ import { ElMessage } from 'element-plus'
 import { Upload } from '@element-plus/icons-vue'
 import { userAPI, fileAPI } from '../../api'
 import { clearAuth, getUserInfo, updateStoredUserInfo } from '../../utils/auth'
+import { buildFeatureVars, getRoleTheme } from '../../utils/featureTheme'
+const localUserInfo = JSON.parse(localStorage.getItem('userInfo') || '{}')
+const theme = getRoleTheme(localUserInfo.role || 'maintainer')
+const featureVars = buildFeatureVars(theme)
 
 const userInfo = ref({})
 const profileDialogVisible = ref(false)
@@ -455,15 +459,11 @@ const handlePasswordSubmit = async () => {
 
 <style scoped>
 .profile-theme {
-  --theme-main: #0f766e;
-  --theme-soft: rgba(15, 118, 110, 0.12);
-  --theme-border: rgba(15, 118, 110, 0.12);
-  --theme-shadow: rgba(15, 118, 110, 0.14);
   padding: 24px;
   min-height: 100%;
   background:
-    radial-gradient(circle at top right, rgba(45, 212, 191, 0.2), transparent 28%),
-    linear-gradient(180deg, #effcf9 0%, #f8fdfc 46%, #eefbf7 100%);
+    radial-gradient(circle at top left, var(--feature-soft), transparent 28%),
+    linear-gradient(180deg, var(--layout-shell-top) 0%, var(--layout-shell-bottom) 100%);
 }
 
 .page-hero,
@@ -478,8 +478,8 @@ const handlePasswordSubmit = async () => {
   padding: 28px;
   border-radius: 28px;
   background: rgba(255, 255, 255, 0.86);
-  border: 1px solid var(--theme-border);
-  box-shadow: 0 24px 60px var(--theme-shadow);
+  border: 1px solid var(--feature-soft);
+  box-shadow: 0 24px 60px var(--feature-glow);
 }
 
 .hero-main {
@@ -500,8 +500,8 @@ const handlePasswordSubmit = async () => {
   height: 120px;
   border-radius: 32px;
   overflow: hidden;
-  background: linear-gradient(135deg, #d9fff6 0%, #f3fffb 100%);
-  box-shadow: 0 14px 34px rgba(15, 118, 110, 0.16);
+  background: linear-gradient(135deg, var(--feature-surface) 0%, var(--feature-soft) 100%);
+  box-shadow: 0 14px 34px var(--feature-glow);
 }
 
 .avatar-image,
@@ -518,7 +518,7 @@ const handlePasswordSubmit = async () => {
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #0f766e;
+  color: var(--feature-primary);
   font-size: 42px;
   font-weight: 700;
 }
@@ -531,8 +531,8 @@ const handlePasswordSubmit = async () => {
   display: inline-flex;
   padding: 6px 12px;
   border-radius: 999px;
-  background: var(--theme-soft);
-  color: var(--theme-main);
+  background: var(--feature-soft);
+  color: var(--feature-primary);
   font-size: 12px;
   letter-spacing: 0.08em;
   text-transform: uppercase;
@@ -563,8 +563,8 @@ const handlePasswordSubmit = async () => {
 .security-item {
   padding: 18px 20px;
   border-radius: 22px;
-  border: 1px solid var(--theme-border);
-  background: linear-gradient(135deg, #effff9 0%, #ffffff 100%);
+  border: 1px solid var(--feature-soft);
+  background: linear-gradient(135deg, var(--feature-surface) 0%, #ffffff 100%);
 }
 
 .meta-card span,
@@ -604,6 +604,15 @@ const handlePasswordSubmit = async () => {
   width: 100%;
   min-height: 48px;
   border-radius: 18px;
+}
+
+.action-warning {
+  background: var(--feature-primary) !important;
+  opacity: 0.85;
+}
+
+.action-warning:hover {
+  opacity: 1;
 }
 
 .hero-actions :deep(.el-button + .el-button) {
@@ -655,8 +664,8 @@ const handlePasswordSubmit = async () => {
   align-items: center;
   padding: 10px 16px;
   border-radius: 999px;
-  background: #effcf9;
-  color: #0f766e;
+  background: var(--feature-soft);
+  color: var(--feature-primary);
   font-size: 13px;
 }
 
@@ -703,8 +712,8 @@ const handlePasswordSubmit = async () => {
 .info-item {
   padding: 18px;
   border-radius: 18px;
-  background: #f7fffd;
-  border: 1px solid rgba(15, 118, 110, 0.08);
+  background: var(--feature-surface);
+  border: 1px solid var(--feature-soft);
 }
 
 .info-item strong {
@@ -720,12 +729,9 @@ const handlePasswordSubmit = async () => {
   gap: 14px;
 }
 
-.security-card :deep(.el-button--warning) {
-  color: #ffffff;
-}
-
-.hero-actions :deep(.el-button--warning) {
-  color: #ffffff;
+.security-action-btn {
+  background: var(--feature-primary) !important;
+  border-color: var(--feature-primary) !important;
 }
 
 .profile-dialog {
@@ -754,8 +760,8 @@ const handlePasswordSubmit = async () => {
   align-items: center;
   gap: 12px;
   padding: 24px 32px;
-  background: linear-gradient(135deg, #dffcf6 0%, #ecfffb 100%);
-  border-bottom: 1px solid rgba(15, 118, 110, 0.1);
+  background: linear-gradient(135deg, var(--feature-surface) 0%, var(--feature-soft) 100%);
+  border-bottom: 1px solid var(--feature-soft);
 }
 
 .warning-header {
@@ -769,8 +775,8 @@ const handlePasswordSubmit = async () => {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: rgba(15, 118, 110, 0.12);
-  color: #0f766e;
+  background: var(--feature-soft);
+  color: var(--feature-primary);
   font-weight: 700;
 }
 
@@ -826,8 +832,8 @@ const handlePasswordSubmit = async () => {
   height: 100px;
   border-radius: 28px;
   overflow: hidden;
-  background: linear-gradient(135deg, #dffcf6 0%, #ecfffb 100%);
-  box-shadow: 0 10px 24px rgba(15, 118, 110, 0.16);
+  background: linear-gradient(135deg, var(--feature-surface) 0%, var(--feature-soft) 100%);
+  box-shadow: 0 10px 24px var(--feature-glow);
   flex-shrink: 0;
 }
 
@@ -845,7 +851,7 @@ const handlePasswordSubmit = async () => {
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #0f766e;
+  color: var(--feature-primary);
   font-size: 38px;
   font-weight: 700;
 }

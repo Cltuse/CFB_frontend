@@ -262,6 +262,11 @@ import { computed, onMounted, reactive, ref } from 'vue'
 import { ElMessage } from 'element-plus'
 import { Search } from '@element-plus/icons-vue'
 import { reservationAPI } from '../../api'
+import { buildFeatureVars, getRoleTheme } from '../../utils/featureTheme'
+
+const userInfo = JSON.parse(localStorage.getItem('userInfo') || '{}')
+const theme = getRoleTheme(userInfo.role || 'maintainer')
+const featureVars = buildFeatureVars(theme)
 
 const tabs = [
   { label: '待审核', value: 'PENDING' },
@@ -497,15 +502,11 @@ const resolveApiError = (error, fallback) =>
 
 <style scoped>
 .reservation-theme {
-  --theme-main: #7c3aed;
-  --theme-soft: rgba(124, 58, 237, 0.12);
-  --theme-border: rgba(124, 58, 237, 0.12);
-  --theme-shadow: rgba(124, 58, 237, 0.14);
   padding: 24px;
   min-height: 100%;
   background:
-    radial-gradient(circle at top left, rgba(192, 132, 252, 0.2), transparent 28%),
-    linear-gradient(180deg, #faf7ff 0%, #fcfbff 46%, #f6f2ff 100%);
+    radial-gradient(circle at top left, var(--feature-soft), transparent 28%),
+    linear-gradient(180deg, var(--layout-shell-top) 0%, var(--layout-shell-bottom) 100%);
 }
 
 .page-hero,
@@ -521,8 +522,8 @@ const resolveApiError = (error, fallback) =>
   padding: 28px;
   border-radius: 28px;
   background: rgba(255, 255, 255, 0.86);
-  border: 1px solid var(--theme-border);
-  box-shadow: 0 24px 60px var(--theme-shadow);
+  border: 1px solid var(--feature-soft);
+  box-shadow: 0 24px 60px var(--feature-glow);
 }
 
 .eyebrow {
@@ -532,14 +533,12 @@ const resolveApiError = (error, fallback) =>
   min-height: 32px;
   padding: 6px 14px;
   border-radius: 999px;
-  border: 1px solid rgba(124, 58, 237, 0.14);
-  background: linear-gradient(135deg, rgba(124, 58, 237, 0.12), rgba(255, 255, 255, 0.92));
-  color: var(--theme-main);
+  background: var(--feature-soft);
+  color: var(--feature-primary);
   font-size: 12px;
   font-weight: 700;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  box-shadow: 0 10px 24px rgba(124, 58, 237, 0.1);
 }
 
 .hero-copy h1 {
@@ -572,12 +571,12 @@ const resolveApiError = (error, fallback) =>
 .mini-card {
   padding: 18px 20px;
   border-radius: 22px;
-  border: 1px solid var(--theme-border);
-  background: linear-gradient(135deg, #f7f0ff 0%, #ffffff 100%);
+  border: 1px solid var(--feature-soft);
+  background: linear-gradient(135deg, var(--feature-surface) 0%, #ffffff 100%);
 }
 
 .highlight-card {
-  box-shadow: 0 12px 28px rgba(124, 58, 237, 0.08);
+  box-shadow: 0 12px 28px var(--feature-glow);
 }
 
 .highlight-card span,
@@ -590,7 +589,7 @@ const resolveApiError = (error, fallback) =>
 .highlight-card small {
   display: block;
   margin-top: 8px;
-  color: #8b5cf6;
+  color: var(--feature-primary);
   font-size: 12px;
 }
 
@@ -598,7 +597,7 @@ const resolveApiError = (error, fallback) =>
 .mini-card strong {
   display: block;
   margin-top: 10px;
-  color: #2e1065;
+  color: #0f172a;
   font-size: 26px;
 }
 
@@ -614,7 +613,7 @@ const resolveApiError = (error, fallback) =>
 
 .mini-card {
   min-height: 118px;
-  box-shadow: 0 12px 28px rgba(124, 58, 237, 0.08);
+  box-shadow: 0 12px 28px var(--feature-glow);
 }
 
 .summary-grid {
@@ -669,7 +668,7 @@ const resolveApiError = (error, fallback) =>
 .panel-header h2 {
   margin: 0;
   font-size: 20px;
-  color: #24104c;
+  color: #0f172a;
 }
 
 .control-copy p,
@@ -691,7 +690,7 @@ const resolveApiError = (error, fallback) =>
   gap: 8px;
   padding: 6px;
   border-radius: 18px;
-  background: #f7f0ff;
+  background: var(--feature-soft);
   flex-wrap: wrap;
   justify-content: flex-end;
 }
@@ -701,15 +700,15 @@ const resolveApiError = (error, fallback) =>
   border: none;
   border-radius: 14px;
   background: transparent;
-  color: #6b4ba6;
+  color: var(--feature-primary);
   cursor: pointer;
   transition: all 0.25s ease;
 }
 
 .filter-chip.active {
   background: #ffffff;
-  color: #6d28d9;
-  box-shadow: 0 8px 18px rgba(124, 58, 237, 0.14);
+  color: var(--feature-primary);
+  box-shadow: 0 8px 18px var(--feature-glow);
 }
 
 .search-group {
@@ -751,8 +750,8 @@ const resolveApiError = (error, fallback) =>
   display: flex;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(135deg, #efe7ff 0%, #f8f4ff 100%);
-  color: #6d28d9;
+  background: linear-gradient(135deg, var(--feature-surface) 0%, var(--feature-soft) 100%);
+  color: var(--feature-primary);
   font-weight: 700;
   flex-shrink: 0;
 }
@@ -792,7 +791,7 @@ const resolveApiError = (error, fallback) =>
 .detail-item {
   padding: 16px;
   border-radius: 18px;
-  background: #f8f3ff;
+  background: var(--feature-surface);
 }
 
 .detail-item.full {
@@ -817,7 +816,7 @@ const resolveApiError = (error, fallback) =>
   padding: 16px;
   margin-bottom: 12px;
   border-radius: 18px;
-  background: #f8f3ff;
+  background: var(--feature-surface);
 }
 
 .verify-panel p {

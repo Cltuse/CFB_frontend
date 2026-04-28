@@ -1,5 +1,5 @@
 <template>
-  <div class="facility-page">
+  <div class="facility-page" :style="themeVars">
     <section class="page-hero">
       <div class="hero-copy">
         <span class="hero-eyebrow">Facility Management</span>
@@ -405,6 +405,11 @@ import {
   Upload
 } from '@element-plus/icons-vue';
 import { facilityAPI, facilityCategoryAPI, fileAPI, userAPI } from '../../api';
+import { buildFeatureVars, getRoleTheme } from '../../utils/featureTheme';
+
+const themeVars = computed(() => ({
+  ...buildFeatureVars(getRoleTheme('admin'))
+}));
 
 const loading = ref(false);
 const dialogVisible = ref(false);
@@ -858,11 +863,11 @@ function releasePreviewUrl(url) {
 
 <style scoped>
 .facility-page {
-  --theme-main: #69b6c4;
-  --theme-deep: #3f8692;
-  --theme-soft: rgba(186, 231, 238, 0.34);
-  --theme-border: rgba(105, 182, 196, 0.16);
-  --theme-shadow: rgba(32, 80, 88, 0.08);
+  --theme-main: var(--feature-primary);
+  --theme-deep: var(--feature-strong);
+  --theme-soft: var(--feature-soft);
+  --theme-border: var(--feature-border);
+  --theme-shadow: var(--feature-glow);
   min-height: 100%;
   display: grid;
   gap: 20px;

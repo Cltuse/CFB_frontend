@@ -263,38 +263,38 @@ onMounted(() => {
 
 <style scoped>
 .welcome-page {
-  --page-primary: #53c2b1;
+  --page-primary: #f5b7c0;
   min-height: 100%;
   display: grid;
   gap: 20px;
   background:
-    radial-gradient(circle at top left, rgba(159, 233, 213, 0.32), transparent 28%),
-    radial-gradient(circle at right center, rgba(255, 215, 122, 0.18), transparent 20%),
-    linear-gradient(180deg, #f7fffc 0%, #fffef8 100%);
+    radial-gradient(circle at top left, rgba(245, 183, 192, 0.32), transparent 28%),
+    radial-gradient(circle at right center, rgba(252, 228, 232, 0.48), transparent 20%),
+    linear-gradient(180deg, #fffafb 0%, #fffdfd 100%);
 }
 
 .welcome-hero,
 .feature-card,
 .recommend-shell {
   border-radius: 30px;
-  border: 1px solid rgba(83, 194, 177, 0.14);
+  border: 1px solid rgba(245, 183, 192, 0.14);
   background: rgba(255, 255, 255, 0.94);
-  box-shadow: 0 20px 44px rgba(19, 49, 44, 0.06);
+  box-shadow: 0 20px 44px rgba(94, 52, 62, 0.06);
 }
 
 .welcome-hero {
   padding: 30px;
   background:
-    radial-gradient(circle at top right, rgba(255, 215, 122, 0.18), transparent 24%),
-    linear-gradient(145deg, rgba(159, 233, 213, 0.18) 0%, #ffffff 62%);
+    radial-gradient(circle at top right, rgba(252, 228, 232, 0.48), transparent 24%),
+    linear-gradient(145deg, rgba(245, 183, 192, 0.18) 0%, #ffffff 62%);
 }
 
 .hero-kicker {
   display: inline-flex;
   padding: 6px 12px;
   border-radius: 999px;
-  background: rgba(83, 194, 177, 0.14);
-  color: #237c70;
+  background: rgba(245, 183, 192, 0.14);
+  color: #c4677a;
   font-size: 12px;
   font-weight: 600;
   letter-spacing: 0.08em;
@@ -303,12 +303,12 @@ onMounted(() => {
 .hero-copy h1 {
   margin: 16px 0 12px;
   font-size: 36px;
-  color: #17453f;
+  color: #7a4052;
 }
 
 .hero-copy p {
   margin: 0;
-  color: #5f7c77;
+  color: #8a6a76;
   line-height: 1.8;
 }
 
@@ -328,15 +328,15 @@ onMounted(() => {
 
 .primary-btn {
   border: none;
-  background: linear-gradient(135deg, #53c2b1 0%, #2f9f8d 100%);
-  box-shadow: 0 14px 28px rgba(47, 159, 141, 0.2);
+  background: linear-gradient(135deg, #f5b7c0 0%, #e8909d 100%);
+  box-shadow: 0 14px 28px rgba(232, 144, 157, 0.2);
 }
 
 .secondary-btn,
 .refresh-btn {
-  border: 1px solid rgba(83, 194, 177, 0.18);
+  border: 1px solid rgba(245, 183, 192, 0.18);
   background: rgba(255, 255, 255, 0.86);
-  color: #2f7067;
+  color: #c4677a;
 }
 
 .content-grid {
@@ -362,20 +362,20 @@ onMounted(() => {
 .card-head h2,
 .recommend-head h2 {
   margin: 0;
-  color: #183f39;
+  color: #7a4052;
 }
 
 .card-head p,
 .recommend-head p {
   margin: 8px 0 0;
-  color: #6b827d;
+  color: #8e717b;
   line-height: 1.7;
 }
 
 .weather-card {
   background:
-    radial-gradient(circle at top right, rgba(255, 215, 122, 0.16), transparent 22%),
-    linear-gradient(155deg, rgba(159, 233, 213, 0.14) 0%, #ffffff 64%);
+    radial-gradient(circle at top right, rgba(252, 228, 232, 0.48), transparent 22%),
+    linear-gradient(155deg, rgba(245, 183, 192, 0.14) 0%, #ffffff 64%);
 }
 
 .weather-layout {
@@ -389,7 +389,7 @@ onMounted(() => {
   padding: 22px;
   border-radius: 24px;
   background: rgba(255, 255, 255, 0.76);
-  border: 1px solid rgba(83, 194, 177, 0.16);
+  border: 1px solid rgba(245, 183, 192, 0.16);
   display: grid;
   justify-items: center;
   gap: 10px;
@@ -410,11 +410,11 @@ onMounted(() => {
 
 .weather-visual strong {
   font-size: 30px;
-  color: #194741;
+  color: #7a4052;
 }
 
 .weather-type {
-  color: #6b827e;
+  color: #8e717b;
 }
 
 .weather-content {
@@ -428,15 +428,15 @@ onMounted(() => {
   gap: 16px;
   padding: 14px 16px;
   border-radius: 18px;
-  background: #f8fffd;
+  background: #fef8f9;
 }
 
 .weather-row label {
-  color: #6d827e;
+  color: #8e717b;
 }
 
 .weather-row span {
-  color: #214f48;
+  color: #c4677a;
   font-weight: 600;
 }
 
@@ -444,8 +444,8 @@ onMounted(() => {
   margin: 0;
   padding: 18px;
   border-radius: 20px;
-  background: rgba(255, 247, 224, 0.62);
-  color: #6f6752;
+  background: rgba(245, 183, 192, 0.12);
+  color: #8a6a76;
   line-height: 1.8;
 }
 
@@ -459,9 +459,9 @@ onMounted(() => {
   appearance: none;
   width: 100%;
   padding: 18px;
-  border: 1px solid rgba(83, 194, 177, 0.14);
+  border: 1px solid rgba(245, 183, 192, 0.14);
   border-radius: 22px;
-  background: linear-gradient(145deg, rgba(255, 255, 255, 0.96), rgba(249, 255, 253, 0.98));
+  background: linear-gradient(145deg, rgba(255, 255, 255, 0.96), rgba(254, 248, 249, 0.98));
   display: flex;
   gap: 14px;
   align-items: center;
@@ -474,7 +474,7 @@ onMounted(() => {
 
 .quick-action:hover {
   transform: translateY(-3px);
-  box-shadow: 0 18px 28px rgba(19, 49, 44, 0.08);
+  box-shadow: 0 18px 28px rgba(94, 52, 62, 0.08);
 }
 
 .quick-action-badge {
@@ -489,23 +489,23 @@ onMounted(() => {
 }
 
 .quick-action-badge.mint {
-  background: rgba(159, 233, 213, 0.38);
-  color: #2d8e80;
+  background: rgba(245, 183, 192, 0.38);
+  color: #c4677a;
 }
 
 .quick-action-badge.sky {
-  background: rgba(172, 224, 255, 0.34);
-  color: #3a78be;
+  background: rgba(245, 183, 192, 0.24);
+  color: #c4677a;
 }
 
 .quick-action-badge.peach {
-  background: rgba(255, 202, 173, 0.34);
-  color: #c96a4d;
+  background: rgba(245, 183, 192, 0.34);
+  color: #d4768a;
 }
 
 .quick-action-badge.gold {
-  background: rgba(255, 226, 152, 0.38);
-  color: #ab7b18;
+  background: rgba(245, 183, 192, 0.28);
+  color: #c4677a;
 }
 
 .quick-action-copy {
@@ -515,18 +515,18 @@ onMounted(() => {
 
 .quick-action-copy strong {
   display: block;
-  color: #1b4640;
+  color: #7a4052;
   font-size: 16px;
 }
 
 .quick-action-copy p {
   margin: 6px 0 0;
-  color: #738a84;
+  color: #8e717b;
   line-height: 1.6;
 }
 
 .quick-action-arrow {
-  color: #5d8f86;
+  color: #c4677a;
   font-size: 18px;
   font-weight: 700;
 }
@@ -564,13 +564,13 @@ onMounted(() => {
 </style>
 <style scoped>
 .welcome-page {
-  --theme-deep: #2f9f8d;
-  --theme-border: rgba(83, 194, 177, 0.16);
-  --theme-shadow: rgba(19, 49, 44, 0.08);
+  --theme-deep: #e8909d;
+  --theme-border: rgba(245, 183, 192, 0.16);
+  --theme-shadow: rgba(94, 52, 62, 0.08);
   background:
-    radial-gradient(circle at top left, rgba(159, 233, 213, 0.38), transparent 28%),
-    radial-gradient(circle at right center, rgba(255, 223, 146, 0.24), transparent 20%),
-    linear-gradient(180deg, #f7fffc 0%, #fffef8 100%);
+    radial-gradient(circle at top left, rgba(245, 183, 192, 0.38), transparent 28%),
+    radial-gradient(circle at right center, rgba(252, 228, 232, 0.48), transparent 20%),
+    linear-gradient(180deg, #fffafb 0%, #fffdfd 100%);
 }
 
 .welcome-hero,
@@ -584,14 +584,14 @@ onMounted(() => {
 
 .welcome-hero {
   background:
-    radial-gradient(circle at top right, rgba(255, 223, 146, 0.22), transparent 24%),
-    linear-gradient(145deg, rgba(239, 253, 248, 0.96) 0%, #ffffff 62%);
+    radial-gradient(circle at top right, rgba(252, 228, 232, 0.48), transparent 24%),
+    linear-gradient(145deg, rgba(254, 248, 249, 0.96) 0%, #ffffff 62%);
 }
 
 .weather-card {
   background:
-    radial-gradient(circle at top right, rgba(255, 223, 146, 0.18), transparent 22%),
-    linear-gradient(155deg, rgba(239, 253, 248, 0.96) 0%, #ffffff 64%);
+    radial-gradient(circle at top right, rgba(252, 228, 232, 0.48), transparent 22%),
+    linear-gradient(155deg, rgba(254, 248, 249, 0.96) 0%, #ffffff 64%);
 }
 
 .quick-action {
@@ -599,7 +599,7 @@ onMounted(() => {
 }
 
 .quick-action:hover {
-  box-shadow: 0 18px 30px rgba(19, 49, 44, 0.1);
+  box-shadow: 0 18px 30px rgba(94, 52, 62, 0.1);
 }
 
 @keyframes welcome-rise {

@@ -1,5 +1,5 @@
 <template>
-  <div class="violation-records-page">
+  <div class="violation-records-page" :style="themeVars">
     <section class="page-hero">
       <div class="hero-copy">
         <span class="hero-eyebrow">Violation Records</span>
@@ -401,6 +401,11 @@ import {
 } from '@element-plus/icons-vue';
 import { formatDateTime } from '@/utils/date';
 import { userAPI, violationAPI } from '../../api';
+import { buildFeatureVars, getRoleTheme } from '../../utils/featureTheme';
+
+const themeVars = computed(() => ({
+  ...buildFeatureVars(getRoleTheme('admin'))
+}));
 
 const violationList = ref([]);
 const currentViolation = ref(null);
@@ -685,8 +690,18 @@ function getStatusText(status) {
 
 <style scoped>
 .violation-records-page {
+  --theme-main: var(--feature-primary);
+  --theme-deep: var(--feature-strong);
+  --theme-soft: var(--feature-soft);
+  --theme-border: var(--feature-border);
+  --theme-shadow: var(--feature-glow);
+  min-height: 100%;
   display: grid;
   gap: 20px;
+  background:
+    radial-gradient(circle at top left, rgba(226, 236, 249, 0.72), transparent 26%),
+    radial-gradient(circle at right center, rgba(240, 249, 252, 0.92), transparent 24%),
+    linear-gradient(180deg, #f9fbff 0%, #f5f8fd 48%, #f3f7fc 100%);
   color: #22364b;
 }
 
@@ -697,10 +712,11 @@ function getStatusText(status) {
 .detail-card,
 .detail-panel,
 .link-card {
+  animation: admin-violation-rise 0.55s ease both;
   border-radius: 28px;
-  border: 1px solid rgba(122, 157, 198, 0.18);
-  background: rgba(255, 255, 255, 0.94);
-  box-shadow: 0 18px 40px rgba(30, 41, 59, 0.06);
+  border: 1px solid var(--theme-border);
+  background: rgba(255, 255, 255, 0.95);
+  box-shadow: 0 22px 50px var(--theme-shadow);
 }
 
 .page-hero {
@@ -709,8 +725,15 @@ function getStatusText(status) {
   gap: 18px;
   padding: 28px;
   background:
-    radial-gradient(circle at top right, rgba(255, 214, 170, 0.28), transparent 28%),
-    linear-gradient(145deg, #fffaf6 0%, #ffffff 62%);
+    radial-gradient(circle at top right, var(--theme-soft), transparent 30%),
+    linear-gradient(145deg, rgba(240, 249, 252, 0.98) 0%, #ffffff 62%);
+}
+
+.stat-card {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+  padding: 22px;
 }
 
 .hero-eyebrow {
@@ -718,8 +741,8 @@ function getStatusText(status) {
   align-items: center;
   padding: 6px 12px;
   border-radius: 999px;
-  background: rgba(251, 191, 114, 0.16);
-  color: #c6751a;
+  background: rgba(200, 216, 240, 0.24);
+  color: #4b6f99;
   font-size: 12px;
   font-weight: 600;
   letter-spacing: 0.08em;
@@ -729,7 +752,7 @@ function getStatusText(status) {
 .section-copy h2,
 .dialog-hero-copy h2 {
   margin: 14px 0 10px;
-  color: #19324d;
+  color: #17314d;
 }
 
 .hero-copy h1 {
@@ -740,7 +763,7 @@ function getStatusText(status) {
 .section-copy p,
 .dialog-hero-copy p {
   margin: 0;
-  color: #6a7b92;
+  color: #67778f;
   line-height: 1.8;
 }
 
@@ -772,14 +795,14 @@ function getStatusText(status) {
 
 .primary-btn {
   border: none;
-  background: linear-gradient(135deg, #6c93be 0%, #5278a5 100%);
-  box-shadow: 0 12px 24px rgba(82, 120, 165, 0.18);
+  background: linear-gradient(135deg, var(--feature-primary) 0%, var(--feature-strong) 100%);
+  box-shadow: 0 12px 24px rgba(63, 134, 146, 0.18);
 }
 
 .secondary-btn {
-  border: 1px solid rgba(132, 165, 205, 0.22);
+  border: 1px solid var(--feature-border);
   background: rgba(255, 255, 255, 0.86);
-  color: #4d6788;
+  color: #5b7a96;
 }
 
 .success-solid-btn {
@@ -802,8 +825,8 @@ function getStatusText(status) {
 .hero-note {
   padding: 22px;
   border-radius: 24px;
-  border: 1px solid rgba(132, 165, 205, 0.14);
-  background: linear-gradient(180deg, #fff9f2 0%, #ffffff 100%);
+  border: 1px solid var(--theme-border);
+  background: linear-gradient(180deg, #f8fbff 0%, #ffffff 100%);
 }
 
 .hero-note span,
@@ -813,7 +836,7 @@ function getStatusText(status) {
 .meta-chip,
 .detail-card span,
 .link-card span {
-  color: #74839a;
+  color: #72839b;
 }
 
 .hero-note strong,
@@ -822,7 +845,7 @@ function getStatusText(status) {
 .link-card strong,
 .penalty-text,
 .user-copy strong {
-  color: #18314d;
+  color: #17314d;
 }
 
 .hero-note strong {
@@ -835,13 +858,6 @@ function getStatusText(status) {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 16px;
-}
-
-.stat-card {
-  display: flex;
-  gap: 16px;
-  align-items: center;
-  padding: 22px;
 }
 
 .stat-icon {
@@ -910,13 +926,15 @@ function getStatusText(status) {
 .meta-chip {
   padding: 8px 12px;
   border-radius: 999px;
-  background: rgba(174, 198, 227, 0.22);
+  background: rgba(200, 216, 240, 0.24);
+  color: #5579a4;
   font-size: 12px;
   font-weight: 600;
 }
 
 .muted-chip {
-  background: rgba(240, 245, 251, 0.94);
+  background: rgba(244, 249, 252, 0.96);
+  color: #72839b;
 }
 
 .user-cell {
@@ -946,7 +964,7 @@ function getStatusText(status) {
 .user-copy small,
 .info-stack small,
 .description-cell {
-  color: #71829a;
+  color: #67778f;
   font-size: 13px;
   line-height: 1.6;
 }
@@ -957,8 +975,8 @@ function getStatusText(status) {
 
 .soft-tag {
   border: none;
-  background: rgba(174, 198, 227, 0.24);
-  color: #557aa4;
+  background: rgba(200, 216, 240, 0.24);
+  color: #5579a4;
 }
 
 .status-tag {
@@ -973,9 +991,9 @@ function getStatusText(status) {
 .action-btn {
   min-height: 36px;
   border-radius: 999px;
-  border: 1px solid rgba(132, 165, 205, 0.22);
+  border: 1px solid var(--feature-border);
   background: rgba(255, 255, 255, 0.88);
-  color: #587aa4;
+  color: #5579a4;
 }
 
 .success-btn {
@@ -1015,9 +1033,9 @@ function getStatusText(status) {
   gap: 18px;
   padding: 24px;
   background:
-    radial-gradient(circle at top right, rgba(255, 214, 170, 0.3), transparent 28%),
-    linear-gradient(145deg, #fff9f4 0%, #ffffff 100%);
-  border-bottom: 1px solid rgba(132, 165, 205, 0.14);
+    radial-gradient(circle at top right, var(--theme-soft), transparent 30%),
+    linear-gradient(145deg, rgba(240, 249, 252, 0.96) 0%, #ffffff 100%);
+  border-bottom: 1px solid var(--theme-border);
 }
 
 .detail-layout {
@@ -1099,7 +1117,7 @@ function getStatusText(status) {
   border-radius: 14px;
   background: #f9fbff;
   box-shadow: none;
-  border: 1px solid rgba(132, 165, 205, 0.2);
+  border: 1px solid var(--feature-border);
 }
 
 .violation-records-page :deep(.el-table) {
@@ -1112,6 +1130,11 @@ function getStatusText(status) {
 
 .violation-table :deep(.el-table__row) {
   cursor: pointer;
+}
+
+@keyframes admin-violation-rise {
+  from { opacity: 0; transform: translateY(16px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
 @media (max-width: 1180px) {
@@ -1167,43 +1190,5 @@ function getStatusText(status) {
   .row-actions {
     justify-content: center;
   }
-}
-</style>
-<style scoped>
-.violation-records-page {
-  --theme-main: #f09782;
-  --theme-deep: #d86d59;
-  --theme-soft: rgba(255, 213, 205, 0.28);
-  --theme-border: rgba(240, 151, 130, 0.16);
-  --theme-shadow: rgba(95, 46, 36, 0.08);
-  min-height: 100%;
-  background:
-    radial-gradient(circle at top left, rgba(255, 228, 222, 0.76), transparent 26%),
-    radial-gradient(circle at right center, rgba(255, 246, 244, 0.92), transparent 24%),
-    linear-gradient(180deg, #fffaf8 0%, #fff7f5 48%, #fff4f2 100%);
-}
-
-.page-hero,
-.stat-card,
-.control-card,
-.panel-card {
-  animation: admin-violation-rise 0.55s ease both;
-  border-color: var(--theme-border);
-  box-shadow: 0 22px 50px var(--theme-shadow);
-}
-
-.page-hero {
-  background:
-    radial-gradient(circle at top right, var(--theme-soft), transparent 30%),
-    linear-gradient(145deg, rgba(255, 246, 244, 0.96) 0%, #ffffff 62%);
-}
-
-.stat-card {
-  border-radius: 24px;
-}
-
-@keyframes admin-violation-rise {
-  from { opacity: 0; transform: translateY(16px); }
-  to { opacity: 1; transform: translateY(0); }
 }
 </style>

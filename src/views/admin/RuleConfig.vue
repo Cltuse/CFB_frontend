@@ -1,5 +1,5 @@
 <template>
-  <div class="rule-config-page">
+  <div class="rule-config-page" :style="themeVars">
     <section class="page-hero">
       <div class="hero-copy">
         <span class="hero-eyebrow">Rule Config</span>
@@ -238,8 +238,8 @@
 
       <template #footer>
         <div class="dialog-footer">
-          <el-button @click="dialogVisible = false">取消</el-button>
-          <el-button type="primary" @click="handleSubmit" :loading="submitLoading">保存</el-button>
+          <el-button class="secondary-btn" @click="dialogVisible = false">取消</el-button>
+          <el-button type="primary" class="primary-btn" @click="handleSubmit" :loading="submitLoading">保存</el-button>
         </div>
       </template>
     </el-dialog>
@@ -282,8 +282,13 @@
 <script setup>
 import { computed, onMounted, ref } from 'vue';
 import { ElMessage } from 'element-plus';
-import { Plus, Refresh, Edit, Clock, Search } from '@element-plus/icons-vue';
+import { Clock, Edit, Search } from '@element-plus/icons-vue';
 import { adminAPI, facilityCategoryAPI } from '../../api';
+import { buildFeatureVars, getRoleTheme } from '../../utils/featureTheme';
+
+const themeVars = computed(() => ({
+  ...buildFeatureVars(getRoleTheme('admin'))
+}));
 
 const loading = ref(false);
 const submitLoading = ref(false);
@@ -445,18 +450,18 @@ onMounted(() => {
 
 <style scoped>
 .rule-config-page {
-  --theme-main: #f0b36f;
-  --theme-deep: #cb8840;
-  --theme-soft: rgba(255, 225, 181, 0.28);
-  --theme-border: rgba(240, 179, 111, 0.16);
-  --theme-shadow: rgba(95, 66, 27, 0.08);
+  --theme-main: var(--feature-primary);
+  --theme-deep: var(--feature-strong);
+  --theme-soft: var(--feature-soft);
+  --theme-border: var(--feature-border);
+  --theme-shadow: var(--feature-glow);
   min-height: 100%;
   display: grid;
   gap: 20px;
   background:
-    radial-gradient(circle at top left, rgba(255, 238, 211, 0.76), transparent 26%),
-    radial-gradient(circle at right center, rgba(255, 248, 238, 0.92), transparent 24%),
-    linear-gradient(180deg, #fffbf8 0%, #fff8f3 48%, #fff5ef 100%);
+    radial-gradient(circle at top left, rgba(226, 236, 249, 0.72), transparent 26%),
+    radial-gradient(circle at right center, rgba(240, 249, 252, 0.92), transparent 24%),
+    linear-gradient(180deg, #f9fbff 0%, #f5f8fd 48%, #f3f7fc 100%);
 }
 
 .page-hero,
@@ -483,7 +488,7 @@ onMounted(() => {
   padding: 30px;
   background:
     radial-gradient(circle at top right, var(--theme-soft), transparent 30%),
-    linear-gradient(145deg, rgba(255, 249, 238, 0.96) 0%, #ffffff 62%);
+    linear-gradient(145deg, rgba(240, 249, 252, 0.98) 0%, #ffffff 62%);
 }
 
 .hero-eyebrow {
@@ -491,8 +496,8 @@ onMounted(() => {
   align-items: center;
   padding: 6px 12px;
   border-radius: 999px;
-  background: rgba(255, 225, 181, 0.24);
-  color: #9a6d2d;
+  background: rgba(200, 216, 240, 0.24);
+  color: #4b6f99;
   font-size: 12px;
   font-weight: 600;
   letter-spacing: 0.08em;
@@ -501,7 +506,7 @@ onMounted(() => {
 .hero-copy h1,
 .section-copy h2 {
   margin: 14px 0 10px;
-  color: #62431f;
+  color: #17314d;
 }
 
 .hero-copy h1 {
@@ -511,7 +516,7 @@ onMounted(() => {
 .hero-copy p,
 .section-copy p {
   margin: 0;
-  color: #917657;
+  color: #67778f;
   line-height: 1.8;
 }
 
@@ -539,14 +544,14 @@ onMounted(() => {
 
 .primary-btn {
   border: none;
-  background: linear-gradient(135deg, #f0b36f 0%, #cb8840 100%);
-  box-shadow: 0 14px 28px rgba(203, 136, 64, 0.22);
+  background: linear-gradient(135deg, var(--feature-primary) 0%, var(--feature-strong) 100%);
+  box-shadow: 0 14px 28px rgba(63, 134, 146, 0.22);
 }
 
 .secondary-btn {
-  border: 1px solid rgba(240, 179, 111, 0.22);
+  border: 1px solid var(--feature-border);
   background: rgba(255, 255, 255, 0.9);
-  color: #8f7557;
+  color: #5b7a96;
 }
 
 .hero-side {
@@ -557,19 +562,19 @@ onMounted(() => {
 .hero-note {
   min-height: 132px;
   padding: 22px;
-  background: linear-gradient(180deg, #fffaf4 0%, #ffffff 100%);
+  background: linear-gradient(180deg, #f8fbff 0%, #ffffff 100%);
 }
 
 .hero-note span,
 .hero-note small,
 .summary-label,
 .summary-card p {
-  color: #977c5b;
+  color: #72839b;
 }
 
 .hero-note strong,
 .summary-card strong {
-  color: #654621;
+  color: #17314d;
 }
 
 .hero-note strong {
@@ -587,9 +592,9 @@ onMounted(() => {
 .summary-card {
   padding: 22px;
   border-radius: 24px;
-  border: 1px solid rgba(240, 179, 111, 0.14);
-  background: linear-gradient(150deg, rgba(255, 249, 238, 0.96) 0%, #ffffff 84%);
-  box-shadow: 0 18px 40px rgba(95, 66, 27, 0.06);
+  border: 1px solid var(--theme-border);
+  background: linear-gradient(150deg, rgba(240, 249, 252, 0.96) 0%, #ffffff 84%);
+  box-shadow: 0 18px 40px rgba(30, 41, 59, 0.06);
 }
 
 .summary-card strong {
@@ -616,8 +621,8 @@ onMounted(() => {
   min-height: 46px;
   border-radius: 16px;
   box-shadow: none;
-  border: 1px solid rgba(240, 179, 111, 0.2);
-  background: #fffbf8;
+  border: 1px solid var(--feature-border);
+  background: #f9fbff;
 }
 
 .panel-head {
@@ -630,20 +635,20 @@ onMounted(() => {
 .meta-chip {
   padding: 8px 12px;
   border-radius: 999px;
-  background: rgba(255, 225, 181, 0.26);
-  color: #9a6d2d;
+  background: rgba(200, 216, 240, 0.24);
+  color: #5579a4;
   font-size: 12px;
   font-weight: 600;
 }
 
 .muted-chip {
-  background: rgba(248, 243, 236, 0.96);
-  color: #92795b;
+  background: rgba(244, 249, 252, 0.96);
+  color: #72839b;
 }
 
 .rule-table :deep(.el-table) {
-  --el-table-border-color: rgba(240, 179, 111, 0.12);
-  --el-table-row-hover-bg-color: rgba(255, 249, 240, 0.95);
+  --el-table-border-color: rgba(132, 165, 205, 0.12);
+  --el-table-row-hover-bg-color: rgba(243, 250, 252, 0.95);
   border-radius: 20px;
 }
 
@@ -653,8 +658,8 @@ onMounted(() => {
 }
 
 .rule-table :deep(.el-table__header-wrapper th.el-table__cell) {
-  background: linear-gradient(180deg, #fffaf6 0%, #fdf1e2 100%) !important;
-  color: #6b4a22;
+  background: linear-gradient(180deg, #f6fbfe 0%, #eef5fc 100%) !important;
+  color: #225368;
 }
 
 .rule-action-btn {
@@ -664,9 +669,9 @@ onMounted(() => {
 }
 
 .edit-action-btn {
-  color: #8b5b1b;
-  border-color: rgba(240, 179, 111, 0.22);
-  background: rgba(255, 249, 238, 0.96);
+  color: #5579a4;
+  border-color: rgba(132, 165, 205, 0.24);
+  background: rgba(243, 250, 252, 0.96);
 }
 
 .history-action-btn {
@@ -678,7 +683,7 @@ onMounted(() => {
 .form-tip {
   margin-top: 4px;
   font-size: 12px;
-  color: #9b8367;
+  color: #72839b;
   line-height: 1.4;
 }
 
@@ -694,8 +699,8 @@ onMounted(() => {
 .rule-dialog :deep(.el-input-number .el-input__wrapper) {
   border-radius: 14px;
   box-shadow: none;
-  border: 1px solid rgba(240, 179, 111, 0.2);
-  background: #fffbf8;
+  border: 1px solid var(--feature-border);
+  background: #f9fbff;
 }
 
 .dialog-footer {

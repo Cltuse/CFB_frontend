@@ -1,5 +1,5 @@
 <template>
-  <div class="admin-notice-page">
+  <div class="admin-notice-page" :style="themeVars">
     <section class="page-hero">
       <div class="hero-copy">
         <span class="hero-eyebrow">Notice Management</span>
@@ -206,6 +206,11 @@ import { computed, onMounted, reactive, ref } from 'vue';
 import { ElMessage, ElMessageBox } from 'element-plus';
 import { Delete, Edit, Search } from '@element-plus/icons-vue';
 import { noticeAPI } from '../../api';
+import { buildFeatureVars, getRoleTheme } from '../../utils/featureTheme';
+
+const themeVars = computed(() => ({
+  ...buildFeatureVars(getRoleTheme('admin'))
+}));
 
 const loading = ref(false);
 const dialogVisible = ref(false);
@@ -416,18 +421,18 @@ function disabledDate(time) {
 
 <style scoped>
 .admin-notice-page {
-  --theme-main: #73c8cf;
-  --theme-deep: #40979f;
-  --theme-soft: rgba(191, 238, 242, 0.28);
-  --theme-border: rgba(115, 200, 207, 0.16);
-  --theme-shadow: rgba(32, 84, 88, 0.08);
+  --theme-main: var(--feature-primary);
+  --theme-deep: var(--feature-strong);
+  --theme-soft: var(--feature-soft);
+  --theme-border: var(--feature-border);
+  --theme-shadow: var(--feature-glow);
   min-height: 100%;
   display: grid;
   gap: 20px;
   background:
-    radial-gradient(circle at top left, rgba(216, 245, 247, 0.76), transparent 26%),
-    radial-gradient(circle at right center, rgba(240, 252, 253, 0.92), transparent 24%),
-    linear-gradient(180deg, #f8fcfd 0%, #f4fafb 48%, #f1f8fa 100%);
+    radial-gradient(circle at top left, rgba(226, 236, 249, 0.72), transparent 26%),
+    radial-gradient(circle at right center, rgba(240, 249, 252, 0.92), transparent 24%),
+    linear-gradient(180deg, #f9fbff 0%, #f5f8fd 48%, #f3f7fc 100%);
 }
 
 .page-hero,
@@ -454,7 +459,7 @@ function disabledDate(time) {
   padding: 30px;
   background:
     radial-gradient(circle at top right, var(--theme-soft), transparent 30%),
-    linear-gradient(145deg, rgba(241, 252, 253, 0.96) 0%, #ffffff 62%);
+    linear-gradient(145deg, rgba(240, 249, 252, 0.98) 0%, #ffffff 62%);
 }
 
 .hero-eyebrow {
@@ -462,8 +467,8 @@ function disabledDate(time) {
   align-items: center;
   padding: 6px 12px;
   border-radius: 999px;
-  background: rgba(191, 238, 242, 0.24);
-  color: #3e8b93;
+  background: rgba(200, 216, 240, 0.24);
+  color: #4b6f99;
   font-size: 12px;
   font-weight: 600;
   letter-spacing: 0.08em;
@@ -472,7 +477,7 @@ function disabledDate(time) {
 .hero-copy h1,
 .section-copy h2 {
   margin: 14px 0 10px;
-  color: #1e4d53;
+  color: #17314d;
 }
 
 .hero-copy h1 {
@@ -482,7 +487,7 @@ function disabledDate(time) {
 .hero-copy p,
 .section-copy p {
   margin: 0;
-  color: #728d91;
+  color: #67778f;
   line-height: 1.8;
 }
 
@@ -510,14 +515,14 @@ function disabledDate(time) {
 
 .primary-btn {
   border: none;
-  background: linear-gradient(135deg, #73c8cf 0%, #40979f 100%);
-  box-shadow: 0 14px 28px rgba(64, 151, 159, 0.22);
+  background: linear-gradient(135deg, var(--feature-primary) 0%, var(--feature-strong) 100%);
+  box-shadow: 0 14px 28px rgba(63, 134, 146, 0.22);
 }
 
 .secondary-btn {
-  border: 1px solid rgba(115, 200, 207, 0.22);
+  border: 1px solid var(--feature-border);
   background: rgba(255, 255, 255, 0.9);
-  color: #6c888d;
+  color: #5b7a96;
 }
 
 .hero-side {
@@ -528,19 +533,19 @@ function disabledDate(time) {
 .hero-note {
   min-height: 132px;
   padding: 22px;
-  background: linear-gradient(180deg, #f8fdfe 0%, #ffffff 100%);
+  background: linear-gradient(180deg, #f8fbff 0%, #ffffff 100%);
 }
 
 .hero-note span,
 .hero-note small,
 .summary-label,
 .summary-card p {
-  color: #7a9195;
+  color: #72839b;
 }
 
 .hero-note strong,
 .summary-card strong {
-  color: #1f555b;
+  color: #19324e;
 }
 
 .hero-note strong {
@@ -558,9 +563,9 @@ function disabledDate(time) {
 .summary-card {
   padding: 22px;
   border-radius: 24px;
-  border: 1px solid rgba(115, 200, 207, 0.14);
-  background: linear-gradient(150deg, rgba(241, 252, 253, 0.96) 0%, #ffffff 84%);
-  box-shadow: 0 18px 40px rgba(32, 84, 88, 0.06);
+  border: 1px solid var(--feature-border);
+  background: linear-gradient(150deg, rgba(240, 249, 252, 0.96) 0%, #ffffff 84%);
+  box-shadow: 0 18px 40px rgba(30, 41, 59, 0.06);
 }
 
 .summary-card strong {
@@ -592,8 +597,8 @@ function disabledDate(time) {
   min-height: 46px;
   border-radius: 16px;
   box-shadow: none;
-  border: 1px solid rgba(115, 200, 207, 0.2);
-  background: #f9fcfd;
+  border: 1px solid var(--feature-border);
+  background: #f9fbff;
 }
 
 .panel-head {
@@ -606,20 +611,20 @@ function disabledDate(time) {
 .meta-chip {
   padding: 8px 12px;
   border-radius: 999px;
-  background: rgba(191, 238, 242, 0.24);
-  color: #3d8d95;
+  background: rgba(200, 216, 240, 0.24);
+  color: #5579a4;
   font-size: 12px;
   font-weight: 600;
 }
 
 .muted-chip {
-  background: rgba(244, 249, 250, 0.96);
-  color: #7a8e92;
+  background: rgba(244, 249, 252, 0.96);
+  color: #72839b;
 }
 
 .notice-table :deep(.el-table) {
-  --el-table-border-color: rgba(115, 200, 207, 0.12);
-  --el-table-row-hover-bg-color: rgba(243, 250, 251, 0.95);
+  --el-table-border-color: rgba(132, 165, 205, 0.12);
+  --el-table-row-hover-bg-color: rgba(243, 250, 252, 0.95);
   border-radius: 20px;
 }
 
@@ -629,8 +634,8 @@ function disabledDate(time) {
 }
 
 .notice-table :deep(.el-table__header-wrapper th.el-table__cell) {
-  background: linear-gradient(180deg, #f6fbfc 0%, #eef8f9 100%) !important;
-  color: #225359;
+  background: linear-gradient(180deg, #f6fbfe 0%, #eef5fc 100%) !important;
+  color: #225368;
 }
 
 .title-cell {
@@ -639,12 +644,12 @@ function disabledDate(time) {
 }
 
 .title-cell strong {
-  color: #214f56;
+  color: #17314d;
   font-size: 15px;
 }
 
 .title-cell span {
-  color: #7a8f93;
+  color: #72839b;
   line-height: 1.6;
 }
 
@@ -655,9 +660,9 @@ function disabledDate(time) {
 }
 
 .edit-btn {
-  color: #3f9098;
-  border-color: rgba(115, 200, 207, 0.24);
-  background: rgba(242, 251, 252, 0.96);
+  color: #5579a4;
+  border-color: rgba(132, 165, 205, 0.24);
+  background: rgba(242, 250, 255, 0.96);
 }
 
 .delete-btn {
@@ -693,8 +698,8 @@ function disabledDate(time) {
 .notice-dialog :deep(.el-date-editor.el-input__wrapper) {
   border-radius: 14px;
   box-shadow: none;
-  border: 1px solid rgba(115, 200, 207, 0.2);
-  background: #f9fcfd;
+  border: 1px solid var(--feature-border);
+  background: #f9fbff;
 }
 
 .dialog-footer {

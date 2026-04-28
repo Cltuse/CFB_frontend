@@ -187,6 +187,8 @@ import { Search } from '@element-plus/icons-vue';
 import { userClientAPI, violationAPI } from '../../api';
 import { formatDateTime } from '@/utils/date';
 
+const VIOLATION_FETCH_LIMIT = 500;
+
 const userInfo = ref({});
 const violationList = ref([]);
 const currentViolation = ref(null);
@@ -261,7 +263,8 @@ const loadCurrentCreditScore = async () => {
 
 const loadMyViolations = async () => {
   try {
-    const res = await userClientAPI.getMyViolationRecords(userInfo.value.id);
+    // 后端已有分页接口，这里先拉取足够大的结果集，保证前端搜索和分页都能覆盖历史记录。
+    const res = await userClientAPI.getMyViolationRecords(userInfo.value.id, 0, VIOLATION_FETCH_LIMIT);
     if (Array.isArray(res?.data)) {
       violationList.value = res.data;
       return;
@@ -359,30 +362,30 @@ const getStatusText = (status) => {
 };
 
 const headerCellStyle = {
-  backgroundColor: '#fff7f6',
-  color: '#6b3e39',
+  backgroundColor: '#fffafb',
+  color: '#7a4052',
   fontWeight: '600',
   fontSize: '14px',
-  borderBottom: '1px solid rgba(241, 141, 123, 0.16)'
+  borderBottom: '1px solid rgba(245, 183, 192, 0.16)'
 };
 
 const cellStyle = () => ({
   padding: '16px 12px',
-  borderBottom: '1px solid #f7ecea',
-  color: '#6a5b58',
+  borderBottom: '1px solid #fce4e8',
+  color: '#755e59',
   fontSize: '14px'
 });
 </script>
 
 <style scoped>
 .violation-page {
-  --page-primary: #f38d7b;
+  --page-primary: #f5b7c0;
   min-height: 100%;
   display: grid;
   gap: 20px;
   background:
-    radial-gradient(circle at top left, rgba(255, 214, 205, 0.28), transparent 30%),
-    linear-gradient(180deg, #fff9f8 0%, #fffdfd 100%);
+    radial-gradient(circle at top left, rgba(252, 228, 232, 0.28), transparent 30%),
+    linear-gradient(180deg, #fffafb 0%, #fffdfd 100%);
 }
 
 .page-header,
@@ -391,24 +394,24 @@ const cellStyle = () => ({
 .table-card,
 .pagination-card {
   border-radius: 30px;
-  border: 1px solid rgba(243, 141, 123, 0.14);
+  border: 1px solid rgba(245, 183, 192, 0.14);
   background: rgba(255, 255, 255, 0.95);
-  box-shadow: 0 20px 40px rgba(68, 33, 26, 0.05);
+  box-shadow: 0 20px 40px rgba(94, 52, 62, 0.05);
 }
 
 .header-content {
   padding: 30px;
   background:
-    radial-gradient(circle at top right, rgba(255, 214, 205, 0.28), transparent 24%),
-    linear-gradient(145deg, rgba(255, 214, 205, 0.16) 0%, #ffffff 64%);
+    radial-gradient(circle at top right, rgba(252, 228, 232, 0.28), transparent 24%),
+    linear-gradient(145deg, rgba(252, 228, 232, 0.16) 0%, #ffffff 64%);
 }
 
 .page-kicker {
   display: inline-flex;
   padding: 6px 12px;
   border-radius: 999px;
-  background: rgba(243, 141, 123, 0.14);
-  color: #cf6b58;
+  background: rgba(245, 183, 192, 0.14);
+  color: #c4677a;
   font-size: 12px;
   font-weight: 600;
   letter-spacing: 0.08em;
@@ -417,12 +420,12 @@ const cellStyle = () => ({
 .page-title {
   margin: 16px 0 10px;
   font-size: 34px;
-  color: #61332a;
+  color: #7a4052;
 }
 
 .page-subtitle {
   margin: 0;
-  color: #8a6c66;
+  color: #8e717b;
   line-height: 1.8;
 }
 
@@ -434,12 +437,12 @@ const cellStyle = () => ({
 
 .summary-card {
   padding: 22px 20px;
-  background: linear-gradient(145deg, rgba(255, 214, 205, 0.18), #ffffff 82%);
+  background: linear-gradient(145deg, rgba(252, 228, 232, 0.18), #ffffff 82%);
 }
 
 .summary-label {
   display: block;
-  color: #9b7b74;
+  color: #8e717b;
   font-size: 13px;
 }
 
@@ -448,12 +451,12 @@ const cellStyle = () => ({
   margin: 12px 0 8px;
   font-size: 32px;
   line-height: 1;
-  color: #64362d;
+  color: #7a4052;
 }
 
 .summary-card p {
   margin: 0;
-  color: #957872;
+  color: #8e717b;
   line-height: 1.6;
 }
 
@@ -472,8 +475,8 @@ const cellStyle = () => ({
 .violation-page :deep(.el-input__wrapper) {
   border-radius: 16px;
   box-shadow: none;
-  background: #fffaf9;
-  border: 1px solid rgba(243, 141, 123, 0.18);
+  background: #fffafb;
+  border: 1px solid rgba(245, 183, 192, 0.18);
 }
 
 .secondary-btn,
@@ -483,9 +486,9 @@ const cellStyle = () => ({
 }
 
 .secondary-btn {
-  border: 1px solid rgba(243, 141, 123, 0.18);
+  border: 1px solid rgba(245, 183, 192, 0.18);
   background: #ffffff;
-  color: #8a645e;
+  color: #c4677a;
 }
 
 .table-card,
@@ -499,22 +502,22 @@ const cellStyle = () => ({
 
 .table-head h2 {
   margin: 0;
-  color: #5e342b;
+  color: #7a4052;
 }
 
 .table-head p {
   margin: 8px 0 0;
-  color: #8a716b;
+  color: #8e717b;
   line-height: 1.7;
 }
 
 .violation-table :deep(.el-table__row:hover > td.el-table__cell) {
-  background: rgba(255, 248, 246, 0.96) !important;
+  background: rgba(252, 228, 232, 0.3) !important;
 }
 
 .description-text,
 .time-text {
-  color: #705d59;
+  color: #755e59;
   line-height: 1.6;
 }
 
@@ -526,9 +529,9 @@ const cellStyle = () => ({
 .view-btn {
   min-height: 36px;
   padding: 0 18px;
-  border: 1px solid rgba(243, 141, 123, 0.18);
+  border: 1px solid rgba(245, 183, 192, 0.18);
   background: rgba(255, 246, 243, 0.92);
-  color: #b25947;
+  color: #c4677a;
 }
 
 .pagination-card {
@@ -544,13 +547,13 @@ const cellStyle = () => ({
 .detail-panel {
   padding: 18px;
   border-radius: 22px;
-  background: #fffaf9;
-  border: 1px solid rgba(243, 141, 123, 0.14);
+  background: #fffafb;
+  border: 1px solid rgba(245, 183, 192, 0.14);
 }
 
 .detail-panel h3 {
   margin: 0 0 14px;
-  color: #60342b;
+  color: #7a4052;
 }
 
 .detail-grid {
@@ -567,20 +570,20 @@ const cellStyle = () => ({
 
 .detail-item label {
   display: block;
-  color: #967772;
+  color: #8e717b;
   font-size: 12px;
 }
 
 .detail-item strong {
   display: block;
   margin-top: 8px;
-  color: #63362d;
+  color: #7a4052;
   line-height: 1.6;
 }
 
 .detail-description {
   margin: 0;
-  color: #715e5a;
+  color: #755e59;
   line-height: 1.8;
 }
 
@@ -619,13 +622,13 @@ const cellStyle = () => ({
 </style>
 <style scoped>
 .violation-page {
-  --theme-deep: #d56f5c;
-  --theme-border: rgba(243, 141, 123, 0.16);
-  --theme-shadow: rgba(68, 33, 26, 0.08);
+  --theme-deep: #e8909d;
+  --theme-border: rgba(245, 183, 192, 0.16);
+  --theme-shadow: rgba(94, 52, 62, 0.08);
   background:
-    radial-gradient(circle at top left, rgba(255, 214, 205, 0.36), transparent 30%),
-    radial-gradient(circle at right center, rgba(255, 241, 237, 0.95), transparent 24%),
-    linear-gradient(180deg, #fff9f8 0%, #fffdfd 100%);
+    radial-gradient(circle at top left, rgba(252, 228, 232, 0.36), transparent 30%),
+    radial-gradient(circle at right center, rgba(254, 248, 249, 0.95), transparent 24%),
+    linear-gradient(180deg, #fffafb 0%, #fffdfd 100%);
 }
 
 .page-header,
@@ -641,12 +644,12 @@ const cellStyle = () => ({
 
 .header-content {
   background:
-    radial-gradient(circle at top right, rgba(255, 214, 205, 0.32), transparent 24%),
-    linear-gradient(145deg, rgba(255, 242, 238, 0.96) 0%, #ffffff 64%);
+    radial-gradient(circle at top right, rgba(252, 228, 232, 0.32), transparent 24%),
+    linear-gradient(145deg, rgba(254, 248, 249, 0.96) 0%, #ffffff 64%);
 }
 
 .summary-card {
-  background: linear-gradient(150deg, rgba(255, 242, 238, 0.96), #ffffff 82%);
+  background: linear-gradient(150deg, rgba(254, 248, 249, 0.96), #ffffff 82%);
 }
 
 .toolbar-card,
@@ -656,7 +659,7 @@ const cellStyle = () => ({
 }
 
 .violation-page :deep(.el-input__wrapper) {
-  border-color: rgba(243, 141, 123, 0.2);
+  border-color: rgba(245, 183, 192, 0.2);
 }
 
 .table-card {
@@ -664,7 +667,7 @@ const cellStyle = () => ({
 }
 
 .violation-table :deep(.el-table__header-wrapper th.el-table__cell) {
-  background: linear-gradient(180deg, #fff8f6 0%, #fff1ed 100%) !important;
+  background: linear-gradient(180deg, #fffafb 0%, #fce4e8 100%) !important;
 }
 
 .violation-table :deep(.el-table::before),
@@ -677,9 +680,9 @@ const cellStyle = () => ({
 }
 
 .view-btn:hover {
-  background: linear-gradient(135deg, #f38d7b 0%, #dd715c 100%);
+  background: linear-gradient(135deg, #f5b7c0 0%, #e8909d 100%);
   color: #ffffff;
-  box-shadow: 0 12px 22px rgba(221, 113, 92, 0.18);
+  box-shadow: 0 12px 22px rgba(232, 144, 157, 0.18);
 }
 
 .detail-dialog :deep(.el-dialog) {

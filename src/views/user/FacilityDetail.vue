@@ -457,13 +457,13 @@ onMounted(() => {
 
 <style scoped>
 .facility-detail-page {
-  --page-primary: #7ea7ff;
+  --page-primary: #f5b7c0;
   min-height: 100%;
   display: grid;
   gap: 20px;
   background:
-    radial-gradient(circle at top left, rgba(196, 215, 255, 0.34), transparent 28%),
-    linear-gradient(180deg, #f8fbff 0%, #fffdfd 100%);
+    radial-gradient(circle at top left, rgba(245, 183, 192, 0.34), transparent 28%),
+    linear-gradient(180deg, #fffafb 0%, #fffdfd 100%);
 }
 
 .hero-card,
@@ -473,16 +473,16 @@ onMounted(() => {
 .loading-card,
 .empty-card {
   border-radius: 30px;
-  border: 1px solid rgba(126, 167, 255, 0.14);
+  border: 1px solid rgba(245, 183, 192, 0.14);
   background: rgba(255, 255, 255, 0.95);
-  box-shadow: 0 20px 42px rgba(24, 42, 78, 0.05);
+  box-shadow: 0 20px 42px rgba(94, 52, 62, 0.05);
 }
 
 .hero-card {
   padding: 24px;
   background:
-    radial-gradient(circle at top right, rgba(196, 215, 255, 0.3), transparent 24%),
-    linear-gradient(145deg, rgba(196, 215, 255, 0.16) 0%, #ffffff 64%);
+    radial-gradient(circle at top right, rgba(245, 183, 192, 0.3), transparent 24%),
+    linear-gradient(145deg, rgba(245, 183, 192, 0.16) 0%, #ffffff 64%);
 }
 
 .hero-top {
@@ -502,15 +502,15 @@ onMounted(() => {
 
 .back-btn,
 .secondary-btn {
-  border: 1px solid rgba(126, 167, 255, 0.18);
+  border: 1px solid rgba(245, 183, 192, 0.18);
   background: #ffffff;
-  color: #5c78a8;
+  color: #c4677a;
 }
 
 .primary-btn {
   border: none;
-  background: linear-gradient(135deg, #7ea7ff 0%, #5b7cf2 100%);
-  box-shadow: 0 14px 28px rgba(91, 124, 242, 0.18);
+  background: linear-gradient(135deg, #f5b7c0 0%, #e8909d 100%);
+  box-shadow: 0 14px 28px rgba(232, 144, 157, 0.18);
 }
 
 .hero-content {
@@ -525,8 +525,8 @@ onMounted(() => {
   display: inline-flex;
   padding: 6px 12px;
   border-radius: 999px;
-  background: rgba(126, 167, 255, 0.14);
-  color: #5572b1;
+  background: rgba(245, 183, 192, 0.14);
+  color: #c4677a;
   font-size: 12px;
   font-weight: 600;
   letter-spacing: 0.08em;
@@ -535,13 +535,13 @@ onMounted(() => {
 .hero-copy h1 {
   margin: 16px 0 10px;
   font-size: 36px;
-  color: #223b6a;
+  color: #7a4052;
 }
 
 .hero-copy p,
 .hero-empty p {
   margin: 0;
-  color: #6f7f9d;
+  color: #8a6a76;
   line-height: 1.8;
 }
 
@@ -556,7 +556,7 @@ onMounted(() => {
   min-height: 260px;
   border-radius: 28px;
   overflow: hidden;
-  background: linear-gradient(145deg, #eef4ff 0%, #dfe9ff 100%);
+  background: linear-gradient(145deg, #fef8f9 0%, #fef0f2 100%);
 }
 
 .hero-image {
@@ -570,7 +570,7 @@ onMounted(() => {
   height: 100%;
   display: grid;
   place-items: center;
-  color: #5d79af;
+  color: #c4677a;
   font-size: 36px;
   font-weight: 700;
 }
@@ -595,7 +595,7 @@ onMounted(() => {
 
 .loading-icon {
   font-size: 32px;
-  color: #5b7cf2;
+  color: #e8909d;
   margin-bottom: 10px;
 }
 
@@ -607,26 +607,26 @@ onMounted(() => {
 
 .summary-card {
   padding: 22px 20px;
-  background: linear-gradient(145deg, rgba(196, 215, 255, 0.16), #ffffff 82%);
+  background: linear-gradient(145deg, rgba(245, 183, 192, 0.16), #ffffff 82%);
 }
 
 .summary-label {
   display: block;
-  color: #7687a8;
+  color: #8e717b;
   font-size: 13px;
 }
 
 .summary-card strong {
   display: block;
   margin: 12px 0 8px;
-  color: #233d69;
+  color: #7a4052;
   font-size: 30px;
   line-height: 1.1;
 }
 
 .summary-card p {
   margin: 0;
-  color: #7c8dab;
+  color: #8e717b;
   line-height: 1.6;
 }
 
@@ -906,13 +906,13 @@ onMounted(() => {
 </style>
 <style scoped>
 .facility-detail-page {
-  --theme-deep: #5b7cf2;
-  --theme-border: rgba(126, 167, 255, 0.16);
-  --theme-shadow: rgba(24, 42, 78, 0.08);
+  --theme-deep: #e8909d;
+  --theme-border: rgba(245, 183, 192, 0.16);
+  --theme-shadow: rgba(94, 52, 62, 0.08);
   background:
-    radial-gradient(circle at top left, rgba(196, 215, 255, 0.4), transparent 28%),
-    radial-gradient(circle at right center, rgba(236, 244, 255, 0.96), transparent 24%),
-    linear-gradient(180deg, #f8fbff 0%, #fffdfd 100%);
+    radial-gradient(circle at top left, rgba(245, 183, 192, 0.4), transparent 28%),
+    radial-gradient(circle at right center, rgba(252, 228, 232, 0.96), transparent 24%),
+    linear-gradient(180deg, #fffafb 0%, #fffdfd 100%);
 }
 
 .hero-card,
@@ -928,12 +928,12 @@ onMounted(() => {
 
 .hero-card {
   background:
-    radial-gradient(circle at top right, rgba(196, 215, 255, 0.34), transparent 24%),
-    linear-gradient(145deg, rgba(236, 244, 255, 0.96) 0%, #ffffff 64%);
+    radial-gradient(circle at top right, rgba(245, 183, 192, 0.34), transparent 24%),
+    linear-gradient(145deg, rgba(254, 248, 249, 0.96) 0%, #ffffff 64%);
 }
 
 .summary-card {
-  background: linear-gradient(150deg, rgba(236, 244, 255, 0.96), #ffffff 82%);
+  background: linear-gradient(150deg, rgba(254, 248, 249, 0.96), #ffffff 82%);
 }
 
 .info-card,
@@ -944,7 +944,7 @@ onMounted(() => {
 .info-card:hover,
 .timeline-card:hover {
   transform: translateY(-2px);
-  box-shadow: 0 24px 52px rgba(24, 42, 78, 0.1);
+  box-shadow: 0 24px 52px rgba(94, 52, 62, 0.1);
 }
 
 .hero-media {
@@ -957,7 +957,7 @@ onMounted(() => {
 
 .timeline-day:hover {
   transform: translateY(-2px);
-  box-shadow: 0 16px 32px rgba(91, 124, 242, 0.12);
+  box-shadow: 0 16px 32px rgba(232, 144, 157, 0.12);
 }
 
 .time-slot {

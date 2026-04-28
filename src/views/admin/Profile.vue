@@ -1,5 +1,5 @@
 <template>
-  <div class="admin-profile-page">
+  <div class="admin-profile-page" :style="themeVars">
     <section class="page-hero">
       <div class="hero-copy">
         <span class="hero-eyebrow">Profile</span>
@@ -228,6 +228,11 @@ import { ElMessage } from 'element-plus';
 import { Edit, Lock, Upload, User } from '@element-plus/icons-vue';
 import { fileAPI, userAPI } from '../../api';
 import { clearAuth, getUserInfo, updateStoredUserInfo } from '../../utils/auth';
+import { buildFeatureVars, getRoleTheme } from '../../utils/featureTheme';
+
+const themeVars = computed(() => ({
+  ...buildFeatureVars(getRoleTheme('admin'))
+}));
 
 const userInfo = ref({});
 const profileDialogVisible = ref(false);
@@ -392,18 +397,18 @@ async function handlePasswordSubmit() {
 
 <style scoped>
 .admin-profile-page {
-  --theme-main: #7cc8ad;
-  --theme-deep: #4e9c82;
-  --theme-soft: rgba(198, 239, 223, 0.28);
-  --theme-border: rgba(124, 200, 173, 0.16);
-  --theme-shadow: rgba(31, 78, 63, 0.08);
+  --theme-main: var(--feature-primary);
+  --theme-deep: var(--feature-strong);
+  --theme-soft: var(--feature-soft);
+  --theme-border: var(--feature-border);
+  --theme-shadow: var(--feature-glow);
   min-height: 100%;
   display: grid;
   gap: 20px;
   background:
-    radial-gradient(circle at top left, rgba(221, 247, 237, 0.76), transparent 26%),
-    radial-gradient(circle at right center, rgba(242, 252, 248, 0.92), transparent 24%),
-    linear-gradient(180deg, #f8fdfa 0%, #f4fbf8 48%, #f1f9f5 100%);
+    radial-gradient(circle at top left, rgba(226, 236, 249, 0.72), transparent 26%),
+    radial-gradient(circle at right center, rgba(240, 249, 252, 0.92), transparent 24%),
+    linear-gradient(180deg, #f9fbff 0%, #f5f8fd 48%, #f3f7fc 100%);
 }
 
 .page-hero,
@@ -429,7 +434,7 @@ async function handlePasswordSubmit() {
   padding: 30px;
   background:
     radial-gradient(circle at top right, var(--theme-soft), transparent 30%),
-    linear-gradient(145deg, rgba(242, 252, 248, 0.96) 0%, #ffffff 62%);
+    linear-gradient(145deg, rgba(240, 249, 252, 0.98) 0%, #ffffff 62%);
 }
 
 .hero-eyebrow {
@@ -437,8 +442,8 @@ async function handlePasswordSubmit() {
   align-items: center;
   padding: 6px 12px;
   border-radius: 999px;
-  background: rgba(198, 239, 223, 0.24);
-  color: #4f977f;
+  background: rgba(200, 216, 240, 0.24);
+  color: #4b6f99;
   font-size: 12px;
   font-weight: 600;
   letter-spacing: 0.08em;
@@ -448,7 +453,7 @@ async function handlePasswordSubmit() {
 .feature-head h2,
 .dialog-header h3 {
   margin: 14px 0 10px;
-  color: #224e40;
+  color: #17314d;
 }
 
 .hero-copy h1 {
@@ -459,7 +464,7 @@ async function handlePasswordSubmit() {
 .feature-head p,
 .dialog-header p {
   margin: 0;
-  color: #738d84;
+  color: #67778f;
   line-height: 1.8;
 }
 
@@ -486,14 +491,14 @@ async function handlePasswordSubmit() {
 
 .primary-btn {
   border: none;
-  background: linear-gradient(135deg, #7cc8ad 0%, #4e9c82 100%);
-  box-shadow: 0 14px 28px rgba(78, 156, 130, 0.22);
+  background: linear-gradient(135deg, var(--feature-primary) 0%, var(--feature-strong) 100%);
+  box-shadow: 0 14px 28px rgba(63, 134, 146, 0.22);
 }
 
 .secondary-btn {
-  border: 1px solid rgba(124, 200, 173, 0.22);
+  border: 1px solid var(--feature-border);
   background: rgba(255, 255, 255, 0.9);
-  color: #718b82;
+  color: #5b7a96;
 }
 
 .warning-btn {
@@ -512,7 +517,7 @@ async function handlePasswordSubmit() {
   align-items: center;
   gap: 16px;
   padding: 22px;
-  background: linear-gradient(180deg, #f9fdfb 0%, #ffffff 100%);
+  background: linear-gradient(180deg, #f9fbff 0%, #ffffff 100%);
 }
 
 .hero-avatar,
@@ -527,8 +532,8 @@ async function handlePasswordSubmit() {
   overflow: hidden;
   display: grid;
   place-items: center;
-  background: linear-gradient(135deg, rgba(198, 239, 223, 0.42), rgba(255, 255, 255, 0.98));
-  color: #4e9c82;
+  background: linear-gradient(135deg, rgba(200, 216, 240, 0.42), rgba(255, 255, 255, 0.98));
+  color: #5579a4;
   font-size: 32px;
   font-weight: 700;
 }
@@ -546,7 +551,7 @@ async function handlePasswordSubmit() {
 }
 
 .hero-profile-copy strong {
-  color: #214c3e;
+  color: #17314d;
   font-size: 20px;
 }
 
@@ -554,7 +559,7 @@ async function handlePasswordSubmit() {
 .hero-profile-copy small,
 .summary-label,
 .summary-card p {
-  color: #748d84;
+  color: #72839b;
 }
 
 .summary-grid {
@@ -565,13 +570,13 @@ async function handlePasswordSubmit() {
 
 .summary-card {
   padding: 22px;
-  background: linear-gradient(150deg, rgba(242, 252, 248, 0.96) 0%, #ffffff 84%);
+  background: linear-gradient(150deg, rgba(240, 249, 252, 0.96) 0%, #ffffff 84%);
 }
 
 .summary-card strong {
   display: block;
   margin: 14px 0 8px;
-  color: #224e40;
+  color: #17314d;
   font-size: 26px;
 }
 
@@ -607,8 +612,8 @@ async function handlePasswordSubmit() {
 }
 
 .profile-icon {
-  background: linear-gradient(135deg, rgba(198, 239, 223, 0.42), rgba(255, 255, 255, 0.98));
-  color: #4e9c82;
+  background: linear-gradient(135deg, rgba(200, 216, 240, 0.42), rgba(255, 255, 255, 0.98));
+  color: #5579a4;
 }
 
 .security-icon {
@@ -628,16 +633,16 @@ async function handlePasswordSubmit() {
   gap: 16px;
   padding: 14px 16px;
   border-radius: 18px;
-  background: #f9fcfb;
+  background: #f9fbff;
 }
 
 .profile-row span,
 .security-hint {
-  color: #769087;
+  color: #72839b;
 }
 
 .profile-row strong {
-  color: #234e41;
+  color: #17314d;
   text-align: right;
 }
 
@@ -674,7 +679,7 @@ async function handlePasswordSubmit() {
   width: 48px;
   height: 48px;
   border-radius: 16px;
-  background: rgba(198, 239, 223, 0.24);
+  background: rgba(200, 216, 240, 0.24);
   color: var(--theme-deep);
 }
 
@@ -690,7 +695,7 @@ async function handlePasswordSubmit() {
   margin-bottom: 22px;
   padding: 20px;
   border-radius: 22px;
-  background: #f9fcfb;
+  background: #f9fbff;
 }
 
 .avatar-preview-wrap {
@@ -701,8 +706,8 @@ async function handlePasswordSubmit() {
 .avatar-preview.placeholder {
   display: grid;
   place-items: center;
-  background: linear-gradient(135deg, rgba(198, 239, 223, 0.42), rgba(255, 255, 255, 0.98));
-  color: #4e9c82;
+  background: linear-gradient(135deg, rgba(200, 216, 240, 0.42), rgba(255, 255, 255, 0.98));
+  color: #5579a4;
   font-size: 34px;
   font-weight: 700;
 }
@@ -715,7 +720,7 @@ async function handlePasswordSubmit() {
 
 .avatar-actions p {
   margin: 0;
-  color: #738d84;
+  color: #67778f;
   line-height: 1.7;
 }
 
@@ -728,8 +733,8 @@ async function handlePasswordSubmit() {
 .profile-dialog :deep(.el-input__wrapper) {
   border-radius: 14px;
   box-shadow: none;
-  border: 1px solid rgba(124, 200, 173, 0.2);
-  background: #f9fcfb;
+  border: 1px solid var(--feature-border);
+  background: #f9fbff;
 }
 
 .dialog-footer {

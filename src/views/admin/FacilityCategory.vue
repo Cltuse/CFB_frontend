@@ -1,5 +1,5 @@
 <template>
-  <div class="facility-category-page">
+  <div class="facility-category-page" :style="themeVars">
     <section class="page-hero">
       <div class="hero-copy">
         <span class="hero-eyebrow">Facility Category</span>
@@ -189,6 +189,11 @@ import { computed, nextTick, onMounted, reactive, ref } from 'vue';
 import { ElMessage, ElMessageBox } from 'element-plus';
 import { Search } from '@element-plus/icons-vue';
 import { facilityCategoryAPI } from '../../api';
+import { buildFeatureVars, getRoleTheme } from '../../utils/featureTheme';
+
+const themeVars = computed(() => ({
+  ...buildFeatureVars(getRoleTheme('admin'))
+}));
 
 const loading = ref(false);
 const dialogVisible = ref(false);
@@ -384,18 +389,18 @@ async function handleSubmit() {
 
 <style scoped>
 .facility-category-page {
-  --theme-main: #7bbc87;
-  --theme-deep: #4d915a;
-  --theme-soft: rgba(198, 233, 203, 0.32);
-  --theme-border: rgba(123, 188, 135, 0.16);
-  --theme-shadow: rgba(41, 81, 49, 0.08);
+  --theme-main: var(--feature-primary);
+  --theme-deep: var(--feature-strong);
+  --theme-soft: var(--feature-soft);
+  --theme-border: var(--feature-border);
+  --theme-shadow: var(--feature-glow);
   min-height: 100%;
   display: grid;
   gap: 20px;
-  color: #28402e;
+  color: #3c6a74;
   background:
-    radial-gradient(circle at 90% 10%, rgba(225, 244, 229, 0.78), transparent 22%),
-    linear-gradient(180deg, #f9fdf8 0%, #f4fbf5 48%, #f1f9f2 100%);
+    radial-gradient(circle at 90% 10%, var(--feature-soft) 0%, transparent 22%),
+    linear-gradient(180deg, #f2fafc 0%, #eef8fa 48%, #eaf6f8 100%);
 }
 
 .page-hero,
@@ -416,7 +421,7 @@ async function handleSubmit() {
   gap: 20px;
   padding: 28px;
   overflow: hidden;
-  background: linear-gradient(145deg, rgba(244, 252, 245, 0.98) 0%, #ffffff 68%);
+  background: linear-gradient(145deg, rgba(232, 247, 250, 0.98) 0%, #ffffff 68%);
 }
 
 .page-hero::before {
@@ -427,7 +432,7 @@ async function handleSubmit() {
   width: 240px;
   height: 240px;
   border-radius: 999px;
-  background: radial-gradient(circle, rgba(198, 233, 203, 0.3) 0%, rgba(198, 233, 203, 0.08) 44%, transparent 72%);
+  background: radial-gradient(circle, rgba(179, 219, 225, 0.3) 0%, rgba(179, 219, 225, 0.08) 44%, transparent 72%);
   pointer-events: none;
 }
 
@@ -443,8 +448,8 @@ async function handleSubmit() {
   align-items: center;
   padding: 6px 12px;
   border-radius: 999px;
-  background: rgba(198, 233, 203, 0.22);
-  color: #5a7e61;
+  background: var(--feature-soft);
+  color: #4f7a82;
   font-size: 12px;
   font-weight: 600;
   letter-spacing: 0.08em;
@@ -453,7 +458,7 @@ async function handleSubmit() {
 .hero-copy h1,
 .section-copy h2 {
   margin: 14px 0 10px;
-  color: #25472d;
+  color: #29555f;
 }
 
 .hero-copy h1 {
@@ -470,7 +475,7 @@ async function handleSubmit() {
 .muted-text,
 .category-copy small {
   margin: 0;
-  color: #718976;
+  color: #587e86;
   line-height: 1.8;
 }
 
@@ -498,14 +503,14 @@ async function handleSubmit() {
 
 .primary-btn {
   border: none;
-  background: linear-gradient(135deg, #7bbc87 0%, #4d915a 100%);
-  box-shadow: 0 14px 28px rgba(77, 145, 90, 0.22);
+  background: linear-gradient(135deg, var(--feature-primary) 0%, var(--feature-strong) 100%);
+  box-shadow: 0 14px 28px rgba(63, 134, 146, 0.22);
 }
 
 .secondary-btn {
-  border: 1px solid rgba(123, 188, 135, 0.2);
+  border: 1px solid var(--feature-border);
   background: rgba(255, 255, 255, 0.88);
-  color: #577760;
+  color: #4f737a;
 }
 
 .hero-side {
@@ -516,14 +521,14 @@ async function handleSubmit() {
 .hero-note {
   min-height: 128px;
   padding: 22px;
-  background: linear-gradient(180deg, #f8fdf8 0%, #ffffff 100%);
+  background: linear-gradient(180deg, #f2fafc 0%, #ffffff 100%);
 }
 
 .hero-note strong,
 .summary-card strong,
 .category-copy strong,
 .order-chip {
-  color: #264830;
+  color: #26515b;
 }
 
 .hero-note strong {
@@ -545,7 +550,7 @@ async function handleSubmit() {
 
 .summary-card:hover {
   transform: translateY(-2px);
-  box-shadow: 0 24px 44px rgba(41, 81, 49, 0.1);
+  box-shadow: 0 24px 44px rgba(36, 88, 96, 0.1);
 }
 
 .summary-card strong {
@@ -581,7 +586,7 @@ async function handleSubmit() {
 }
 
 .muted-chip {
-  background: rgba(243, 248, 244, 0.94);
+  background: rgba(237, 247, 250, 0.94);
 }
 
 .category-cell {
@@ -597,8 +602,8 @@ async function handleSubmit() {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(135deg, #e7f6ea 0%, #dcf0df 100%);
-  color: #4d915a;
+  background: linear-gradient(135deg, #d4ecf2 0%, #c3e3ea 100%);
+  color: #3f9aa8;
   font-size: 20px;
   font-weight: 700;
   flex-shrink: 0;
@@ -616,7 +621,7 @@ async function handleSubmit() {
   min-width: 44px;
   padding: 8px 10px;
   border-radius: 999px;
-  background: rgba(198, 233, 203, 0.18);
+  background: rgba(179, 219, 225, 0.18);
   font-weight: 700;
 }
 
@@ -652,13 +657,13 @@ async function handleSubmit() {
   border-radius: 14px;
   background: #fbfdfb;
   box-shadow: none;
-  border: 1px solid rgba(123, 188, 135, 0.18);
+  border: 1px solid var(--feature-border);
 }
 
 .facility-category-page :deep(.el-table) {
-  --el-table-border-color: rgba(123, 188, 135, 0.12);
-  --el-table-header-bg-color: #f6fbf7;
-  --el-table-row-hover-bg-color: #f7fbf8;
+  --el-table-border-color: var(--feature-border);
+  --el-table-header-bg-color: #f0f8fa;
+  --el-table-row-hover-bg-color: #f4fafc;
   border-radius: 20px;
   overflow: hidden;
 }
@@ -676,12 +681,12 @@ async function handleSubmit() {
 .facility-category-page :deep(.el-dialog__header) {
   margin: 0;
   padding: 22px 24px 10px;
-  background: linear-gradient(145deg, #f5fbf6 0%, #ffffff 100%);
+  background: linear-gradient(145deg, #eef6f9 0%, #ffffff 100%);
 }
 
 .facility-category-page :deep(.el-dialog__body) {
   padding: 16px 24px 18px;
-  background: #fdfffd;
+  background: #fbfefd;
 }
 
 .facility-category-page :deep(.el-dialog__footer) {

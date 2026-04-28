@@ -1,5 +1,14 @@
 ﻿import request from '../utils/request';
 
+const normalizeViolationRecord = (record = {}) => ({
+    ...record,
+    points: record.points ?? record.penaltyPoints ?? 0,
+    createTime: record.createTime || record.reportedTime || record.createdAt || null
+});
+
+const normalizeKeyword = (keyword) =>
+    typeof keyword === 'string' ? keyword : keyword?.keyword ?? '';
+
 // 用户相关API
 export const userAPI = {
     login: (data) => request.post('/user/login', data),
@@ -12,7 +21,9 @@ export const userAPI = {
     update: (id, data) => request.put(`/user/${id}`, data),
     changePassword: (id, data) => request.post(`/user/${id}/change-password`, data),
     delete: (id) => request.delete(`/user/${id}`),
-    searchUsers: (keyword) => request.get('/user/search', { params: { keyword } }),
+    searchUsers: (keyword) => request.get('/user/search', {
+        params: { keyword: normalizeKeyword(keyword) }
+    }),
     listMaintainers: () => request.get('/user/maintainers')
 };
 
@@ -45,9 +56,16 @@ export const feedbackAPI = {
 // 设施相关API
 export const facilityAPI = {
     list: () => request.get('/facility/list'),
+    mine: () => request.get('/facility/mine'),
     available: () => request.get('/facility/available'),
     getById: (id) => request.get(`/facility/${id}`),
     getDetail: (id, days = 7) => request.get(`/facility/${id}/detail`, { params: { days } }),
+    getFacilityList: (params = {}) => (
+        params && Object.keys(params).length
+            ? request.get('/facility/listPage', { params })
+            : request.get('/facility/list')
+    ),
+    getFacilityTimeline: (id, days = 30) => request.get(`/facility/${id}/detail`, { params: { days } }),
     search: (keyword) => request.get('/facility/search', { params: { keyword } }),
     // 分页查询设施列表
     listPage: (params) => request.get('/facility/listPage', { params }),
@@ -69,7 +87,10 @@ export const facilityAPI = {
     },
     update: (id, data) => request.put(`/facility/${id}`, data),
     updateStatus: (id, status) => request.put(`/facility/${id}/status`, { status }),
+    updateFacilityStatus: (id, status, reason) => request.put(`/facility/${id}/status`, { status, reason }),
     delete: (id) => request.delete(`/facility/${id}`),
+    createFacility: (data) => request.post('/facility', data),
+    deleteFacility: (id) => request.delete(`/facility/${id}`),
     // 上传设施图片
     uploadImage: (idOrFile, file) => {
         if (file) {
@@ -154,6 +175,7 @@ export const noticeAPI = {
 export const facilityCategoryAPI = {
     list: () => request.get('/facility-category/list'),
     active: () => request.get('/facility-category/active'),
+    getCategoryList: () => request.get('/facility-category/active'),
     getById: (id) => request.get(`/facility-category/${id}`),
     create: (data) => request.post('/facility-category', data),
     update: (id, data) => request.put(`/facility-category/${id}`, data),
@@ -207,10 +229,20 @@ export const adminAPI = {
     getRuleConfigById: (id) => request.get(`/admin/rule-configs/${id}`),
     
     // 获取黑名单列表
-    getBlacklist: (params) => request.get('/admin/blacklist', { params }),
+    getBlacklist: (params = {}) => {
+        const { pageSize, size, ...rest } = params;
+        return request.get('/admin/blacklist', {
+            params: {
+                ...rest,
+                size: size ?? pageSize
+            }
+        });
+    },
     getBlacklistStats: () => request.get('/admin/blacklist/stats'),
     addToBlacklist: (data) => request.post('/admin/blacklist', data),
+    addBlacklist: (data) => request.post('/admin/blacklist', data),
     removeFromBlacklist: (id) => request.put(`/admin/blacklist/${id}/remove`),
+    removeBlacklist: (id) => request.put(`/admin/blacklist/${id}/remove`),
     autoExpireBlacklist: () => request.put('/admin/blacklist/auto-expire'),
     
     // 获取操作日志列表
@@ -219,7 +251,9 @@ export const adminAPI = {
     getOperationTypes: () => request.get('/admin/operation-logs/types'),
     
     // 分页查询用户列表
-    searchUsers: (keyword) => request.get('/user/search', { params: { keyword } }),
+    searchUsers: (keyword) => request.get('/user/search', {
+        params: { keyword: normalizeKeyword(keyword) }
+    }),
     
     // 分页查询违规记录列表
     getAllViolations: (page = 0, size = 10, userName = '', violationType = '', status = '') => 
@@ -248,6 +282,78 @@ export const adminAPI = {
 
 // 违规记录相关API
 export const violationAPI = {
+    create: (data) => request.post('/violation/record', {
+        userId: data?.userId ?? null,
+        reservationId: data?.reservationId ?? null,
+        violationType: data?.violationType ?? '',
+        description: data?.description ?? '',
+        penaltyPoints: data?.penaltyPoints ?? data?.points ?? 0
+    }),
+    list: async (params = {}) => {
+        const page = Number(params.page ?? 0);
+        const size = Number(params.size ?? 10);
+        const description = params.description?.trim() || '';
+        const response = await request.get('/violation/maintainer', {
+            params: {
+                page: 0,
+                size: Math.max(size, 200),
+                maintainerId: params.maintainerId,
+                userName: params.userName,
+                violationType: params.violationType,
+                status: params.status
+            }
+        });
+
+        const pageData = response.data || {};
+        let content = Array.isArray(pageData.content)
+            ? pageData.content.map(normalizeViolationRecord)
+            : [];
+
+        if (description) {
+            const keyword = description.toLowerCase();
+            content = content.filter((item) =>
+                (item.description || '').toLowerCase().includes(keyword) ||
+                (item.userName || '').toLowerCase().includes(keyword) ||
+                (item.facilityName || '').toLowerCase().includes(keyword)
+            );
+        }
+
+        const start = page * size;
+        const end = start + size;
+
+        return {
+            ...response,
+            data: {
+                ...pageData,
+                content: content.slice(start, end),
+                totalElements: content.length,
+                number: page,
+                size
+            }
+        };
+    },
+    getMaintainerViolations: async (params = {}) => {
+        const response = await request.get('/violation/maintainer', { params });
+        const pageData = response.data || {};
+        return {
+            ...response,
+            data: {
+                ...pageData,
+                content: Array.isArray(pageData.content)
+                    ? pageData.content.map(normalizeViolationRecord)
+                    : []
+            }
+        };
+    },
+    getReportableUsers: () => request.get('/user/reportable-list'),
+    getUserReservations: async (userId) => {
+        const response = await request.get('/reservation/list');
+        const reservations = Array.isArray(response.data) ? response.data : [];
+        return {
+            ...response,
+            data: reservations.filter((item) => String(item.userId) === String(userId))
+        };
+    },
     getAllViolations: (page = 0, size = 10, userName = '', violationType = '', status = '') => 
         request.get('/violation/all', { params: { page, size, userName, violationType, status } }),
     recordViolation: (data) => request.post('/violation/record', data),

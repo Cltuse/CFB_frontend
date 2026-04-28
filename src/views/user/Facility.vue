@@ -2,141 +2,76 @@
   <div class="page-shell facility-theme">
     <section class="page-hero">
       <div class="hero-copy">
-        <span class="eyebrow">场地预约中心</span>
-        <h1>设施浏览与预约</h1>
-        <p>
-          保持与设施管理员页面同一套浅色卡片语言和层级结构，
-          但把主内容改成更适合用户端的预约卡片流，方便快速筛选、查看详情和直接预约。
-        </p>
-        <div class="hero-actions">
-          <el-button type="primary" class="hero-primary-btn" @click="scrollToList">
-            <el-icon><ArrowRight /></el-icon>
-            浏览可预约设施
-          </el-button>
-          <el-button class="hero-secondary-btn" @click="clearAllFilters">
-            <el-icon><RefreshRight /></el-icon>
-            重置筛选
-          </el-button>
-        </div>
-      </div>
-
-      <div class="hero-aside">
-        <article class="mini-card">
-          <span>当前可预约</span>
-          <strong>{{ stats.available }}</strong>
-          <small>状态为“可用”的设施</small>
-        </article>
-        <article class="mini-card">
-          <span>筛选结果</span>
-          <strong>{{ filteredFacilityList.length }}</strong>
-          <small>会随着条件实时变化</small>
-        </article>
+        <span class="hero-kicker">设施浏览</span>
+        <h1>校园设施</h1>
+        <p>浏览、筛选和预约公共设施，每张卡片都包含基本信息和状态标识，方便快速判断。</p>
       </div>
     </section>
 
+    <!-- 统计卡片 -->
     <section class="summary-grid">
       <article class="summary-card">
-        <span class="summary-label">设施总数</span>
+        <span class="summary-label">全部设施</span>
         <strong>{{ stats.total }}</strong>
-        <p>当前系统内可浏览设施</p>
+        <p>当前系统中登记的所有设施</p>
       </article>
       <article class="summary-card">
         <span class="summary-label">可预约</span>
         <strong>{{ stats.available }}</strong>
-        <p>可以直接发起预约</p>
+        <p>状态正常、接受预约的设施</p>
       </article>
       <article class="summary-card">
         <span class="summary-label">维护中</span>
         <strong>{{ stats.maintenance }}</strong>
-        <p>暂不开放预约</p>
+        <p>正在维保、暂不可预约</p>
       </article>
       <article class="summary-card">
         <span class="summary-label">已损坏</span>
         <strong>{{ stats.damaged }}</strong>
-        <p>等待维修或下线</p>
+        <p>损坏待处理中</p>
       </article>
     </section>
 
-    <section class="control-card">
-      <div class="control-copy">
-        <h2>筛选条件</h2>
-        <p>用设施管理员同风格的控制面板重做用户端查询区域，并保持中文文案与浅色低冲突配色。</p>
-      </div>
-
-      <div class="control-actions">
+    <!-- 筛选器 -->
+    <section class="panel-card control-card">
+      <div class="control-row">
         <el-input
           v-model="searchKeyword"
-          placeholder="搜索设施名称、型号、位置或描述"
-          clearable
           class="search-input"
-          @input="handleFilterChange"
-          @clear="handleFilterChange"
-        >
-          <template #prefix>
-            <el-icon><Search /></el-icon>
-          </template>
-        </el-input>
-
-        <el-select
-          v-model="selectedCategory"
+          placeholder="搜索设施名称…"
           clearable
-          class="filter-select"
-          placeholder="设施类别"
-          @change="handleFilterChange"
-        >
-          <el-option
-            v-for="category in categories"
-            :key="category.id"
-            :label="category.categoryName"
-            :value="category.categoryName"
-          />
+          :prefix-icon="Search"
+        />
+        <el-select v-model="selectedCategory" class="filter-select" placeholder="全部类别" clearable>
+          <el-option value="" label="全部类别" />
+          <el-option v-for="c in categories" :key="c.id" :value="c.name" :label="c.name" />
         </el-select>
-
-        <el-select
-          v-model="selectedStatus"
-          clearable
-          class="filter-select"
-          placeholder="设施状态"
-          @change="handleFilterChange"
-        >
-          <el-option label="可用" value="AVAILABLE" />
-          <el-option label="维护中" value="MAINTENANCE" />
-          <el-option label="已损坏" value="DAMAGED" />
+        <el-select v-model="selectedStatus" class="filter-select" placeholder="全部状态" clearable>
+          <el-option value="" label="全部状态" />
+          <el-option value="AVAILABLE" label="可预约" />
+          <el-option value="MAINTENANCE" label="维护中" />
+          <el-option value="DAMAGED" label="已损坏" />
         </el-select>
-
-        <el-select
-          v-model="sortBy"
-          class="filter-select"
-          placeholder="排序方式"
-          @change="handleFilterChange"
-        >
-          <el-option label="默认排序" value="" />
-          <el-option label="名称升序" value="nameAsc" />
-          <el-option label="名称降序" value="nameDesc" />
-          <el-option label="状态优先" value="status" />
-        </el-select>
+        <el-button class="reset-btn" @click="resetFilters">重置</el-button>
       </div>
     </section>
 
+    <!-- 设施列表卡片 -->
     <section class="panel-card facility-panel" ref="listSectionRef">
       <div class="panel-head">
-        <div>
-          <h3>设施列表</h3>
-          <p>卡片结构和抽屉详情与设施管理员端保持统一语言，但保留用户端的预约入口和时间选择流程。</p>
-        </div>
         <div class="panel-meta">
           <span class="meta-chip">共 {{ filteredFacilityList.length }} 条结果</span>
           <span class="meta-chip meta-muted" v-if="selectedCategory || selectedStatus || searchKeyword">
-            已启用筛选
+            <span>筛选结果</span>
+            <strong>{{ filteredFacilityList.length }}</strong>
+            <small>会随着条件实时变化</small>
           </span>
         </div>
       </div>
 
-      <div v-if="loading" class="loading-wrap">
-        <el-icon class="loading-icon is-loading"><Loading /></el-icon>
-        <p>正在加载设施信息...</p>
-      </div>
-
+      <template v-if="loading">
+        <div v-loading="loading" style="min-height: 240px"></div>
+      </template>
       <template v-else>
         <div v-if="paginatedFacilityList.length" class="facility-grid">
           <article
@@ -146,62 +81,29 @@
             @click="openDetail(item)"
           >
             <div class="card-media">
-              <img
-                v-if="item.imageUrl"
-                :src="item.imageUrl"
-                :alt="item.name"
-                @error="handleImageError"
-              />
-              <div v-else class="media-fallback">
-                <el-icon><Picture /></el-icon>
-              </div>
-              <el-tag :type="getStatusType(item.status)" effect="light" class="status-pill">
-                {{ getStatusText(item.status) }}
-              </el-tag>
+              <img v-if="item.imageUrl" :src="item.imageUrl" :alt="item.name" />
+              <div v-else class="card-media-fallback">📦</div>
             </div>
-
             <div class="card-body">
-              <div class="card-head">
-                <h4>{{ item.name }}</h4>
+              <div class="card-tags">
+                <el-tag :type="getStatusType(item.status)" effect="light" size="small">
+                  {{ getStatusText(item.status) }}
+                </el-tag>
+                <el-tag effect="light" size="small" class="tag-category">{{ item.category || '未分类' }}</el-tag>
+              </div>
+              <h3 class="card-title">{{ item.name }}</h3>
+              <p class="card-desc">{{ item.description || '暂无设施介绍。' }}</p>
+              <div class="card-meta">
+                <span>{{ item.location || '未填写位置' }}</span>
                 <span>{{ item.model || '未填写型号' }}</span>
               </div>
-
-              <div class="info-grid">
-                <div class="info-item">
-                  <label>类别</label>
-                  <strong>{{ item.category || '未分类' }}</strong>
-                </div>
-                <div class="info-item">
-                  <label>位置</label>
-                  <strong>{{ item.location || '未填写位置' }}</strong>
-                </div>
-              </div>
-
-              <p class="card-desc">
-                {{ item.description || '暂无设施说明，可进入详情查看预约安排。' }}
-              </p>
-            </div>
-
-            <div class="card-actions">
-              <el-button class="ghost-btn" @click.stop="openDetail(item)">
-                <el-icon><InfoFilled /></el-icon>
-                查看详情
-              </el-button>
-              <el-button
-                type="primary"
-                class="reserve-btn"
-                :disabled="item.status !== 'AVAILABLE'"
-                @click.stop="handleReserve(item)"
-              >
-                <el-icon><Calendar /></el-icon>
-                立即预约
-              </el-button>
             </div>
           </article>
         </div>
-
-        <el-empty v-else description="没有符合条件的设施" />
-
+        <div v-else class="empty-state">
+          <h3>暂无设施</h3>
+          <p>当前没有符合筛选条件的设施，可尝试放宽筛选条件。</p>
+        </div>
         <div class="pagination-wrap" v-if="filteredFacilityList.length">
           <el-pagination
             v-model:current-page="currentPage"
@@ -209,33 +111,29 @@
             :page-sizes="[8, 12, 20, 40]"
             :total="filteredFacilityList.length"
             layout="total, sizes, prev, pager, next, jumper"
-            @size-change="handleSizeChange"
-            @current-change="handleCurrentChange"
+            background
           />
         </div>
       </template>
     </section>
 
+    <!-- 详情抽屉 -->
     <el-drawer
-      v-model="detailDrawerVisible"
-      :with-header="false"
-      size="760px"
+      v-model="drawerVisible"
+      size="620px"
       class="detail-drawer"
+      direction="rtl"
+      :with-header="false"
     >
       <div v-loading="detailLoading" class="detail-layout" v-if="detailFacility">
         <section class="detail-hero">
-          <div class="detail-cover">
-            <img
-              v-if="detailFacility.imageUrl"
-              :src="detailFacility.imageUrl"
-              :alt="detailFacility.name"
-              @error="handleImageError"
-            />
-            <div v-else class="media-fallback detail-fallback">
-              <el-icon><Picture /></el-icon>
-            </div>
-          </div>
-
+          <img
+            v-if="detailFacility.imageUrl"
+            :src="detailFacility.imageUrl"
+            :alt="detailFacility.name"
+            class="detail-image"
+            @error="handleImageError"
+          />
           <div class="detail-copy">
             <span class="eyebrow">设施详情</span>
             <h2>{{ detailFacility.name }}</h2>
@@ -260,162 +158,129 @@
             <strong>{{ detailFacility.purchaseDate || '未填写' }}</strong>
           </article>
           <article class="detail-info-card">
-            <span class="detail-label">近 {{ detailQueryDays }} 天预约</span>
-            <strong>{{ upcomingReservations.length }}</strong>
-          </article>
-          <article class="detail-info-card">
             <span class="detail-label">预约状态</span>
             <strong>{{ detailFacility.status === 'AVAILABLE' ? '可直接预约' : '暂不可预约' }}</strong>
           </article>
         </section>
 
-        <section class="detail-panel">
-          <div class="section-title">
-            <h3>近期预约安排</h3>
-            <span>展示最近 {{ detailQueryDays }} 天内的预约时间段</span>
-          </div>
-
-          <div v-if="upcomingReservations.length" class="timeline-list">
-            <article v-for="item in upcomingReservations" :key="item.id" class="timeline-item">
+        <section class="detail-panel" v-if="upcomingReservations.length">
+          <h3>近期待占用</h3>
+          <div class="timeline-list">
+            <div v-for="res in upcomingReservations.slice(0, 6)" :key="res.id" class="timeline-item">
               <div class="timeline-dot"></div>
               <div class="timeline-content">
                 <div class="timeline-top">
-                  <strong>{{ formatDateTime(item.startTime) }}</strong>
-                  <el-tag :type="getReservationStatusType(item.status)" size="small" effect="light">
-                    {{ getReservationStatusText(item.status) }}
+                  <span class="res-time">{{ formatTime(res.startTime) }} - {{ formatTime(res.endTime) }}</span>
+                  <el-tag :type="getStatusType(res.status)" effect="light" size="small">
+                    {{ getStatusText(res.status) }}
                   </el-tag>
                 </div>
-                <p>{{ item.userName || '未知用户' }} · {{ item.purpose || '未填写使用目的' }}</p>
-                <span>结束时间：{{ formatDateTime(item.endTime) }}</span>
+                <p>{{ res.purpose || res.reason || '未填写用途说明' }}</p>
               </div>
-            </article>
+            </div>
           </div>
-          <el-empty v-else description="最近几天暂无预约安排" />
         </section>
 
         <div class="drawer-actions">
-          <el-button class="ghost-btn" @click="detailDrawerVisible = false">关闭</el-button>
           <el-button
-            type="primary"
             class="reserve-btn"
             :disabled="detailFacility.status !== 'AVAILABLE'"
             @click="handleReserve(detailFacility)"
           >
-            <el-icon><Calendar /></el-icon>
-            预约此设施
+            {{ detailFacility.status === 'AVAILABLE' ? '立即预约' : '暂不可预约' }}
           </el-button>
+          <el-button class="drawer-close-btn" @click="drawerVisible = false">关闭详情</el-button>
         </div>
       </div>
     </el-drawer>
 
-    <el-dialog
-      v-model="dialogVisible"
-      width="620px"
-      class="reservation-dialog"
-      destroy-on-close
-    >
-      <template #header>
-        <div class="dialog-header">
-          <div class="dialog-badge">
-            <el-icon><Calendar /></el-icon>
-          </div>
-          <div>
-            <h3>提交预约</h3>
-            <p>{{ currentFacility.name || '请选择设施' }}</p>
-          </div>
+    <!-- 预约对话框 -->
+    <el-dialog v-model="dialogVisible" width="500px" class="reserve-dialog" :show-close="false">
+      <div class="dialog-header">
+        <div class="dialog-badge">
+          <el-icon :size="26"><Calendar /></el-icon>
         </div>
-      </template>
-
-      <el-form ref="formRef" :model="form" :rules="rules" label-position="top" class="reservation-form">
-        <div class="form-grid">
-          <el-form-item label="开始时间" prop="startTime">
-            <el-date-picker
-              v-model="form.startTime"
-              type="datetime"
-              style="width: 100%"
-              value-format="YYYY-MM-DD HH:mm:ss"
-              format="YYYY-MM-DD HH:mm"
-              placeholder="请选择开始时间"
-              :disabled-date="disabledStartDate"
-            />
-          </el-form-item>
-
-          <el-form-item label="结束时间" prop="endTime">
-            <el-date-picker
-              v-model="form.endTime"
-              type="datetime"
-              style="width: 100%"
-              value-format="YYYY-MM-DD HH:mm:ss"
-              format="YYYY-MM-DD HH:mm"
-              placeholder="请选择结束时间"
-              :disabled-date="disabledEndDate"
-            />
-          </el-form-item>
+        <div>
+          <h3>提交预约</h3>
+          <p>{{ currentFacility.name || '请选择设施' }}</p>
         </div>
+      </div>
 
-        <el-form-item label="使用目的" prop="purpose">
+      <el-form
+        ref="formRef"
+        :model="form"
+        :rules="rules"
+        label-width="80px"
+        class="reserve-form"
+      >
+        <el-form-item label="开始时间" prop="startTime">
+          <el-date-picker
+            v-model="form.startTime"
+            type="datetime"
+            placeholder="选择开始时间"
+            :disabled-date="disabledDate"
+            :disabled-hours="disabledHours"
+            value-format="YYYY-MM-DD HH:mm:ss"
+            style="width: 100%"
+          />
+        </el-form-item>
+        <el-form-item label="结束时间" prop="endTime">
+          <el-date-picker
+            v-model="form.endTime"
+            type="datetime"
+            placeholder="选择结束时间"
+            :disabled-date="disabledDate"
+            :disabled-hours="disabledHours"
+            value-format="YYYY-MM-DD HH:mm:ss"
+            style="width: 100%"
+          />
+        </el-form-item>
+        <el-form-item label="预约用途" prop="purpose">
           <el-input
             v-model="form.purpose"
             type="textarea"
-            :rows="4"
-            maxlength="500"
-            show-word-limit
-            placeholder="请简要填写用途、活动内容或实验说明"
+            :rows="3"
+            placeholder="请填写预约用途"
           />
         </el-form-item>
       </el-form>
 
       <template #footer>
-        <div class="dialog-footer">
-          <el-button class="ghost-btn" @click="dialogVisible = false">取消</el-button>
-          <el-button type="primary" class="reserve-btn" @click="handleSubmit">
-            <el-icon><Check /></el-icon>
-            提交预约
-          </el-button>
-        </div>
+        <el-button @click="dialogVisible = false">取消</el-button>
+        <el-button class="submit-btn" :loading="submitting" @click="handleSubmit">提交预约</el-button>
       </template>
     </el-dialog>
+
+    <UserLayout />
   </div>
 </template>
 
 <script setup>
-import { computed, nextTick, onMounted, ref, watch } from 'vue';
-import { ElMessage } from 'element-plus';
-import {
-  ArrowRight,
-  Calendar,
-  Check,
-  CircleCheck,
-  CircleClose,
-  InfoFilled,
-  Loading,
-  Picture,
-  RefreshRight,
-  Search,
-  Tools
-} from '@element-plus/icons-vue';
+import { ref, onMounted, computed, watch } from 'vue';
+import { ElMessage, ElMessageBox } from 'element-plus';
+import { Search, Calendar, Edit, Delete } from '@element-plus/icons-vue';
 import { facilityAPI, facilityCategoryAPI, reservationAPI } from '../../api';
+import { normalizeUserMessage } from '../../utils/messageText';
+import UserLayout from '../../layouts/UserLayout.vue';
 
 const allFacilityList = ref([]);
 const categories = ref([]);
+const loading = ref(false);
+const detailLoading = ref(false);
 const searchKeyword = ref('');
 const selectedCategory = ref('');
 const selectedStatus = ref('');
-const sortBy = ref('');
 const currentPage = ref(1);
 const pageSize = ref(8);
+const drawerVisible = ref(false);
 const dialogVisible = ref(false);
-const detailDrawerVisible = ref(false);
-const detailLoading = ref(false);
-const loading = ref(true);
+const submitting = ref(false);
 const formRef = ref(null);
+const userInfo = ref(JSON.parse(localStorage.getItem('userInfo') || '{}'));
 const listSectionRef = ref(null);
 const currentFacility = ref({});
 const detailFacility = ref(null);
 const upcomingReservations = ref([]);
-const detailQueryDays = ref(7);
-const userInfo = ref({});
-
 const form = ref({
   facilityId: null,
   userId: null,
@@ -425,53 +290,33 @@ const form = ref({
 });
 
 const rules = {
-  startTime: [
-    { required: true, message: '请选择开始时间', trigger: 'change' },
-    { validator: validateStartTime, trigger: 'change' }
-  ],
-  endTime: [
-    { required: true, message: '请选择结束时间', trigger: 'change' },
-    { validator: validateEndTime, trigger: 'change' }
-  ],
-  purpose: [{ required: true, message: '请填写使用目的', trigger: 'blur' }]
+  startTime: [{ required: true, message: '请选择开始时间', trigger: 'change' }],
+  endTime: [{ required: true, message: '请选择结束时间', trigger: 'change' }],
+  purpose: [{ required: true, message: '请填写预约用途', trigger: 'blur' }]
+};
+
+const getStatusType = (status) => {
+  const map = { AVAILABLE: 'success', MAINTENANCE: 'warning', DAMAGED: 'danger' };
+  return map[status] || 'info';
+};
+
+const getStatusText = (status) => {
+  const map = { AVAILABLE: '可预约', MAINTENANCE: '维护中', DAMAGED: '已损坏' };
+  return map[status] || status;
 };
 
 const filteredFacilityList = computed(() => {
   let filtered = [...allFacilityList.value];
   const keyword = searchKeyword.value.trim().toLowerCase();
-
   if (keyword) {
-    filtered = filtered.filter((item) =>
-      [item.name, item.model, item.category, item.location, item.description]
-        .filter(Boolean)
-        .some((field) => String(field).toLowerCase().includes(keyword))
-    );
+    filtered = filtered.filter((item) => item.name && item.name.toLowerCase().includes(keyword));
   }
-
   if (selectedCategory.value) {
     filtered = filtered.filter((item) => item.category === selectedCategory.value);
   }
-
   if (selectedStatus.value) {
     filtered = filtered.filter((item) => item.status === selectedStatus.value);
   }
-
-  if (sortBy.value) {
-    filtered.sort((a, b) => {
-      if (sortBy.value === 'nameAsc') {
-        return String(a.name || '').localeCompare(String(b.name || ''), 'zh-CN');
-      }
-      if (sortBy.value === 'nameDesc') {
-        return String(b.name || '').localeCompare(String(a.name || ''), 'zh-CN');
-      }
-      if (sortBy.value === 'status') {
-        const order = { AVAILABLE: 1, MAINTENANCE: 2, DAMAGED: 3 };
-        return (order[a.status] || 9) - (order[b.status] || 9);
-      }
-      return 0;
-    });
-  }
-
   return filtered;
 });
 
@@ -499,10 +344,6 @@ watch(
 );
 
 onMounted(() => {
-  const info = localStorage.getItem('userInfo');
-  if (info) {
-    userInfo.value = JSON.parse(info);
-  }
   loadFacilityList();
   loadCategories();
 });
@@ -513,7 +354,6 @@ async function loadFacilityList() {
     const res = await facilityAPI.list();
     allFacilityList.value = Array.isArray(res.data) ? res.data : [];
   } catch (error) {
-    console.error('加载设施列表失败:', error);
     ElMessage.error('加载设施列表失败');
     allFacilityList.value = [];
   } finally {
@@ -525,39 +365,19 @@ async function loadCategories() {
   try {
     const res = await facilityCategoryAPI.active();
     categories.value = Array.isArray(res.data) ? res.data : [];
-  } catch (error) {
-    console.error('加载设施分类失败:', error);
-    categories.value = [];
+  } catch {
+    // 不阻塞主流程
   }
 }
 
-function handleFilterChange() {
-  currentPage.value = 1;
-}
-
-function clearAllFilters() {
+function resetFilters() {
   searchKeyword.value = '';
   selectedCategory.value = '';
   selectedStatus.value = '';
-  sortBy.value = '';
   currentPage.value = 1;
-}
-
-function handleCurrentChange(page) {
-  currentPage.value = page;
-}
-
-function handleSizeChange(size) {
-  pageSize.value = size;
-  currentPage.value = 1;
-}
-
-function scrollToList() {
-  listSectionRef.value?.scrollIntoView?.({ behavior: 'smooth', block: 'start' });
 }
 
 async function openDetail(item) {
-  detailDrawerVisible.value = true;
   detailLoading.value = true;
   currentFacility.value = { ...item };
   detailFacility.value = { ...item };
@@ -567,16 +387,18 @@ async function openDetail(item) {
     const payload = result.data || {};
     detailFacility.value = payload.facility || item;
     upcomingReservations.value = payload.reservations || [];
-    detailQueryDays.value = payload.queryDays || 7;
-  } catch (error) {
-    console.error('加载设施详情失败:', error);
-    upcomingReservations.value = [];
     detailQueryDays.value = 7;
+  } catch {
     detailFacility.value = { ...item };
     ElMessage.error('加载设施详情失败');
   } finally {
     detailLoading.value = false;
+    drawerVisible.value = true;
   }
+}
+
+function handleImageError(e) {
+  e.target.style.display = 'none';
 }
 
 function handleReserve(item) {
@@ -589,167 +411,103 @@ function handleReserve(item) {
     purpose: ''
   };
   dialogVisible.value = true;
-  nextTick(() => formRef.value?.clearValidate());
+}
+
+function disabledDate(time) {
+  const now = new Date();
+  now.setHours(0, 0, 0, 0);
+  return time.getTime() < now.getTime();
+}
+
+function disabledHours() {
+  const hours = [];
+  for (let i = 0; i < 8; i++) hours.push(i);
+  for (let i = 22; i < 24; i++) hours.push(i);
+  return hours;
 }
 
 async function handleSubmit() {
+  if (!formRef.value) return;
   try {
     await formRef.value.validate();
-    const response = await reservationAPI.create(form.value);
-    ElMessage.success(response.message || '预约提交成功');
-    dialogVisible.value = false;
+  } catch {
+    return;
+  }
 
-    if (detailFacility.value?.id) {
-      openDetail(detailFacility.value);
+  submitting.value = true;
+  try {
+    const res = await reservationAPI.create(form.value);
+    if (res.code === 200) {
+      ElMessage.success('预约已提交');
+      dialogVisible.value = false;
+      if (detailFacility.value?.id) {
+        openDetail(detailFacility.value);
+      }
+    } else {
+      ElMessage.error(normalizeUserMessage(res.message) || '预约失败');
     }
   } catch (error) {
-    console.error('提交预约失败:', error);
+    ElMessage.error(error.message || '预约失败');
+  } finally {
+    submitting.value = false;
   }
 }
 
-function disabledStartDate(time) {
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
-  return time.getTime() < today.getTime();
-}
-
-function disabledEndDate(time) {
-  if (!form.value.startTime) {
-    return false;
+function formatTime(timeStr) {
+  if (!timeStr) return '';
+  try {
+    const d = new Date(timeStr);
+    return `${d.getMonth() + 1}/${d.getDate()} ${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`;
+  } catch {
+    return timeStr;
   }
-  const startDate = new Date(form.value.startTime);
-  startDate.setHours(0, 0, 0, 0);
-  return time.getTime() < startDate.getTime();
-}
-
-function validateStartTime(rule, value, callback) {
-  if (!value) {
-    callback(new Error('请选择开始时间'));
-    return;
-  }
-  const startDate = new Date(value);
-  if (Number.isNaN(startDate.getTime())) {
-    callback(new Error('开始时间格式不正确'));
-    return;
-  }
-  if (startDate < new Date()) {
-    callback(new Error('开始时间不能早于当前时间'));
-    return;
-  }
-  callback();
-}
-
-function validateEndTime(rule, value, callback) {
-  if (!value) {
-    callback(new Error('请选择结束时间'));
-    return;
-  }
-  const endDate = new Date(value);
-  const startDate = new Date(form.value.startTime);
-  if (Number.isNaN(endDate.getTime())) {
-    callback(new Error('结束时间格式不正确'));
-    return;
-  }
-  if (form.value.startTime && endDate <= startDate) {
-    callback(new Error('结束时间必须晚于开始时间'));
-    return;
-  }
-  callback();
-}
-
-function getStatusType(status) {
-  const map = {
-    AVAILABLE: 'success',
-    MAINTENANCE: 'warning',
-    DAMAGED: 'danger'
-  };
-  return map[status] || 'info';
-}
-
-function getStatusText(status) {
-  const map = {
-    AVAILABLE: '可用',
-    MAINTENANCE: '维护中',
-    DAMAGED: '已损坏'
-  };
-  return map[status] || '未知状态';
-}
-
-function getReservationStatusType(status) {
-  const map = {
-    PENDING: 'warning',
-    APPROVED: 'success',
-    REJECTED: 'danger',
-    COMPLETED: 'info',
-    CANCELLED: 'info'
-  };
-  return map[status] || 'info';
-}
-
-function getReservationStatusText(status) {
-  const map = {
-    PENDING: '待审核',
-    APPROVED: '已通过',
-    REJECTED: '已拒绝',
-    COMPLETED: '已完成',
-    CANCELLED: '已取消'
-  };
-  return map[status] || '未知状态';
-}
-
-function formatDateTime(value) {
-  if (!value) {
-    return '未设置';
-  }
-  return new Date(value).toLocaleString('zh-CN', { hour12: false });
-}
-
-function handleImageError(event) {
-  event.target.style.display = 'none';
 }
 </script>
 
 <style scoped>
 .facility-theme {
-  --theme-main: #5aa499;
-  --theme-deep: #3b8078;
-  --theme-soft: rgba(143, 210, 199, 0.24);
-  --theme-border: rgba(127, 194, 184, 0.22);
-  --theme-shadow: rgba(90, 164, 153, 0.16);
+  --theme-main: #f5b7c0;
+  --theme-deep: #e8909d;
+  --theme-soft: rgba(245, 183, 192, 0.18);
+  --theme-glow: rgba(245, 183, 192, 0.22);
+  --theme-border: rgba(245, 183, 192, 0.16);
+  --theme-shadow: rgba(94, 52, 62, 0.08);
+  --theme-surface: #fef8f9;
   min-height: 100%;
-  padding: 24px;
+  display: grid;
+  gap: 20px;
+  padding: 0;
   background:
-    radial-gradient(circle at top left, rgba(204, 238, 231, 0.7), transparent 24%),
-    radial-gradient(circle at right center, rgba(224, 245, 240, 0.9), transparent 22%),
-    linear-gradient(180deg, #f8fcfb 0%, #f4faf8 45%, #eef7f4 100%);
+    radial-gradient(circle at top left, rgba(245, 183, 192, 0.22), transparent 28%),
+    radial-gradient(circle at right center, rgba(252, 228, 232, 0.48), transparent 20%),
+    linear-gradient(180deg, #fffafb 0%, #fef8f9 48%, #fdf0f3 100%);
 }
 
 .page-hero,
-.summary-card,
 .control-card,
 .panel-card,
-.facility-card {
+.detail-drawer,
+.reserve-dialog {
   animation: rise-in 0.55s ease both;
 }
 
+/* Hero */
 .page-hero {
-  display: grid;
-  grid-template-columns: minmax(0, 1.6fr) 320px;
-  gap: 20px;
   padding: 30px;
   border-radius: 30px;
-  background: rgba(255, 255, 255, 0.92);
   border: 1px solid var(--theme-border);
-  box-shadow: 0 24px 60px var(--theme-shadow);
+  background:
+    radial-gradient(circle at top right, var(--theme-soft), transparent 24%),
+    linear-gradient(145deg, rgba(252, 228, 232, 0.36) 0%, #ffffff 62%);
+  box-shadow: 0 20px 44px var(--theme-shadow);
 }
 
-.eyebrow {
+.hero-kicker {
   display: inline-flex;
-  align-items: center;
   padding: 6px 12px;
   border-radius: 999px;
   background: var(--theme-soft);
-  color: var(--theme-deep);
+  color: #c4677a;
   font-size: 12px;
   font-weight: 600;
   letter-spacing: 0.08em;
@@ -757,352 +515,296 @@ function handleImageError(event) {
 
 .hero-copy h1 {
   margin: 16px 0 12px;
-  font-size: 34px;
-  color: #143730;
+  font-size: 36px;
+  color: #7a4052;
 }
 
 .hero-copy p {
   margin: 0;
-  color: #617872;
+  color: #8a6a76;
   line-height: 1.8;
 }
 
-.hero-actions {
-  display: flex;
-  gap: 12px;
-  margin-top: 24px;
-  flex-wrap: wrap;
-}
-
-.hero-primary-btn,
-.hero-secondary-btn,
-.ghost-btn,
-.reserve-btn {
-  min-height: 44px;
-  padding: 0 18px;
-  border-radius: 14px;
-}
-
-.hero-primary-btn,
-.reserve-btn {
-  border: none;
-  background: linear-gradient(135deg, #5aa499 0%, #3b8078 100%);
-  box-shadow: 0 14px 28px rgba(59, 128, 120, 0.22);
-}
-
-.hero-secondary-btn,
-.ghost-btn {
-  border: 1px solid rgba(116, 177, 168, 0.24);
-  background: rgba(255, 255, 255, 0.86);
-  color: #447971;
-}
-
-.hero-aside {
-  display: grid;
-  gap: 14px;
-}
-
-.mini-card {
-  min-height: 132px;
-  padding: 22px;
-  border-radius: 24px;
-  background: linear-gradient(180deg, #f7fdfb 0%, #ffffff 100%);
-  border: 1px solid var(--theme-border);
-}
-
-.mini-card span,
-.mini-card small {
-  color: #70827d;
-}
-
-.mini-card strong {
-  display: block;
-  margin: 14px 0 8px;
-  font-size: 32px;
-  color: #153c35;
-}
-
+/* Summary */
 .summary-grid {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 16px;
-  margin-top: 22px;
 }
 
 .summary-card {
-  padding: 20px 22px;
+  padding: 22px;
   border-radius: 24px;
-  background: rgba(255, 255, 255, 0.92);
-  border: 1px solid rgba(127, 194, 184, 0.14);
-  box-shadow: 0 18px 40px rgba(31, 41, 55, 0.06);
+  border: 1px solid var(--theme-border);
+  background: linear-gradient(150deg, rgba(252, 228, 232, 0.36) 0%, #ffffff 82%);
+  box-shadow: 0 18px 38px var(--theme-shadow);
+}
+
+.summary-card strong {
+  margin: 14px 0 8px;
+  font-size: 32px;
+  color: #7a4052;
 }
 
 .summary-label,
 .summary-card p {
-  color: #728680;
+  color: #8e717b;
 }
 
-.summary-card strong {
-  display: block;
-  margin: 12px 0 8px;
-  font-size: 30px;
-  color: #173e38;
-}
-
-.summary-card p {
-  margin: 0;
-  font-size: 13px;
-}
-
-.control-card,
-.panel-card {
-  margin-top: 20px;
-  padding: 24px;
-  border-radius: 28px;
-  background: rgba(255, 255, 255, 0.92);
-  border: 1px solid rgba(127, 194, 184, 0.16);
-  box-shadow: 0 20px 44px rgba(31, 41, 55, 0.07);
-}
-
+/* Control Card */
 .control-card {
+  padding: 24px;
+  border: 1px solid var(--theme-border);
+  border-radius: 30px;
+  background: rgba(255, 255, 255, 0.95);
+  box-shadow: 0 22px 50px var(--theme-shadow);
+}
+
+.control-row {
   display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 18px;
-}
-
-.control-copy h2,
-.panel-head h3,
-.section-title h3 {
-  margin: 0;
-  color: #173d37;
-}
-
-.control-copy p,
-.panel-head p,
-.section-title span {
-  margin: 8px 0 0;
-  color: #6d817c;
-  line-height: 1.7;
-}
-
-.control-actions {
-  display: flex;
-  flex-wrap: wrap;
   gap: 12px;
+  flex-wrap: wrap;
   align-items: center;
-  justify-content: flex-end;
 }
 
 .search-input {
-  width: 280px;
+  width: 320px;
+}
+
+.search-input :deep(.el-input__wrapper) {
+  min-height: 46px;
+  border-radius: 16px;
+  box-shadow: none;
+  border: 1px solid rgba(245, 183, 192, 0.2);
+  background: #fef8f9;
+}
+
+.search-input :deep(.el-input__wrapper.is-focus) {
+  box-shadow: 0 0 0 4px rgba(245, 183, 192, 0.12);
 }
 
 .filter-select {
-  width: 150px;
+  width: 160px;
 }
 
+.filter-select :deep(.el-select__wrapper) {
+  min-height: 46px;
+  border-radius: 16px;
+  box-shadow: none;
+  border: 1px solid rgba(245, 183, 192, 0.2);
+  background: #fef8f9;
+}
+
+.reset-btn {
+  border-radius: 14px;
+  min-height: 46px;
+  padding: 0 24px;
+  border: 1px solid rgba(245, 183, 192, 0.2);
+  background: rgba(255, 255, 255, 0.86);
+  color: #c4677a;
+  transition: all 0.25s ease;
+}
+
+.reset-btn:hover {
+  background: linear-gradient(135deg, #f5b7c0 0%, #e8909d 100%);
+  color: #ffffff;
+  border-color: transparent;
+}
+
+/* Facility Panel */
 .facility-panel {
-  scroll-margin-top: 24px;
+  border: 1px solid var(--theme-border);
+  border-radius: 30px;
+  padding: 8px 24px 24px;
+  background: rgba(255, 255, 255, 0.95);
+  box-shadow: 0 22px 50px var(--theme-shadow);
 }
 
 .panel-head {
   display: flex;
-  align-items: flex-start;
   justify-content: space-between;
+  align-items: center;
   gap: 16px;
-  margin-bottom: 18px;
+  padding: 16px 0;
 }
 
 .panel-meta {
   display: flex;
-  gap: 10px;
+  gap: 12px;
+  align-items: center;
   flex-wrap: wrap;
 }
 
 .meta-chip {
-  padding: 8px 12px;
+  padding: 6px 12px;
   border-radius: 999px;
-  background: rgba(143, 210, 199, 0.2);
-  color: #3e746e;
+  background: var(--theme-soft);
+  color: #c4677a;
   font-size: 12px;
   font-weight: 600;
 }
 
 .meta-muted {
-  background: rgba(239, 248, 246, 0.95);
-  color: #6f817d;
+  background: rgba(200, 200, 200, 0.14);
+  color: #888;
 }
 
-.loading-wrap {
-  display: grid;
-  place-items: center;
-  min-height: 260px;
-  color: #6c817c;
-}
-
-.loading-icon {
-  font-size: 34px;
-  margin-bottom: 12px;
-  color: var(--theme-deep);
-}
-
+/* Facility Grid */
 .facility-grid {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 18px;
 }
 
 .facility-card {
-  overflow: hidden;
   border-radius: 24px;
-  border: 1px solid rgba(127, 194, 184, 0.16);
-  background: linear-gradient(180deg, #ffffff 0%, #fbfefd 100%);
-  box-shadow: 0 18px 40px rgba(31, 41, 55, 0.06);
-  transition: transform 0.25s ease, box-shadow 0.25s ease;
+  border: 1px solid var(--theme-border);
+  background: linear-gradient(145deg, rgba(255, 255, 255, 0.98), rgba(254, 248, 249, 0.98));
+  box-shadow: 0 14px 28px var(--theme-shadow);
+  overflow: hidden;
   cursor: pointer;
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
 }
 
 .facility-card:hover {
   transform: translateY(-4px);
-  box-shadow: 0 24px 46px rgba(31, 41, 55, 0.1);
+  box-shadow: 0 24px 44px rgba(94, 52, 62, 0.12);
 }
 
 .card-media {
-  position: relative;
-  height: 200px;
-  background: linear-gradient(135deg, #edf8f5 0%, #dff0eb 100%);
+  height: 160px;
+  overflow: hidden;
+  background: rgba(245, 183, 192, 0.08);
 }
 
-.card-media img,
-.detail-cover img {
+.card-media img {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  display: block;
 }
 
-.media-fallback {
+.card-media-fallback {
+  height: 100%;
   display: grid;
   place-items: center;
-  width: 100%;
-  height: 100%;
-  color: #74a29b;
-  font-size: 36px;
-}
-
-.status-pill {
-  position: absolute;
-  top: 14px;
-  right: 14px;
-  border: none;
+  font-size: 48px;
 }
 
 .card-body {
-  padding: 18px 18px 12px;
+  padding: 18px;
 }
 
-.card-head h4 {
-  margin: 0;
-  color: #183d37;
-  font-size: 20px;
+.card-tags {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin-bottom: 10px;
 }
 
-.card-head span {
-  display: inline-block;
-  margin-top: 6px;
-  color: #728681;
-  font-size: 13px;
+.card-tags .tag-category {
+  background: rgba(245, 183, 192, 0.14) !important;
+  border-color: transparent !important;
+  color: #c4677a !important;
 }
 
-.info-grid {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 10px;
-  margin-top: 16px;
-}
-
-.info-item {
-  padding: 12px;
-  border-radius: 16px;
-  background: #f6fbf9;
-}
-
-.info-item label,
-.detail-label {
-  display: block;
-  color: #748782;
-  font-size: 12px;
-}
-
-.info-item strong,
-.detail-info-card strong {
-  display: block;
-  margin-top: 8px;
-  color: #193f39;
-  line-height: 1.6;
+.card-title {
+  margin: 0 0 8px;
+  font-size: 17px;
+  color: #7a4052;
 }
 
 .card-desc {
-  margin: 16px 0 0;
-  color: #667a75;
-  line-height: 1.8;
-  min-height: 56px;
+  margin: 0 0 12px;
+  color: #8e717b;
+  line-height: 1.6;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }
 
-.card-actions,
-.drawer-actions,
-.dialog-footer {
+.card-meta {
   display: flex;
-  gap: 12px;
-  align-items: center;
-  justify-content: flex-end;
+  justify-content: space-between;
+  gap: 10px;
+  color: #9e818c;
+  font-size: 12px;
 }
 
-.card-actions {
-  padding: 0 18px 18px;
-}
-
+/* Pagination */
 .pagination-wrap {
   display: flex;
-  justify-content: flex-end;
-  margin-top: 22px;
+  justify-content: center;
+  margin-top: 24px;
+}
+
+.pagination-wrap :deep(.el-pagination) {
+  --el-pagination-button-color: #7a4052;
+}
+
+.pagination-wrap :deep(.el-pagination.is-background .el-pager li:not(.is-disabled).is-active) {
+  background: linear-gradient(135deg, #f5b7c0 0%, #e8909d 100%);
+  border: none;
+}
+
+/* Empty */
+.empty-state {
+  text-align: center;
+  padding: 60px 20px;
+}
+
+.empty-state h3 {
+  color: #7a4052;
+}
+
+.empty-state p {
+  color: #8e717b;
+}
+
+/* Detail Drawer */
+.detail-drawer :deep(.el-drawer) {
+  border-radius: 30px 0 0 30px;
+  background: linear-gradient(180deg, #fffafb 0%, #fef8f9 100%);
 }
 
 .detail-layout {
+  padding: 28px;
   display: grid;
-  gap: 20px;
-  padding: 8px 4px 20px;
+  gap: 24px;
 }
 
 .detail-hero {
   display: grid;
-  grid-template-columns: 260px minmax(0, 1fr);
-  gap: 18px;
-  padding: 22px;
-  border-radius: 28px;
-  background: linear-gradient(135deg, #f7fdfb 0%, #eef8f4 100%);
+  gap: 20px;
 }
 
-.detail-cover {
-  overflow: hidden;
-  border-radius: 22px;
-  min-height: 220px;
-  background: linear-gradient(135deg, #edf8f5 0%, #dff0eb 100%);
+.detail-image {
+  width: 100%;
+  max-height: 260px;
+  object-fit: cover;
+  border-radius: 24px;
 }
 
-.detail-fallback {
-  min-height: 220px;
+.eyebrow {
+  display: inline-block;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: var(--theme-soft);
+  color: #c4677a;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  margin-bottom: 8px;
 }
 
 .detail-copy h2 {
-  margin: 14px 0 10px;
-  color: #163c36;
+  margin: 0;
+  color: #7a4052;
 }
 
 .detail-copy p {
   margin: 0;
-  color: #667a75;
+  color: #8a6a76;
   line-height: 1.8;
 }
 
@@ -1123,8 +825,19 @@ function handleImageError(event) {
 .detail-panel {
   padding: 18px;
   border-radius: 22px;
-  background: #fbfefd;
-  border: 1px solid rgba(127, 194, 184, 0.14);
+  background: #fef8f9;
+  border: 1px solid rgba(245, 183, 192, 0.14);
+}
+
+.detail-label {
+  display: block;
+  font-size: 12px;
+  color: #9e818c;
+  margin-bottom: 6px;
+}
+
+.detail-info-card strong {
+  color: #7a4052;
 }
 
 .timeline-list {
@@ -1144,15 +857,15 @@ function handleImageError(event) {
   height: 12px;
   margin-top: 9px;
   border-radius: 999px;
-  background: linear-gradient(135deg, #5aa499, #3b8078);
-  box-shadow: 0 0 0 6px rgba(90, 164, 153, 0.14);
+  background: linear-gradient(135deg, #f5b7c0, #e8909d);
+  box-shadow: 0 0 0 6px rgba(245, 183, 192, 0.14);
 }
 
 .timeline-content {
   padding: 16px;
   border-radius: 18px;
   background: #ffffff;
-  border: 1px solid rgba(127, 194, 184, 0.14);
+  border: 1px solid rgba(245, 183, 192, 0.14);
 }
 
 .timeline-top {
@@ -1164,18 +877,52 @@ function handleImageError(event) {
 
 .timeline-content p {
   margin: 10px 0 6px;
-  color: #2c443f;
+  color: #7a4052;
 }
 
 .timeline-content span {
-  color: #728682;
+  color: #9e818c;
   font-size: 12px;
 }
 
 .drawer-actions {
   margin-top: 4px;
+  display: flex;
+  gap: 12px;
 }
 
+.drawer-actions .reserve-btn {
+  flex: 1;
+  min-height: 50px;
+  border-radius: 16px;
+  border: none;
+  background: linear-gradient(135deg, #f5b7c0 0%, #e8909d 100%);
+  color: #ffffff;
+  box-shadow: 0 14px 28px rgba(232, 144, 157, 0.2);
+  font-size: 15px;
+  font-weight: 600;
+  transition: opacity 0.25s ease;
+}
+
+.drawer-actions .reserve-btn:hover {
+  opacity: 0.9;
+}
+
+.drawer-actions .reserve-btn:disabled {
+  background: #ddd;
+  box-shadow: none;
+  color: #999;
+}
+
+.drawer-close-btn {
+  min-height: 50px;
+  border-radius: 16px;
+  border: 1px solid rgba(245, 183, 192, 0.2);
+  background: rgba(255, 255, 255, 0.86);
+  color: #c4677a;
+}
+
+/* Dialog */
 .dialog-header {
   display: flex;
   align-items: center;
@@ -1184,12 +931,12 @@ function handleImageError(event) {
 
 .dialog-header h3 {
   margin: 0;
-  color: #163d37;
+  color: #7a4052;
 }
 
 .dialog-header p {
   margin: 6px 0 0;
-  color: #6e827d;
+  color: #8e717b;
 }
 
 .dialog-badge {
@@ -1198,7 +945,7 @@ function handleImageError(event) {
   width: 48px;
   height: 48px;
   border-radius: 16px;
-  background: rgba(143, 210, 199, 0.24);
+  background: rgba(245, 183, 192, 0.24);
   color: var(--theme-deep);
 }
 
@@ -1208,14 +955,24 @@ function handleImageError(event) {
   gap: 14px;
 }
 
+.submit-btn {
+  border-radius: 14px;
+  min-height: 44px;
+  border: none;
+  background: linear-gradient(135deg, #f5b7c0 0%, #e8909d 100%);
+  color: #ffffff;
+  box-shadow: 0 14px 28px rgba(232, 144, 157, 0.2);
+  padding: 0 28px;
+}
+
 .facility-theme :deep(.el-input__wrapper),
 .facility-theme :deep(.el-select__wrapper),
 .facility-theme :deep(.el-textarea__inner),
 .facility-theme :deep(.el-date-editor.el-input__wrapper) {
   border-radius: 14px;
   box-shadow: none;
-  background: #f9fcfb;
-  border: 1px solid rgba(127, 194, 184, 0.2);
+  background: #fef8f9;
+  border: 1px solid rgba(245, 183, 192, 0.2);
 }
 
 .facility-theme :deep(.el-dialog) {
