@@ -167,9 +167,9 @@
         <el-table-column label="操作" width="220" fixed="right" align="center">
           <template #default="{ row }">
             <div class="row-actions">
-              <el-button link type="primary" @click.stop="openDetail(row)">详情</el-button>
-              <el-button link type="primary" @click.stop="handleEdit(row)">编辑</el-button>
-              <el-button link type="danger" @click.stop="handleDelete(row)">删除</el-button>
+              <el-button class="action-btn view-btn" @click.stop="openDetail(row)">详情</el-button>
+              <el-button class="action-btn edit-btn" @click.stop="handleEdit(row)">编辑</el-button>
+              <el-button class="action-btn delete-btn" @click.stop="handleDelete(row)">删除</el-button>
             </div>
           </template>
         </el-table-column>

@@ -85,18 +85,16 @@
         <el-table-column label="操作" width="220" fixed="right" align="center">
           <template #default="{ row }">
             <div class="row-actions">
-              <el-button link type="primary" @click.stop="openDetail(row)">查看</el-button>
+              <el-button class="action-btn view-btn" @click.stop="openDetail(row)">查看</el-button>
               <el-button
-                link
-                type="success"
+                class="action-btn edit-btn"
                 :disabled="row.status === 'COMPLETED' || row.status === 'CANCELLED'"
                 @click.stop="openEditDialog(row)"
               >
                 编辑
               </el-button>
               <el-button
-                link
-                type="warning"
+                class="action-btn success-btn"
                 :disabled="!['PENDING', 'IN_PROGRESS'].includes(row.status)"
                 @click.stop="openCompleteDialog(row)"
               >

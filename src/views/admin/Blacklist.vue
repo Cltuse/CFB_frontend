@@ -439,19 +439,23 @@ onMounted(() => {
   --theme-border: var(--feature-border);
   --theme-shadow: var(--feature-glow);
   min-height: 100%;
-  border-radius: 28px;
-  background:
-    radial-gradient(circle at top right, var(--theme-soft) 0%, transparent 35%),
-    linear-gradient(145deg, rgba(255, 255, 255, 0.96) 0%, #ffffff 62%);
+  display: grid;
+  gap: 20px;
   animation: blacklist-rise 0.55s ease both;
-  padding: 32px;
 }
 
 .page-hero {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 20px;
-  margin-bottom: 28px;
+  padding: 30px;
+  margin-bottom: 0;
+  border-radius: 28px;
+  border: 1px solid var(--theme-border);
+  background:
+    radial-gradient(circle at top right, var(--theme-soft) 0%, transparent 35%),
+    linear-gradient(145deg, rgba(255, 255, 255, 0.96) 0%, #ffffff 62%);
+  box-shadow: 0 22px 50px var(--theme-shadow);
 }
 
 .hero-copy .hero-eyebrow {
@@ -512,7 +516,7 @@ onMounted(() => {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 16px;
-  margin-bottom: 28px;
+  margin-bottom: 0;
 }
 
 .summary-card {
@@ -544,7 +548,7 @@ onMounted(() => {
 
 .control-card {
   padding: 24px;
-  margin-bottom: 28px;
+  margin-bottom: 0;
   border-radius: 24px;
   border: 1px solid var(--theme-border);
   background: rgba(255, 255, 255, 0.94);
@@ -651,27 +655,9 @@ onMounted(() => {
 .row-actions {
   display: flex;
   align-items: center;
-  gap: 12px;
+  justify-content: center;
+  gap: 10px;
   flex-wrap: wrap;
-}
-
-.danger-action-btn,
-.neutral-action-btn {
-  min-height: 34px;
-  padding: 0 14px;
-  border-radius: 999px;
-}
-
-.danger-action-btn {
-  color: var(--theme-deep);
-  border-color: var(--theme-border);
-  background: rgba(255, 255, 255, 0.96);
-}
-
-.neutral-action-btn {
-  color: #718096;
-  border-color: rgba(189, 198, 214, 0.24);
-  background: rgba(247, 249, 252, 0.96);
 }
 
 .pagination-wrap {

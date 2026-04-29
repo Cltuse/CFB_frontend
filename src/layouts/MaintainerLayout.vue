@@ -186,7 +186,7 @@ const handleMenuSelect = (index) => {
   flex: 1;
   padding: 24px;
   overflow-y: auto;
-  background: transparent;
+  background: var(--content-area-bg);
 }
 
 .route-content-shell {

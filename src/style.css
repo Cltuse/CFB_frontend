@@ -72,6 +72,9 @@ textarea {
   --layout-shell-bg:
     radial-gradient(circle at top left, color-mix(in srgb, var(--feature-secondary) 22%, transparent), transparent 23%),
     linear-gradient(180deg, var(--layout-shell-top, #f8fbfd) 0%, var(--layout-shell-bottom, #f4f7fb) 100%);
+  --content-area-bg:
+    radial-gradient(circle at top right, var(--feature-soft), transparent 24%),
+    linear-gradient(180deg, var(--layout-shell-top, #f8fbfd) 0%, var(--layout-shell-bottom, #f4f7fb) 100%);
   --layout-sidebar-border: color-mix(in srgb, var(--feature-primary) 14%, #dbe5ef 86%);
   --layout-sidebar-shadow: 0 16px 38px color-mix(in srgb, var(--feature-primary) 12%, transparent);
 }
@@ -86,8 +89,14 @@ textarea {
 .maintainer-layout .route-content-shell,
 .user-layout .route-content-shell {
   width: 100%;
-  max-width: 1480px;
+  max-width: clamp(1120px, 82vw, 1680px);
   margin: 0 auto;
+}
+
+.admin-layout .route-content-shell > :is(.page-shell, [class$='-page'], [class*='-page ']),
+.maintainer-layout .route-content-shell > :is(.page-shell, [class$='-page'], [class*='-page ']),
+.user-layout .route-content-shell > :is(.page-shell, [class$='-page'], [class*='-page ']) {
+  width: 100%;
 }
 
 .admin-layout .content-area,
@@ -95,16 +104,22 @@ textarea {
 .user-layout .content-area {
   display: flex;
   justify-content: center;
+  background: var(--content-area-bg);
 }
 
 .admin-layout :is([class$='-page'], [class*='-page ']),
 .maintainer-layout :is([class$='-page'], [class*='-page ']),
 .user-layout :is([class$='-page'], [class*='-page ']) {
   padding: 0 !important;
-  background:
-    radial-gradient(circle at top left, color-mix(in srgb, var(--feature-secondary) 26%, transparent), transparent 28%),
-    radial-gradient(circle at right center, color-mix(in srgb, var(--feature-soft) 78%, #ffffff 22%), transparent 26%),
-    linear-gradient(180deg, var(--feature-surface, #f7f9fb) 0%, #ffffff 100%) !important;
+  background: transparent !important;
+  background-image: none !important;
+}
+
+.admin-layout .route-content-shell > :is(.page-shell, [class$='-page'], [class*='-page ']),
+.maintainer-layout .route-content-shell > :is(.page-shell, [class$='-page'], [class*='-page ']),
+.user-layout .route-content-shell > :is(.page-shell, [class$='-page'], [class*='-page ']) {
+  background: transparent !important;
+  background-image: none !important;
 }
 
 .admin-layout :is(.page-hero, .page-header, .summary-card, .stat-card, .control-card, .panel-card, .hero-note, .feature-card, .chart-card, .detail-panel, .detail-summary-card, .table-container, .toolbar, .pagination-container, .hero-profile-card, .mini-card, .empty-state),
@@ -201,20 +216,82 @@ textarea {
   border-radius: 14px !important;
 }
 
-.admin-layout :is(.action-btn, .edit-btn, .view-btn, .reply-btn),
-.maintainer-layout :is(.action-btn, .edit-btn, .view-btn, .reply-btn),
-.user-layout :is(.action-btn, .edit-btn, .view-btn, .reply-btn) {
+.admin-layout :is(.action-btn, .view-btn, .edit-btn, .reply-btn, .rule-action-btn, .history-action-btn, .neutral-action-btn, .success-btn),
+.maintainer-layout :is(.action-btn, .view-btn, .edit-btn, .reply-btn, .rule-action-btn, .history-action-btn, .neutral-action-btn, .success-btn),
+.user-layout :is(.action-btn, .view-btn, .edit-btn, .reply-btn, .rule-action-btn, .history-action-btn, .neutral-action-btn, .success-btn) {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-height: 36px;
+  padding: 0 14px;
+  border-radius: 999px !important;
   color: var(--feature-strong) !important;
   border-color: var(--feature-border) !important;
   background: color-mix(in srgb, var(--feature-soft-bg) 70%, #ffffff 30%) !important;
+  box-shadow: 0 10px 22px color-mix(in srgb, var(--feature-primary) 12%, transparent) !important;
 }
 
-.admin-layout :is(.delete-btn, .danger-btn),
-.maintainer-layout :is(.delete-btn, .danger-btn),
-.user-layout :is(.delete-btn, .danger-btn) {
+.admin-layout :is(.edit-btn, .reply-btn, .history-action-btn),
+.maintainer-layout :is(.edit-btn, .reply-btn, .history-action-btn),
+.user-layout :is(.edit-btn, .reply-btn, .history-action-btn) {
+  color: var(--feature-primary-deep) !important;
+  border-color: color-mix(in srgb, var(--feature-primary) 22%, #dce4ee 78%) !important;
+  background: color-mix(in srgb, var(--feature-primary) 16%, #ffffff 84%) !important;
+}
+
+.admin-layout :is(.success-btn),
+.maintainer-layout :is(.success-btn),
+.user-layout :is(.success-btn) {
+  color: #2f8f63 !important;
+  border-color: rgba(47, 143, 99, 0.22) !important;
+  background: rgba(239, 251, 244, 0.98) !important;
+}
+
+.admin-layout :is(.warning-btn),
+.maintainer-layout :is(.warning-btn),
+.user-layout :is(.warning-btn) {
+  color: #b7791f !important;
+  border-color: rgba(183, 121, 31, 0.22) !important;
+  background: rgba(255, 249, 235, 0.98) !important;
+}
+
+.admin-layout :is(.delete-btn, .danger-btn, .danger-action-btn, .cancel-btn),
+.maintainer-layout :is(.delete-btn, .danger-btn, .danger-action-btn, .cancel-btn),
+.user-layout :is(.delete-btn, .danger-btn, .danger-action-btn, .cancel-btn) {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-height: 36px;
+  padding: 0 14px;
+  border-radius: 999px !important;
   color: #c85f6b !important;
   border-color: rgba(200, 95, 107, 0.2) !important;
   background: rgba(255, 244, 246, 0.98) !important;
+  box-shadow: 0 10px 22px rgba(200, 95, 107, 0.12) !important;
+}
+
+.admin-layout :is(.action-btn, .view-btn, .edit-btn, .reply-btn, .delete-btn, .danger-btn, .danger-action-btn, .neutral-action-btn, .rule-action-btn, .history-action-btn, .success-btn, .warning-btn, .cancel-btn),
+.maintainer-layout :is(.action-btn, .view-btn, .edit-btn, .reply-btn, .delete-btn, .danger-btn, .danger-action-btn, .neutral-action-btn, .rule-action-btn, .history-action-btn, .success-btn, .warning-btn, .cancel-btn),
+.user-layout :is(.action-btn, .view-btn, .edit-btn, .reply-btn, .delete-btn, .danger-btn, .danger-action-btn, .neutral-action-btn, .rule-action-btn, .history-action-btn, .success-btn, .warning-btn, .cancel-btn) {
+  transition:
+    transform var(--shell-transition),
+    box-shadow var(--shell-transition),
+    border-color var(--shell-transition),
+    background var(--shell-transition);
+}
+
+.admin-layout :is(.action-btn, .view-btn, .edit-btn, .reply-btn, .delete-btn, .danger-btn, .danger-action-btn, .neutral-action-btn, .rule-action-btn, .history-action-btn, .success-btn, .warning-btn, .cancel-btn):hover,
+.maintainer-layout :is(.action-btn, .view-btn, .edit-btn, .reply-btn, .delete-btn, .danger-btn, .danger-action-btn, .neutral-action-btn, .rule-action-btn, .history-action-btn, .success-btn, .warning-btn, .cancel-btn):hover,
+.user-layout :is(.action-btn, .view-btn, .edit-btn, .reply-btn, .delete-btn, .danger-btn, .danger-action-btn, .neutral-action-btn, .rule-action-btn, .history-action-btn, .success-btn, .warning-btn, .cancel-btn):hover {
+  transform: translateY(-1px);
+}
+
+.admin-layout .row-actions .el-button + .el-button,
+.maintainer-layout .row-actions .el-button + .el-button,
+.user-layout .row-actions .el-button + .el-button {
+  margin-left: 0 !important;
 }
 
 .admin-layout :is(.el-button--text, .el-button.is-link),
@@ -302,6 +379,12 @@ textarea {
 }
 
 @media (max-width: 768px) {
+  .admin-layout .route-content-shell,
+  .maintainer-layout .route-content-shell,
+  .user-layout .route-content-shell {
+    max-width: 100%;
+  }
+
   .admin-layout :is(.page-hero, .page-header, .summary-card, .stat-card, .control-card, .panel-card, .hero-note, .feature-card, .chart-card, .detail-panel, .detail-summary-card, .table-container, .toolbar, .pagination-container, .hero-profile-card, .mini-card, .empty-state),
   .maintainer-layout :is(.page-hero, .page-header, .summary-card, .stat-card, .control-card, .panel-card, .hero-note, .feature-card, .chart-card, .detail-panel, .detail-summary-card, .table-container, .toolbar, .pagination-container, .hero-profile-card, .mini-card, .empty-state),
   .user-layout :is(.page-hero, .page-header, .summary-card, .stat-card, .control-card, .panel-card, .hero-note, .feature-card, .chart-card, .detail-panel, .detail-summary-card, .table-container, .toolbar, .pagination-container, .hero-profile-card, .mini-card, .empty-state) {

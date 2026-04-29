@@ -9,22 +9,22 @@ const ROLE_THEMES = {
     shellBottom: '#eef5fb'
   },
   maintainer: {
-    primary: '#8fc6ea',
-    secondary: '#cfe6f7',
-    soft: 'rgba(143, 198, 234, 0.18)',
-    glow: 'rgba(143, 198, 234, 0.22)',
-    surface: '#f4f9fd',
-    shellTop: '#f7fbfe',
-    shellBottom: '#eef5fb'
+    primary: '#8fcf9b',
+    secondary: '#d8f0de',
+    soft: 'rgba(143, 207, 155, 0.18)',
+    glow: 'rgba(143, 207, 155, 0.24)',
+    surface: '#f4fbf5',
+    shellTop: '#f8fcf8',
+    shellBottom: '#edf7ef'
   },
   user: {
-    primary: '#f5b7c0',
-    secondary: '#fce4e8',
-    soft: 'rgba(245, 183, 192, 0.18)',
-    glow: 'rgba(245, 183, 192, 0.22)',
-    surface: '#fef8f9',
-    shellTop: '#fffafb',
-    shellBottom: '#fdf0f3'
+    primary: '#7fc8f8',
+    secondary: '#d8eefc',
+    soft: 'rgba(127, 200, 248, 0.18)',
+    glow: 'rgba(127, 200, 248, 0.24)',
+    surface: '#f4fbff',
+    shellTop: '#f8fcff',
+    shellBottom: '#edf7fd'
   }
 }
 
