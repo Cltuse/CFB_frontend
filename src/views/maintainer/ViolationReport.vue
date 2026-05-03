@@ -162,9 +162,11 @@
                 {{ formatDateTime(row.createTime) }}
               </template>
             </el-table-column>
-            <el-table-column label="操作" width="90" align="center" fixed="right">
+            <el-table-column label="操作" width="150" align="center" fixed="right">
               <template #default="{ row }">
-                <el-button link type="primary" @click="viewDetails(row)">详情</el-button>
+                <div class="row-actions">
+                  <el-button class="action-btn view-btn" @click="viewDetails(row)">详情</el-button>
+                </div>
               </template>
             </el-table-column>
           </el-table>
@@ -567,13 +569,23 @@ const formatDateTime = (value) => {
   padding-top: 8px;
 }
 
+.row-actions {
+  display: flex;
+  justify-content: center;
+}
+
 .points-text {
   font-weight: 700;
-  color: var(--feature-primary);
+  color: var(--feature-primary-deep);
 }
 
 .records-table :deep(.el-table__header-wrapper th.el-table__cell) {
-  background: linear-gradient(180deg, #f8fbff 0%, #eef4fb 100%) !important;
+  background:
+    linear-gradient(
+      180deg,
+      color-mix(in srgb, var(--feature-soft-bg) 46%, #ffffff 54%) 0%,
+      color-mix(in srgb, var(--feature-soft-bg) 82%, #ffffff 18%) 100%
+    ) !important;
 }
 
 .records-table :deep(.el-table::before),
@@ -596,7 +608,14 @@ const formatDateTime = (value) => {
 .detail-item {
   padding: 16px;
   border-radius: 18px;
-  background: var(--feature-surface);
+  border: 1px solid color-mix(in srgb, var(--feature-primary) 18%, #dbe7de 82%);
+  background:
+    linear-gradient(
+      135deg,
+      color-mix(in srgb, var(--feature-soft-bg) 74%, #ffffff 26%) 0%,
+      #ffffff 100%
+    );
+  box-shadow: 0 12px 26px color-mix(in srgb, var(--feature-primary) 10%, transparent);
 }
 
 .detail-item.full {
@@ -606,8 +625,9 @@ const formatDateTime = (value) => {
 .detail-label {
   display: block;
   margin-bottom: 10px;
-  color: #6b7280;
+  color: var(--feature-primary-deep);
   font-size: 12px;
+  font-weight: 600;
 }
 
 .detail-item strong,

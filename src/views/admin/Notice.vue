@@ -42,22 +42,26 @@
         <p>根据通知标题或内容搜索，快速定位到相关记录。</p>
       </div>
 
-      <div class="control-actions">
-        <el-input
-          v-model="searchKeyword"
-          placeholder="搜索通知标题或内容"
-          class="search-input"
-          clearable
-          @keyup.enter="handleSearch"
-          @clear="handleClearSearch"
-        >
-          <template #prefix>
-            <el-icon><Search /></el-icon>
-          </template>
-          <template #append>
-            <el-button type="primary" @click="handleSearch">搜索</el-button>
-          </template>
-        </el-input>
+      <div class="control-actions search-toolbar">
+        <div class="search-fields">
+          <el-input
+            v-model="searchKeyword"
+            placeholder="搜索通知标题或内容"
+            class="search-input"
+            clearable
+            @keyup.enter="handleSearch"
+            @clear="handleClearSearch"
+          >
+            <template #prefix>
+              <el-icon><Search /></el-icon>
+            </template>
+          </el-input>
+        </div>
+
+        <div class="search-buttons">
+          <el-button type="primary" class="primary-btn small-btn" @click="handleSearch">搜索</el-button>
+          <el-button class="secondary-btn small-btn" @click="handleClearSearch">重置</el-button>
+        </div>
       </div>
     </section>
 

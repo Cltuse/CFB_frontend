@@ -51,22 +51,26 @@
         <el-tab-pane label="已拒绝" name="REJECTED" />
         <el-tab-pane label="全部" name="ALL" />
       </el-tabs>
-      <div class="control-actions">
-        <el-input
-          v-model="searchKeyword"
-          placeholder="搜索设施名称或申请人"
-          class="search-input"
-          clearable
-          @keyup.enter="handleSearch"
-          @clear="handleClearSearch"
-        >
-          <template #prefix>
-            <el-icon><Search /></el-icon>
-          </template>
-          <template #append>
-            <el-button type="primary" @click="handleSearch">搜索</el-button>
-          </template>
-        </el-input>
+      <div class="control-actions search-toolbar">
+        <div class="search-fields">
+          <el-input
+            v-model="searchKeyword"
+            placeholder="搜索设施名称或申请人"
+            class="search-input"
+            clearable
+            @keyup.enter="handleSearch"
+            @clear="handleClearSearch"
+          >
+            <template #prefix>
+              <el-icon><Search /></el-icon>
+            </template>
+          </el-input>
+        </div>
+
+        <div class="search-buttons">
+          <el-button type="primary" class="primary-btn small-btn" @click="handleSearch">搜索</el-button>
+          <el-button class="secondary-btn small-btn" @click="handleClearSearch">重置</el-button>
+        </div>
       </div>
 
 

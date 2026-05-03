@@ -117,29 +117,27 @@
             </el-tag>
           </template>
         </el-table-column>
-        <el-table-column label="操作" width="250" fixed="right" align="center">
+        <el-table-column label="操作" width="320" fixed="right" align="center">
           <template #default="{ row }">
             <div class="row-actions">
               <el-button
                 v-if="row.status === 'PENDING'"
-                link
-                type="success"
+                class="action-btn success-btn"
                 @click.stop="openAuditDialog(row, 'approve')"
               >
                 通过
               </el-button>
               <el-button
                 v-if="row.status === 'PENDING'"
-                link
-                type="danger"
+                class="action-btn danger-btn"
                 @click.stop="openAuditDialog(row, 'reject')"
               >
                 驳回
               </el-button>
-              <el-button v-if="canVerify(row)" link type="warning" @click.stop="openVerifyDialog(row)">
+              <el-button v-if="canVerify(row)" class="action-btn warning-btn" @click.stop="openVerifyDialog(row)">
                 {{ getVerifyActionText(row) }}
               </el-button>
-              <el-button link type="primary" @click.stop="openDetail(row)">查看</el-button>
+              <el-button class="action-btn view-btn" @click.stop="openDetail(row)">查看</el-button>
             </div>
           </template>
         </el-table-column>

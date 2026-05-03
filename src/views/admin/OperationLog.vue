@@ -97,7 +97,7 @@
           </el-form-item>
         </div>
 
-        <div class="control-actions">
+        <div class="control-actions search-buttons">
           <el-button type="primary" class="primary-btn small-btn" @click="handleSearch">搜索</el-button>
           <el-button class="secondary-btn small-btn" @click="resetSearch">重置</el-button>
         </div>

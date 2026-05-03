@@ -670,10 +670,11 @@ const goTo = (path, query) => {
 
 .quick-links button {
   padding: 14px 16px;
-  border: none;
+  border: 1px solid color-mix(in srgb, var(--feature-primary) 24%, transparent);
   border-radius: 18px;
-  background: linear-gradient(135deg, var(--feature-primary) 0%, var(--feature-secondary) 100%);
-  color: #2c3e50;
+  background: linear-gradient(135deg, var(--feature-primary) 0%, var(--feature-primary-deep) 100%);
+  box-shadow: 0 14px 30px color-mix(in srgb, var(--feature-primary) 20%, transparent);
+  color: #f7fffa;
   font-weight: 600;
   cursor: pointer;
   transition: transform 0.25s ease, box-shadow 0.25s ease;
@@ -681,7 +682,7 @@ const goTo = (path, query) => {
 
 .quick-links button:hover {
   transform: translateY(-2px);
-  box-shadow: 0 16px 28px var(--feature-glow);
+  box-shadow: 0 18px 32px color-mix(in srgb, var(--feature-primary) 28%, transparent);
 }
 
 .stats-grid {

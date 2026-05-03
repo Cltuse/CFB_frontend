@@ -42,31 +42,40 @@
         <p>支持按用户名、真实姓名、联系方式、角色和状态筛选，便于在账号量增加后快速定位目标用户。</p>
       </div>
 
-      <div class="control-actions">
-        <el-input
-          v-model="searchKeyword"
-          placeholder="搜索用户名、姓名、手机号或邮箱"
-          class="search-input"
-          clearable
-        >
-          <template #prefix>
-            <el-icon><Search /></el-icon>
-          </template>
-        </el-input>
+      <div class="control-actions search-toolbar">
+        <div class="search-fields">
+          <el-input
+            v-model="searchKeyword"
+            placeholder="搜索用户名、姓名、手机号或邮箱"
+            class="search-input"
+            clearable
+            @keyup.enter="handleSearch"
+            @clear="handleClearSearch"
+          >
+            <template #prefix>
+              <el-icon><Search /></el-icon>
+            </template>
+          </el-input>
 
-        <el-select v-model="roleFilter" clearable placeholder="角色筛选" class="filter-select">
-          <el-option
-            v-for="option in roleOptions"
-            :key="option.value"
-            :label="option.label"
-            :value="option.value"
-          />
-        </el-select>
+          <el-select v-model="roleFilter" clearable placeholder="角色筛选" class="filter-select">
+            <el-option
+              v-for="option in roleOptions"
+              :key="option.value"
+              :label="option.label"
+              :value="option.value"
+            />
+          </el-select>
 
-        <el-select v-model="statusFilter" clearable placeholder="状态筛选" class="filter-select">
-          <el-option label="激活" value="ACTIVE" />
-          <el-option label="禁用" value="INACTIVE" />
-        </el-select>
+          <el-select v-model="statusFilter" clearable placeholder="状态筛选" class="filter-select">
+            <el-option label="激活" value="ACTIVE" />
+            <el-option label="禁用" value="INACTIVE" />
+          </el-select>
+        </div>
+
+        <div class="search-buttons">
+          <el-button type="primary" class="primary-btn small-btn" @click="handleSearch">搜索</el-button>
+          <el-button class="secondary-btn small-btn" @click="handleClearSearch">重置</el-button>
+        </div>
       </div>
     </section>
 
@@ -356,6 +365,17 @@ function handleEdit(row) {
 
 function handleRowClick(row) {
   handleEdit(row);
+}
+
+function handleSearch() {
+  pagination.page = 1;
+}
+
+function handleClearSearch() {
+  searchKeyword.value = '';
+  roleFilter.value = '';
+  statusFilter.value = '';
+  pagination.page = 1;
 }
 
 async function handleSubmit() {

@@ -39,7 +39,7 @@
           <div class="avatar-shell">
             <img v-if="userInfo.avatar" :src="userInfo.avatar" class="avatar-image" alt="用户头像" />
             <div v-else class="avatar-placeholder">{{ userInitial }}</div>
-            <button type="button" class="avatar-action" @click.stop="handleAvatarUpload">更换头像</button>
+            
           </div>
 
           <div class="card-copy">

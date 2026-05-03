@@ -42,33 +42,38 @@
         <p>支持按标题、正文、用户、状态和反馈类型快速锁定目标记录，适合管理员集中处理某一类问题。</p>
       </div>
 
-      <div class="control-actions">
-        <el-input
-          v-model="searchKeyword"
-          placeholder="搜索标题、正文或提交用户"
-          class="search-input"
-          clearable
-          @keyup.enter="handleSearch"
-          @clear="handleClearSearch"
-        >
-          <template #prefix>
-            <el-icon><Search /></el-icon>
-          </template>
-        </el-input>
+      <div class="control-actions search-toolbar">
+        <div class="search-fields">
+          <el-input
+            v-model="searchKeyword"
+            placeholder="搜索标题、正文或提交用户"
+            class="search-input"
+            clearable
+            @keyup.enter="handleSearch"
+            @clear="handleClearSearch"
+          >
+            <template #prefix>
+              <el-icon><Search /></el-icon>
+            </template>
+          </el-input>
 
-        <el-select v-model="filterStatus" clearable placeholder="状态筛选" class="filter-select">
-          <el-option label="待处理" value="PENDING" />
-          <el-option label="已处理" value="PROCESSED" />
-          <el-option label="已关闭" value="CLOSED" />
-        </el-select>
+          <el-select v-model="filterStatus" clearable placeholder="状态筛选" class="filter-select">
+            <el-option label="待处理" value="PENDING" />
+            <el-option label="已处理" value="PROCESSED" />
+            <el-option label="已关闭" value="CLOSED" />
+          </el-select>
 
-        <el-select v-model="filterType" clearable placeholder="类型筛选" class="filter-select">
-          <el-option label="建议" value="SUGGESTION" />
-          <el-option label="投诉" value="COMPLAINT" />
-          <el-option label="咨询" value="QUESTION" />
-        </el-select>
+          <el-select v-model="filterType" clearable placeholder="类型筛选" class="filter-select">
+            <el-option label="建议" value="SUGGESTION" />
+            <el-option label="投诉" value="COMPLAINT" />
+            <el-option label="咨询" value="QUESTION" />
+          </el-select>
+        </div>
 
-        <el-button type="primary" class="primary-btn small-btn" @click="handleSearch">搜索</el-button>
+        <div class="search-buttons">
+          <el-button type="primary" class="primary-btn small-btn" @click="handleSearch">搜索</el-button>
+          <el-button class="secondary-btn small-btn" @click="handleClearSearch">重置</el-button>
+        </div>
       </div>
     </section>
 

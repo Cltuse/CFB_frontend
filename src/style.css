@@ -79,6 +79,136 @@ textarea {
   --layout-sidebar-shadow: 0 16px 38px color-mix(in srgb, var(--feature-primary) 12%, transparent);
 }
 
+.maintainer-layout {
+  --feature-strong: color-mix(in srgb, var(--feature-primary) 76%, #1e3428 24%);
+  --feature-primary-deep: color-mix(in srgb, var(--feature-primary) 84%, #163422 16%);
+  --feature-border: color-mix(in srgb, var(--feature-primary) 22%, #d5e2d8 78%);
+  --feature-soft-bg: color-mix(in srgb, var(--feature-primary) 14%, #ffffff 86%);
+  --feature-soft-surface: color-mix(in srgb, var(--feature-primary) 18%, #ffffff 82%);
+  --feature-chip-bg: color-mix(in srgb, var(--feature-primary) 22%, #ffffff 78%);
+  --layout-sidebar-shadow: 0 18px 42px color-mix(in srgb, var(--feature-primary) 18%, transparent);
+}
+
+.admin-layout {
+  --feature-strong: color-mix(in srgb, var(--feature-primary) 78%, #1d3650 22%);
+  --feature-primary-deep: color-mix(in srgb, var(--feature-primary) 84%, #17314c 16%);
+  --feature-border: color-mix(in srgb, var(--feature-primary) 22%, #d8e2ec 78%);
+  --feature-soft-bg: color-mix(in srgb, var(--feature-primary) 14%, #ffffff 86%);
+  --feature-soft-surface: color-mix(in srgb, var(--feature-primary) 18%, #ffffff 82%);
+  --feature-chip-bg: color-mix(in srgb, var(--feature-primary) 22%, #ffffff 78%);
+  --layout-sidebar-shadow: 0 18px 42px color-mix(in srgb, var(--feature-primary) 18%, transparent);
+}
+
+.user-layout {
+  --feature-strong: color-mix(in srgb, var(--feature-primary) 42%, #5a4d3e 58%);
+  --feature-primary-deep: color-mix(in srgb, var(--feature-primary) 38%, #6a5a47 62%);
+  --feature-border: color-mix(in srgb, var(--feature-primary) 30%, #e5ddd1 70%);
+  --feature-soft-bg: color-mix(in srgb, var(--feature-primary) 12%, #ffffff 88%);
+  --feature-soft-surface: color-mix(in srgb, var(--feature-primary) 16%, #ffffff 84%);
+  --feature-chip-bg: color-mix(in srgb, var(--feature-primary) 20%, #ffffff 80%);
+  --layout-sidebar-shadow: 0 18px 42px color-mix(in srgb, var(--feature-primary) 16%, transparent);
+}
+
+.user-layout :is(.page-shell, [class$='-page'], [class*='-page ']) {
+  --page-primary: var(--feature-primary) !important;
+  --page-secondary: color-mix(in srgb, var(--feature-primary) 18%, #ffffff 82%) !important;
+  --page-soft: color-mix(in srgb, var(--feature-primary) 12%, #ffffff 88%) !important;
+  --theme-main: var(--feature-primary) !important;
+  --theme-deep: var(--feature-primary-deep) !important;
+  --theme-soft: color-mix(in srgb, var(--feature-primary) 18%, #ffffff 82%) !important;
+  --theme-glow: var(--feature-glow) !important;
+  --theme-border: var(--feature-border) !important;
+  --theme-shadow: color-mix(in srgb, var(--feature-primary) 12%, transparent) !important;
+  --theme-surface: color-mix(in srgb, var(--feature-primary) 8%, #ffffff 92%) !important;
+}
+
+.user-layout :is(.hero-kicker, .page-kicker, .section-kicker, .dialog-badge, .meta-chip, .eyebrow, .dialog-kicker) {
+  color: var(--feature-primary-deep) !important;
+}
+
+.user-layout :is(.page-title, .hero-copy h1, .summary-card strong, .stat-card strong, .card-title, .detail-copy h2, .table-head h2, .dialog-header h3, .empty-state h3, .detail-info-card strong, .timeline-content p, .panel-head h2, .section-copy h2, .facility-name, .card-head h2, .recommend-head h2, .quick-action-copy strong, .weather-visual strong, .notice-title, .feedback-title, .reply-head strong, .dialog-title-text, .empty-title, .info-value, .card-copy h2) {
+  color: var(--feature-strong) !important;
+}
+
+.user-layout :is(.hero-copy p, .page-subtitle, .summary-label, .summary-card p, .stat-label, .stat-card p, .card-desc, .card-meta, .detail-copy p, .detail-label, .table-head p, .empty-state p, .timeline-content span, .meta-muted, .panel-head p, .description-text, .time-text, .card-head p, .recommend-head p, .quick-action-copy p, .quick-action-arrow, .weather-type, .weather-row label, .weather-row span, .weather-quote, .notice-meta, .content-text, .content-text-full, .empty-description, .info-label, .feedback-time, .feedback-content, .meta-list, .reply-box p, .reply-head span, .reply-user, .upload-copy p, .security-item p, .card-copy p, .page-subtitle, .page-header p) {
+  color: color-mix(in srgb, var(--feature-strong) 62%, #7f9084 38%) !important;
+}
+
+.user-layout :is(.primary-btn, .el-button--primary, .submit-btn, .reserve-btn) {
+  border-color: color-mix(in srgb, var(--feature-primary) 28%, #d8ccbb 72%) !important;
+  background: linear-gradient(135deg, color-mix(in srgb, var(--feature-primary) 92%, #ffffff 8%) 0%, color-mix(in srgb, var(--feature-primary-deep) 54%, #efe7dd 46%) 100%) !important;
+  color: #4f4336 !important;
+  box-shadow: 0 12px 24px color-mix(in srgb, var(--feature-primary) 20%, transparent) !important;
+}
+
+.user-layout :is(.secondary-btn, .el-button--default, .reset-btn, .refresh-btn, .drawer-close-btn, .close-btn) {
+  border-color: var(--feature-border) !important;
+  background: color-mix(in srgb, var(--feature-soft-bg) 62%, #ffffff 38%) !important;
+  color: var(--feature-strong) !important;
+  box-shadow: 0 10px 22px color-mix(in srgb, var(--feature-primary) 10%, transparent) !important;
+}
+
+.user-layout :is(.page-header, .welcome-hero, .feature-card, .recommend-shell, .panel-card, .summary-card, .notice-item, .feedback-card, .empty-state, .pagination-container, .table-container, .toolbar, .toolbar-card, .weather-visual, .weather-row, .quick-action, .info-row, .security-item, .detail-panel, .detail-info-card, .timeline-content, .notice-info, .content-text-full, .upload-shell, .reply-box) {
+  border-color: var(--feature-border) !important;
+  box-shadow: 0 18px 40px color-mix(in srgb, var(--feature-primary) 14%, transparent) !important;
+}
+
+.user-layout :is(.page-header, .feature-card, .recommend-shell, .panel-card, .summary-card, .notice-item, .feedback-card, .empty-state, .pagination-container, .table-container, .toolbar, .toolbar-card, .quick-action, .info-row, .security-item, .detail-panel, .detail-info-card, .timeline-content, .notice-info, .content-text-full, .upload-shell) {
+  background: color-mix(in srgb, var(--feature-soft-bg) 34%, #ffffff 66%) !important;
+}
+
+.user-layout :is(.header-content, .welcome-hero, .page-hero, .dialog-header, .weather-card) {
+  background:
+    radial-gradient(circle at top right, color-mix(in srgb, var(--feature-soft) 82%, #ffffff 18%), transparent 26%),
+    linear-gradient(145deg, color-mix(in srgb, var(--feature-soft-bg) 72%, #ffffff 28%) 0%, #ffffff 66%) !important;
+}
+
+.user-layout :is(.summary-card) {
+  background: linear-gradient(150deg, color-mix(in srgb, var(--feature-soft-bg) 74%, #ffffff 26%) 0%, #ffffff 84%) !important;
+}
+
+.user-layout :is(.weather-visual, .weather-row, .reply-box, .content-text-full, .upload-shell, .detail-panel, .detail-info-card, .notice-info) {
+  background: color-mix(in srgb, var(--feature-soft-bg) 80%, #ffffff 20%) !important;
+}
+
+.user-layout :is(.title-icon, .notice-icon, .empty-icon, .quick-action-badge, .dialog-title-icon, .avatar-placeholder, .avatar-preview.placeholder) {
+  background: linear-gradient(145deg, color-mix(in srgb, var(--feature-primary) 24%, #ffffff 76%), #ffffff 96%) !important;
+  color: var(--feature-primary-deep) !important;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.82) !important;
+}
+
+.user-layout :is(.weather-row span, .avatar-action, .quick-action-arrow, .detail-btn, .view-btn, .title-icon svg, .notice-icon svg, .publisher svg, .time svg, .dialog-title-icon svg, .empty-icon svg) {
+  color: var(--feature-primary-deep) !important;
+}
+
+.user-layout :is(.avatar-action, .detail-btn, .view-btn) {
+  border-color: var(--feature-border) !important;
+  background: color-mix(in srgb, var(--feature-soft-bg) 66%, #ffffff 34%) !important;
+}
+
+.user-layout .notice-item::before,
+.user-layout .header-decoration,
+.user-layout .reply-box {
+  border-left-color: color-mix(in srgb, var(--feature-primary-deep) 34%, #cbbba5 66%) !important;
+}
+
+.user-layout .notice-item::before,
+.user-layout .header-decoration {
+  background: linear-gradient(180deg, color-mix(in srgb, var(--feature-primary) 90%, #ffffff 10%) 0%, color-mix(in srgb, var(--feature-primary-deep) 44%, #efe7dd 56%) 100%) !important;
+}
+
+.user-layout :is(.reset-btn:hover, .refresh-btn:hover, .drawer-close-btn:hover, .view-btn:hover:not(.is-disabled), .checkin-btn:hover:not(.is-disabled), .detail-btn:hover:not(.is-disabled), .reserve-btn:hover:not(:disabled), .submit-btn:hover:not(:disabled)) {
+  background: linear-gradient(135deg, color-mix(in srgb, var(--feature-primary) 92%, #ffffff 8%) 0%, color-mix(in srgb, var(--feature-primary-deep) 54%, #efe7dd 46%) 100%) !important;
+  color: #4f4336 !important;
+  border-color: color-mix(in srgb, var(--feature-primary) 30%, #d8ccbb 70%) !important;
+  box-shadow: 0 14px 28px color-mix(in srgb, var(--feature-primary) 22%, transparent) !important;
+}
+
+.user-layout :is(.tag-category, .dialog-badge, .page-kicker, .hero-kicker, .dialog-kicker) {
+  background: var(--feature-chip-bg) !important;
+  border-color: color-mix(in srgb, var(--feature-primary) 12%, transparent) !important;
+  color: var(--feature-primary-deep) !important;
+}
 .admin-layout .route-content-shell > *,
 .maintainer-layout .route-content-shell > *,
 .user-layout .route-content-shell > * {
@@ -192,6 +322,62 @@ textarea {
   box-shadow: 0 0 0 4px color-mix(in srgb, var(--feature-primary) 12%, transparent) !important;
 }
 
+.admin-layout :is(.control-card) {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.admin-layout :is(.search-toolbar) {
+  width: 100%;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+
+.admin-layout :is(.search-fields) {
+  flex: 1 1 720px;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.admin-layout :is(.search-buttons) {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 12px;
+  flex: 0 0 auto;
+  flex-wrap: nowrap;
+  margin-left: auto;
+}
+
+.admin-layout :is(.search-input) {
+  flex: 1 1 320px;
+  width: auto !important;
+  min-width: 260px;
+  max-width: none !important;
+}
+
+.admin-layout :is(.filter-select) {
+  flex: 0 1 180px;
+  width: auto !important;
+  min-width: 160px;
+}
+
+.admin-layout :is(.search-buttons .el-button, .search-buttons .primary-btn, .search-buttons .secondary-btn, .search-buttons .small-btn) {
+  min-width: 108px;
+  min-height: 46px;
+}
+
+.admin-layout :is(.search-form .control-actions) {
+  margin-top: 2px !important;
+}
+
 .admin-layout :is(.primary-btn, .el-button--primary),
 .maintainer-layout :is(.primary-btn, .el-button--primary),
 .user-layout :is(.primary-btn, .el-button--primary) {
@@ -240,6 +426,19 @@ textarea {
   background: color-mix(in srgb, var(--feature-primary) 16%, #ffffff 84%) !important;
 }
 
+.admin-layout :is(.view-btn),
+.maintainer-layout :is(.view-btn),
+.user-layout :is(.view-btn) {
+  color: var(--feature-primary-deep) !important;
+  border-color: color-mix(in srgb, var(--feature-primary) 24%, #dce4ee 76%) !important;
+  background:
+    linear-gradient(
+      135deg,
+      color-mix(in srgb, var(--feature-primary) 16%, #ffffff 84%) 0%,
+      color-mix(in srgb, var(--feature-primary) 24%, #ffffff 76%) 100%
+    ) !important;
+}
+
 .admin-layout :is(.success-btn),
 .maintainer-layout :is(.success-btn),
 .user-layout :is(.success-btn) {
@@ -285,6 +484,16 @@ textarea {
 .admin-layout :is(.action-btn, .view-btn, .edit-btn, .reply-btn, .delete-btn, .danger-btn, .danger-action-btn, .neutral-action-btn, .rule-action-btn, .history-action-btn, .success-btn, .warning-btn, .cancel-btn):hover,
 .maintainer-layout :is(.action-btn, .view-btn, .edit-btn, .reply-btn, .delete-btn, .danger-btn, .danger-action-btn, .neutral-action-btn, .rule-action-btn, .history-action-btn, .success-btn, .warning-btn, .cancel-btn):hover,
 .user-layout :is(.action-btn, .view-btn, .edit-btn, .reply-btn, .delete-btn, .danger-btn, .danger-action-btn, .neutral-action-btn, .rule-action-btn, .history-action-btn, .success-btn, .warning-btn, .cancel-btn):hover {
+  transform: translateY(-1px);
+  box-shadow: 0 14px 28px color-mix(in srgb, var(--feature-primary) 16%, transparent) !important;
+}
+
+.admin-layout :is(.primary-btn, .el-button--primary):hover,
+.maintainer-layout :is(.primary-btn, .el-button--primary):hover,
+.user-layout :is(.primary-btn, .el-button--primary):hover,
+.admin-layout :is(.secondary-btn, .el-button--default):hover,
+.maintainer-layout :is(.secondary-btn, .el-button--default):hover,
+.user-layout :is(.secondary-btn, .el-button--default):hover {
   transform: translateY(-1px);
 }
 
@@ -389,5 +598,24 @@ textarea {
   .maintainer-layout :is(.page-hero, .page-header, .summary-card, .stat-card, .control-card, .panel-card, .hero-note, .feature-card, .chart-card, .detail-panel, .detail-summary-card, .table-container, .toolbar, .pagination-container, .hero-profile-card, .mini-card, .empty-state),
   .user-layout :is(.page-hero, .page-header, .summary-card, .stat-card, .control-card, .panel-card, .hero-note, .feature-card, .chart-card, .detail-panel, .detail-summary-card, .table-container, .toolbar, .pagination-container, .hero-profile-card, .mini-card, .empty-state) {
     border-radius: calc(var(--shell-radius-lg) + 2px) !important;
+  }
+
+  .admin-layout :is(.search-toolbar, .search-fields, .search-buttons) {
+    width: 100%;
+  }
+
+  .admin-layout :is(.search-buttons) {
+    margin-left: 0;
+    justify-content: stretch;
+    flex-wrap: wrap;
+  }
+
+  .admin-layout :is(.search-input, .filter-select) {
+    min-width: 0;
+    width: 100% !important;
+  }
+
+  .admin-layout :is(.search-buttons .el-button, .search-buttons .primary-btn, .search-buttons .secondary-btn, .search-buttons .small-btn) {
+    flex: 1 1 140px;
   }
 }

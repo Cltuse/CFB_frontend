@@ -7,10 +7,7 @@
         <p>展示系统内所有被限制的用户记录，包括生效状态、有效期、拉黑原因等信息。</p>
         
       </div>
-      <div class="hero-actions">
-          <el-button type="danger" class="danger-btn" @click="handleAddBlacklist">新增黑名单</el-button>
-          <el-button class="secondary-btn" @click="refreshAll">刷新列表</el-button>
-        </div>
+      
     </section>
 
     <section class="summary-grid">
@@ -56,6 +53,8 @@
         <el-form-item>
           <el-button type="primary" @click="handleSearch" :icon="Search">搜索</el-button>
           <el-button @click="resetSearch" :icon="Refresh">重置</el-button>
+          <el-button type="danger" class="danger-btn" @click="handleAddBlacklist">新增黑名单</el-button>
+          <el-button class="secondary-btn" @click="refreshAll">刷新列表</el-button>
         </el-form-item>
       </el-form>
     </section>

@@ -145,14 +145,14 @@ const handleMenuSelect = (index) => {
 .side-menu :deep(.el-menu-item:hover) {
   color: var(--feature-strong);
   transform: translateX(4px);
-  background: linear-gradient(135deg, var(--feature-soft) 0%, #ffffff 100%);
+  background: linear-gradient(135deg, color-mix(in srgb, var(--feature-soft) 82%, #ffffff 18%) 0%, #ffffff 100%);
   box-shadow: 0 10px 22px var(--feature-glow);
 }
 
 .side-menu :deep(.el-menu-item.is-active) {
-  color: #ffffff;
-  background: linear-gradient(135deg, var(--feature-primary) 0%, var(--feature-secondary) 100%);
-  box-shadow: 0 12px 28px var(--feature-glow);
+  color: var(--feature-strong);
+  background: linear-gradient(135deg, color-mix(in srgb, var(--feature-primary) 78%, #ffffff 22%) 0%, color-mix(in srgb, var(--feature-secondary) 92%, #ffffff 8%) 100%);
+  box-shadow: 0 12px 28px color-mix(in srgb, var(--feature-primary) 18%, transparent);
   font-weight: 600;
 }
 
@@ -168,7 +168,7 @@ const handleMenuSelect = (index) => {
 }
 
 .side-menu :deep(.el-menu-item.is-active .el-icon) {
-  color: #ffffff;
+  color: var(--feature-primary-deep);
 }
 
 .menu-text {

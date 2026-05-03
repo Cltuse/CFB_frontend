@@ -1,30 +1,30 @@
 const ROLE_THEMES = {
   admin: {
-    primary: '#8fc6ea',
-    secondary: '#cfe6f7',
-    soft: 'rgba(143, 198, 234, 0.18)',
-    glow: 'rgba(143, 198, 234, 0.22)',
-    surface: '#f4f9fd',
-    shellTop: '#f7fbfe',
-    shellBottom: '#eef5fb'
+    primary: '#5f8fbd',
+    secondary: '#c9dced',
+    soft: 'rgba(95, 143, 189, 0.18)',
+    glow: 'rgba(95, 143, 189, 0.26)',
+    surface: '#f2f7fc',
+    shellTop: '#f6f9fd',
+    shellBottom: '#e8f0f8'
   },
   maintainer: {
-    primary: '#8fcf9b',
-    secondary: '#d8f0de',
-    soft: 'rgba(143, 207, 155, 0.18)',
-    glow: 'rgba(143, 207, 155, 0.24)',
-    surface: '#f4fbf5',
-    shellTop: '#f8fcf8',
-    shellBottom: '#edf7ef'
+    primary: '#5f9f73',
+    secondary: '#c9e2cf',
+    soft: 'rgba(95, 159, 115, 0.18)',
+    glow: 'rgba(95, 159, 115, 0.26)',
+    surface: '#f2f8f3',
+    shellTop: '#f6fbf7',
+    shellBottom: '#e8f3eb'
   },
   user: {
-    primary: '#7fc8f8',
-    secondary: '#d8eefc',
-    soft: 'rgba(127, 200, 248, 0.18)',
-    glow: 'rgba(127, 200, 248, 0.24)',
-    surface: '#f4fbff',
-    shellTop: '#f8fcff',
-    shellBottom: '#edf7fd'
+    primary: '#d9cbb8',
+    secondary: '#f2ece3',
+    soft: 'rgba(217, 203, 184, 0.2)',
+    glow: 'rgba(217, 203, 184, 0.24)',
+    surface: '#faf7f2',
+    shellTop: '#fdfbf8',
+    shellBottom: '#f4efe8'
   }
 }
 
