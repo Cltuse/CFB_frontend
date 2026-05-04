@@ -44,7 +44,12 @@
         />
         <el-select v-model="selectedCategory" class="filter-select" placeholder="全部类别" clearable>
           <el-option value="" label="全部类别" />
-          <el-option v-for="c in categories" :key="c.id" :value="c.name" :label="c.name" />
+          <el-option
+            v-for="c in categories"
+            :key="c.id"
+            :value="getCategoryLabel(c)"
+            :label="getCategoryLabel(c)"
+          />
         </el-select>
         <el-select v-model="selectedStatus" class="filter-select" placeholder="全部状态" clearable>
           <el-option value="" label="全部状态" />
@@ -163,6 +168,43 @@
           </article>
         </section>
 
+        <section class="detail-panel">
+          <div class="detail-panel-head">
+            <h3>棰勭害瑙勫垯</h3>
+            <span v-if="detailRuleConfig" class="rule-badge">
+              {{ detailRuleConfig.categoryName || detailFacility.category || '鍏ㄥ眬榛樿' }}
+            </span>
+          </div>
+          <div v-if="detailRuleLoading" class="rule-loading">姝ｅ湪鍔犺浇瑙勫垯...</div>
+          <div v-else-if="detailRuleConfig" class="rule-grid">
+            <article class="rule-card">
+              <span>寮€鏀炬椂娈?</span>
+              <strong>{{ formatRuleTime(detailRuleConfig.openTime) }} - {{ formatRuleTime(detailRuleConfig.closeTime) }}</strong>
+            </article>
+            <article class="rule-card">
+              <span>鍙绾︽椂闀?</span>
+              <strong>{{ formatMinutes(detailRuleConfig.minDurationMinutes) }} - {{ formatMinutes(detailRuleConfig.maxDurationMinutes) }}</strong>
+            </article>
+            <article class="rule-card">
+              <span>鎻愬墠棰勭害</span>
+              <strong>鏈€澶?{{ detailRuleConfig.advanceDaysMax }} 澶?</strong>
+            </article>
+            <article class="rule-card">
+              <span>鍙栨秷鎴</span>
+              <strong>寮€濮嬪墠 {{ formatMinutes(detailRuleConfig.cancelDeadlineMinutes) }}</strong>
+            </article>
+            <article class="rule-card">
+              <span>褰撳ぉ棰勭害</span>
+              <strong>{{ detailRuleConfig.allowSameDayBooking ? '鍏佽' : '涓嶅厑璁?' }}</strong>
+            </article>
+            <article class="rule-card">
+              <span>瀹℃壒瑕佹眰</span>
+              <strong>{{ detailRuleConfig.needApproval ? '闇€瑕佺鐞嗗憳瀹℃壒' : '鏃犻渶棰濆瀹℃壒' }}</strong>
+            </article>
+          </div>
+          <p v-else class="rule-empty">褰撳墠鏆傛湭閰嶇疆鐗规畩棰勭害瑙勫垯锛屽彲鐩存帴鎸夌郴缁熼粯璁よ鏄庨绾︺€?</p>
+        </section>
+
         <section class="detail-panel" v-if="upcomingReservations.length">
           <h3>近期待占用</h3>
           <div class="timeline-list">
@@ -251,22 +293,23 @@
       </template>
     </el-dialog>
 
-    <UserLayout />
   </div>
 </template>
 
 <script setup>
 import { ref, onMounted, computed, watch } from 'vue';
-import { ElMessage, ElMessageBox } from 'element-plus';
-import { Search, Calendar, Edit, Delete } from '@element-plus/icons-vue';
-import { facilityAPI, facilityCategoryAPI, reservationAPI } from '../../api';
+import { ElMessage } from 'element-plus';
+import { Search, Calendar } from '@element-plus/icons-vue';
+import { facilityAPI, facilityCategoryAPI, reservationAPI, userClientAPI } from '../../api';
 import { normalizeUserMessage } from '../../utils/messageText';
-import UserLayout from '../../layouts/UserLayout.vue';
+import { findApplicableRuleConfig, formatMinutes, formatRuleTime } from '../../utils/facilityRules';
 
 const allFacilityList = ref([]);
 const categories = ref([]);
+const ruleConfigs = ref([]);
 const loading = ref(false);
 const detailLoading = ref(false);
+const detailRuleLoading = ref(false);
 const searchKeyword = ref('');
 const selectedCategory = ref('');
 const selectedStatus = ref('');
@@ -277,9 +320,9 @@ const dialogVisible = ref(false);
 const submitting = ref(false);
 const formRef = ref(null);
 const userInfo = ref(JSON.parse(localStorage.getItem('userInfo') || '{}'));
-const listSectionRef = ref(null);
 const currentFacility = ref({});
 const detailFacility = ref(null);
+const detailRuleConfig = ref(null);
 const upcomingReservations = ref([]);
 const form = ref({
   facilityId: null,
@@ -346,6 +389,7 @@ watch(
 onMounted(() => {
   loadFacilityList();
   loadCategories();
+  loadRuleConfigs();
 });
 
 async function loadFacilityList() {
@@ -370,6 +414,19 @@ async function loadCategories() {
   }
 }
 
+async function loadRuleConfigs() {
+  try {
+    const res = await userClientAPI.getAllRuleConfigs();
+    ruleConfigs.value = Array.isArray(res.data) ? res.data : [];
+  } catch {
+    ruleConfigs.value = [];
+  }
+}
+
+function getCategoryLabel(category) {
+  return category?.categoryName || category?.name || '';
+}
+
 function resetFilters() {
   searchKeyword.value = '';
   selectedCategory.value = '';
@@ -379,20 +436,27 @@ function resetFilters() {
 
 async function openDetail(item) {
   detailLoading.value = true;
+  detailRuleLoading.value = true;
   currentFacility.value = { ...item };
   detailFacility.value = { ...item };
+  detailRuleConfig.value = null;
 
   try {
     const result = await facilityAPI.getDetail(item.id, 7);
     const payload = result.data || {};
+    if (!ruleConfigs.value.length) {
+      await loadRuleConfigs();
+    }
     detailFacility.value = payload.facility || item;
     upcomingReservations.value = payload.reservations || [];
-    detailQueryDays.value = 7;
+    detailRuleConfig.value = findApplicableRuleConfig(ruleConfigs.value, detailFacility.value?.category);
   } catch {
     detailFacility.value = { ...item };
+    detailRuleConfig.value = findApplicableRuleConfig(ruleConfigs.value, item.category);
     ElMessage.error('加载设施详情失败');
   } finally {
     detailLoading.value = false;
+    detailRuleLoading.value = false;
     drawerVisible.value = true;
   }
 }
@@ -846,6 +910,62 @@ function formatTime(timeStr) {
   color: var(--feature-strong);
 }
 
+.detail-panel-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.detail-panel-head h3 {
+  margin: 0;
+  color: var(--feature-strong);
+}
+
+.rule-badge {
+  padding: 6px 12px;
+  border-radius: 999px;
+  background: var(--theme-soft);
+  color: var(--theme-deep);
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.rule-loading,
+.rule-empty {
+  margin: 14px 0 0;
+  color: color-mix(in srgb, var(--feature-strong) 62%, #7f9084 38%);
+  line-height: 1.7;
+}
+
+.rule-grid {
+  margin-top: 16px;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.rule-card {
+  padding: 14px 16px;
+  border-radius: 18px;
+  background: #ffffff;
+  border: 1px solid color-mix(in srgb, var(--feature-primary) 14%, #dce7de 86%);
+}
+
+.rule-card span {
+  display: block;
+  color: color-mix(in srgb, var(--feature-strong) 54%, #90a090 46%);
+  font-size: 12px;
+}
+
+.rule-card strong {
+  display: block;
+  margin-top: 8px;
+  color: var(--feature-strong);
+  line-height: 1.6;
+}
+
 .timeline-list {
   display: grid;
   gap: 14px;
@@ -1051,6 +1171,7 @@ function formatTime(timeStr) {
   .summary-grid,
   .facility-grid,
   .detail-grid,
+  .rule-grid,
   .form-grid,
   .info-grid {
     grid-template-columns: 1fr;

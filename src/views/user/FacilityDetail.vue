@@ -92,13 +92,57 @@
             </div>
             <div class="info-item">
               <label>参考价格</label>
-              <strong>{{ facility.price ? `￥${facility.price}` : '未填写' }}</strong>
+              <strong>{{ formatPrice(facility.price) }}</strong>
             </div>
           </div>
 
           <div class="description-box">
             <h3>详细描述</h3>
             <p>{{ facility.description || '暂无设施详细说明。' }}</p>
+          </div>
+
+          <div class="rule-section">
+            <div class="section-head compact-head">
+              <h2>棰勭害瑙勫垯</h2>
+              <p>鍦ㄦ彁浜ら绾﹀墠锛屽厛鐪嬫竻鏃堕棿銆佹椂闀垮拰瀹℃壒瑕佹眰锛屽彲浠ュ噺灏戞棤鏁堢敵璇枫€?</p>
+            </div>
+
+            <div v-if="ruleConfigLoading" class="rule-loading">姝ｅ湪鍔犺浇璁炬柦瑙勫垯...</div>
+            <div v-else-if="currentRuleConfig" class="rule-grid">
+              <article class="rule-item">
+                <span>閫傜敤瑙勫垯</span>
+                <strong>{{ currentRuleConfig.categoryName || facility.category || '鍏ㄥ眬榛樿' }}</strong>
+              </article>
+              <article class="rule-item">
+                <span>寮€鏀炬椂娈?</span>
+                <strong>{{ formatRuleTime(currentRuleConfig.openTime) }} - {{ formatRuleTime(currentRuleConfig.closeTime) }}</strong>
+              </article>
+              <article class="rule-item">
+                <span>鍙绾︽椂闀?</span>
+                <strong>{{ formatMinutes(currentRuleConfig.minDurationMinutes) }} - {{ formatMinutes(currentRuleConfig.maxDurationMinutes) }}</strong>
+              </article>
+              <article class="rule-item">
+                <span>鏃堕棿绮掑害</span>
+                <strong>{{ formatMinutes(currentRuleConfig.timeSlotMinutes) }}</strong>
+              </article>
+              <article class="rule-item">
+                <span>鎻愬墠棰勭害</span>
+                <strong>鏈€澶?{{ currentRuleConfig.advanceDaysMax }} 澶?</strong>
+              </article>
+              <article class="rule-item">
+                <span>鍙栨秷鎴</span>
+                <strong>寮€濮嬪墠 {{ formatMinutes(currentRuleConfig.cancelDeadlineMinutes) }}</strong>
+              </article>
+              <article class="rule-item">
+                <span>褰撳ぉ棰勭害</span>
+                <strong>{{ currentRuleConfig.allowSameDayBooking ? '鍏佽' : '涓嶅厑璁?' }}</strong>
+              </article>
+              <article class="rule-item">
+                <span>瀹℃壒瑕佹眰</span>
+                <strong>{{ currentRuleConfig.needApproval ? '闇€瑕佺鐞嗗憳瀹℃壒' : '鏃犻渶棰濆瀹℃壒' }}</strong>
+              </article>
+            </div>
+            <p v-else class="rule-empty">褰撳墠鏆傛湭閰嶇疆鐗规畩棰勭害瑙勫垯锛屽彲鎸夌郴缁熼粯璁よ姹傚畨鎺掗绾︺€?</p>
           </div>
         </article>
 
@@ -222,16 +266,19 @@ import { computed, nextTick, onMounted, ref } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { ElMessage } from 'element-plus';
 import { Loading } from '@element-plus/icons-vue';
-import { facilityAPI, reservationAPI } from '../../api';
+import { facilityAPI, reservationAPI, userClientAPI } from '../../api';
 import { normalizeUserMessage } from '../../utils/messageText';
+import { findApplicableRuleConfig, formatMinutes, formatRuleTime } from '../../utils/facilityRules';
 
 const route = useRoute();
 const router = useRouter();
 
 const facility = ref(null);
 const reservations = ref([]);
+const ruleConfigs = ref([]);
 const queryDays = ref(7);
 const loading = ref(true);
+const ruleConfigLoading = ref(false);
 const dialogVisible = ref(false);
 const formRef = ref(null);
 const timelineSection = ref(null);
@@ -239,6 +286,7 @@ const userInfo = ref({});
 const checkingAvailability = ref(false);
 const isTimeAvailable = ref(true);
 const availabilityMessage = ref('');
+const currentRuleConfig = computed(() => findApplicableRuleConfig(ruleConfigs.value, facility.value?.category));
 
 const form = ref({
   facilityId: null,
@@ -370,6 +418,18 @@ const timelineDays = computed(() => {
   return days;
 });
 
+const loadRuleConfigs = async () => {
+  try {
+    ruleConfigLoading.value = true;
+    const res = await userClientAPI.getAllRuleConfigs();
+    ruleConfigs.value = Array.isArray(res.data) ? res.data : [];
+  } catch {
+    ruleConfigs.value = [];
+  } finally {
+    ruleConfigLoading.value = false;
+  }
+};
+
 const loadFacilityDetail = async () => {
   try {
     loading.value = true;
@@ -386,6 +446,14 @@ const loadFacilityDetail = async () => {
   } finally {
     loading.value = false;
   }
+};
+
+const formatPrice = (value) => {
+  if (value === null || value === undefined || value === '') {
+    return '鏈～鍐?';
+  }
+
+  return `￥${value}`;
 };
 
 const getStatusType = (status) => {
@@ -452,6 +520,7 @@ onMounted(() => {
     userInfo.value = JSON.parse(info);
   }
   loadFacilityDetail();
+  loadRuleConfigs();
 });
 </script>
 
@@ -699,6 +768,51 @@ onMounted(() => {
   line-height: 1.8;
 }
 
+.compact-head {
+  margin-bottom: 14px;
+}
+
+.rule-section {
+  margin-top: 16px;
+  padding: 18px;
+  border-radius: 22px;
+  background: rgba(248, 251, 255, 0.94);
+  border: 1px solid rgba(126, 167, 255, 0.12);
+}
+
+.rule-loading,
+.rule-empty {
+  margin: 0;
+  color: #6e809f;
+  line-height: 1.8;
+}
+
+.rule-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.rule-item {
+  padding: 14px 16px;
+  border-radius: 18px;
+  background: #ffffff;
+  border: 1px solid rgba(126, 167, 255, 0.12);
+}
+
+.rule-item span {
+  display: block;
+  color: #7c8ca9;
+  font-size: 12px;
+}
+
+.rule-item strong {
+  display: block;
+  margin-top: 8px;
+  color: #24406d;
+  line-height: 1.6;
+}
+
 .timeline-container {
   display: flex;
   gap: 16px;
@@ -877,6 +991,10 @@ onMounted(() => {
 
 @media (max-width: 768px) {
   .summary-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .rule-grid {
     grid-template-columns: 1fr;
   }
 
