@@ -45,11 +45,19 @@
           <div class="weather-content">
             <div class="weather-row">
               <label>城市</label>
-              <span>{{ weatherInfo.city || '校园附近' }}</span>
+              <span class="weather-row-value">{{ weatherInfo.city || '校园附近' }}</span>
+            </div>
+            <div class="weather-row">
+              <label>当前 IP</label>
+              <span class="weather-row-value">{{ weatherInfo.ipAddress || '--' }}</span>
+            </div>
+            <div class="weather-row weather-row--multiline">
+              <label>IP 归属地</label>
+              <span class="weather-row-value">{{ weatherInfo.regionAddress || '暂无定位信息' }}</span>
             </div>
             <div class="weather-row">
               <label>更新时间</label>
-              <span>{{ weatherInfo.updateTime || '刚刚' }}</span>
+              <span class="weather-row-value">{{ weatherInfo.updateTime || '刚刚' }}</span>
             </div>
             <p class="weather-quote">
               {{ weatherInfo.moodQuote || '愿你今天的学习和预约都顺顺利利。' }}
@@ -115,6 +123,8 @@ const weatherInfo = ref({
   weatherIcon: '☀',
   moodQuote: '愿你今天的学习、实验和预约安排都顺顺利利。',
   city: '北京',
+  ipAddress: '',
+  regionAddress: '',
   updateTime: ''
 });
 
@@ -213,6 +223,8 @@ const applyWeatherData = (data) => {
     weatherIcon: data?.weatherIcon || '☀',
     moodQuote: data?.moodQuote || '愿你今天的学习和预约都顺顺利利。',
     city: data?.city || '北京',
+    ipAddress: data?.ipAddress || '',
+    regionAddress: data?.regionAddress || '',
     updateTime: data?.updateTime || new Date().toLocaleString('zh-CN', { hour12: false })
   };
 };
@@ -247,6 +259,8 @@ const fetchWeather = async () => {
     weatherIcon: '☀',
     moodQuote: '天气数据暂时未刷新成功，但愿你今天依然有明亮心情。',
     city: '北京',
+    ipAddress: '',
+    regionAddress: '暂无可用的IP归属地信息',
     updateTime: new Date().toLocaleString('zh-CN', { hour12: false })
   });
   loading.value = false;
@@ -437,9 +451,20 @@ onMounted(() => {
   color: #8e717b;
 }
 
-.weather-row span {
+.weather-row-value {
   color: #c4677a;
   font-weight: 600;
+  text-align: right;
+}
+
+.weather-row--multiline {
+  align-items: flex-start;
+}
+
+.weather-row--multiline .weather-row-value {
+  max-width: 70%;
+  white-space: normal;
+  overflow-wrap: anywhere;
 }
 
 .weather-quote {
