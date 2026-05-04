@@ -134,18 +134,24 @@ textarea {
   color: color-mix(in srgb, var(--feature-strong) 62%, #7f9084 38%) !important;
 }
 
-.user-layout :is(.primary-btn, .el-button--primary, .submit-btn, .reserve-btn) {
-  border-color: color-mix(in srgb, var(--feature-primary) 28%, #d8ccbb 72%) !important;
-  background: linear-gradient(135deg, color-mix(in srgb, var(--feature-primary) 92%, #ffffff 8%) 0%, color-mix(in srgb, var(--feature-primary-deep) 54%, #efe7dd 46%) 100%) !important;
-  color: #4f4336 !important;
-  box-shadow: 0 12px 24px color-mix(in srgb, var(--feature-primary) 20%, transparent) !important;
+.user-layout :is(.primary-btn, .submit-btn, .reserve-btn),
+.user-layout .el-button--primary:not(.is-link):not(.is-text) {
+  border-color: color-mix(in srgb, var(--feature-primary) 46%, #9a7650 54%) !important;
+  background:
+    linear-gradient(
+      135deg,
+      color-mix(in srgb, var(--feature-primary) 48%, #b88d62 52%) 0%,
+      color-mix(in srgb, var(--feature-primary-deep) 22%, #7b5a39 78%) 100%
+    ) !important;
+  color: #fffdf9 !important;
+  box-shadow: 0 14px 28px rgba(123, 90, 57, 0.22) !important;
 }
 
 .user-layout :is(.secondary-btn, .el-button--default, .reset-btn, .refresh-btn, .drawer-close-btn, .close-btn) {
-  border-color: var(--feature-border) !important;
-  background: color-mix(in srgb, var(--feature-soft-bg) 62%, #ffffff 38%) !important;
-  color: var(--feature-strong) !important;
-  box-shadow: 0 10px 22px color-mix(in srgb, var(--feature-primary) 10%, transparent) !important;
+  border-color: color-mix(in srgb, var(--feature-primary) 38%, #ddcfbd 62%) !important;
+  background: linear-gradient(180deg, #ffffff 0%, color-mix(in srgb, var(--feature-soft-bg) 84%, #f7f1e8 16%) 100%) !important;
+  color: color-mix(in srgb, var(--feature-primary-deep) 82%, #4e3928 18%) !important;
+  box-shadow: 0 10px 22px rgba(123, 90, 57, 0.08) !important;
 }
 
 .user-layout :is(.page-header, .welcome-hero, .feature-card, .recommend-shell, .panel-card, .summary-card, .notice-item, .feedback-card, .empty-state, .pagination-container, .table-container, .toolbar, .toolbar-card, .weather-visual, .weather-row, .quick-action, .info-row, .security-item, .detail-panel, .detail-info-card, .timeline-content, .notice-info, .content-text-full, .upload-shell, .reply-box) {
@@ -198,10 +204,15 @@ textarea {
 }
 
 .user-layout :is(.reset-btn:hover, .refresh-btn:hover, .drawer-close-btn:hover, .view-btn:hover:not(.is-disabled), .checkin-btn:hover:not(.is-disabled), .detail-btn:hover:not(.is-disabled), .reserve-btn:hover:not(:disabled), .submit-btn:hover:not(:disabled)) {
-  background: linear-gradient(135deg, color-mix(in srgb, var(--feature-primary) 92%, #ffffff 8%) 0%, color-mix(in srgb, var(--feature-primary-deep) 54%, #efe7dd 46%) 100%) !important;
-  color: #4f4336 !important;
-  border-color: color-mix(in srgb, var(--feature-primary) 30%, #d8ccbb 70%) !important;
-  box-shadow: 0 14px 28px color-mix(in srgb, var(--feature-primary) 22%, transparent) !important;
+  background:
+    linear-gradient(
+      135deg,
+      color-mix(in srgb, var(--feature-primary) 48%, #b88d62 52%) 0%,
+      color-mix(in srgb, var(--feature-primary-deep) 22%, #7b5a39 78%) 100%
+    ) !important;
+  color: #fffdf9 !important;
+  border-color: color-mix(in srgb, var(--feature-primary) 46%, #9a7650 54%) !important;
+  box-shadow: 0 14px 28px rgba(123, 90, 57, 0.2) !important;
 }
 
 .user-layout :is(.tag-category, .dialog-badge, .page-kicker, .hero-kicker, .dialog-kicker) {
@@ -380,7 +391,8 @@ textarea {
 
 .admin-layout :is(.primary-btn, .el-button--primary),
 .maintainer-layout :is(.primary-btn, .el-button--primary),
-.user-layout :is(.primary-btn, .el-button--primary) {
+.user-layout .primary-btn,
+.user-layout .el-button--primary:not(.is-link):not(.is-text) {
   background: linear-gradient(135deg, var(--feature-primary) 0%, var(--feature-primary-deep) 100%) !important;
   border-color: transparent !important;
   box-shadow: 0 12px 24px color-mix(in srgb, var(--feature-primary) 20%, transparent) !important;
@@ -490,7 +502,8 @@ textarea {
 
 .admin-layout :is(.primary-btn, .el-button--primary):hover,
 .maintainer-layout :is(.primary-btn, .el-button--primary):hover,
-.user-layout :is(.primary-btn, .el-button--primary):hover,
+.user-layout .primary-btn:hover,
+.user-layout .el-button--primary:not(.is-link):not(.is-text):hover,
 .admin-layout :is(.secondary-btn, .el-button--default):hover,
 .maintainer-layout :is(.secondary-btn, .el-button--default):hover,
 .user-layout :is(.secondary-btn, .el-button--default):hover {

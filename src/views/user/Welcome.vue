@@ -84,7 +84,7 @@
         </div>
       </article>
     </section>
-
+    <!-- 推荐模块 
     <section v-if="currentUser?.id" class="recommend-shell">
       <div class="recommend-head">
         <div>
@@ -94,6 +94,7 @@
       </div>
       <RecommendWidget :userId="currentUser.id" />
     </section>
+    -->
   </div>
 </template>
 
@@ -324,6 +325,7 @@ onMounted(() => {
 .refresh-btn {
   min-height: 44px;
   border-radius: 14px;
+  font-weight: 600;
 }
 
 .primary-btn {
@@ -477,6 +479,11 @@ onMounted(() => {
   box-shadow: 0 18px 28px rgba(94, 52, 62, 0.08);
 }
 
+.quick-action:focus-visible {
+  outline: 3px solid rgba(184, 141, 98, 0.28);
+  outline-offset: 3px;
+}
+
 .quick-action-badge {
   width: 46px;
   height: 46px;
@@ -489,23 +496,23 @@ onMounted(() => {
 }
 
 .quick-action-badge.mint {
-  background: rgba(245, 183, 192, 0.38);
-  color: #c4677a;
+  background: linear-gradient(135deg, #f1ddc6 0%, #e2c199 100%);
+  color: #6f5234;
 }
 
 .quick-action-badge.sky {
-  background: rgba(245, 183, 192, 0.24);
-  color: #c4677a;
+  background: linear-gradient(135deg, #f3e6d5 0%, #e4c6a1 100%);
+  color: #6c4f31;
 }
 
 .quick-action-badge.peach {
-  background: rgba(245, 183, 192, 0.34);
-  color: #d4768a;
+  background: linear-gradient(135deg, #f3dccf 0%, #dfb69f 100%);
+  color: #754734;
 }
 
 .quick-action-badge.gold {
-  background: rgba(245, 183, 192, 0.28);
-  color: #c4677a;
+  background: linear-gradient(135deg, #f4e4c8 0%, #dbbc86 100%);
+  color: #6c4e24;
 }
 
 .quick-action-copy {
@@ -526,7 +533,7 @@ onMounted(() => {
 }
 
 .quick-action-arrow {
-  color: #c4677a;
+  color: #7a5a3b;
   font-size: 18px;
   font-weight: 700;
 }

@@ -9,8 +9,7 @@
       </div>
       <div class="header-right">
         <el-button
-            type="primary"
-            link
+            type="default"
             @click="refreshRecommendations"
             :loading="refreshing"
             class="refresh-btn"
@@ -204,7 +203,7 @@ onMounted(() => {
 }
 
 .refresh-btn {
-  color: #409eff;
+  font-weight: 600;
 }
 
 .loading-container {
